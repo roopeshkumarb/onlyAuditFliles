@@ -125,7 +125,7 @@ C-029,03-11-2026,broker_chain_snap / broker_quote_depth_snap are recoverable (so
 C-030,03-11-2026,livewatch v3.1 bounded conn scan runs in 74-310 ms on the real closed depth/upstox/tbt day files of both boxes,PROVEN (closed files; load ~12),audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt,in-session timing and -shm readability NOT TESTED
 C-031,03-11-2026,v3.1 dry run logs every verdict every cycle (no suppression) and a CSV with action/query_ms/restart_count/events_max,PROVEN (25 tests; 3 mutations caught),audit_031126_BLK001_livewatch/28_unit_tests_v3.1_output.txt + 29_mutations_v3.1.txt,first real in-session rows tomorrow 09:00
 C-032,03-11-2026,dry-run daemons (--dry-run --session-start 09:00 --session-end 15:40 --stale-s 90) are running on i5 and i7 from 22:16 IST,PROVEN at start (/proc ALIVE + log lines),audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt,dies on reboot (boot task not installed); no kills possible in --dry-run
-C-033,03-11-2026,multi-day gap histogram from the day files supports a per-recorder threshold,PENDING,audit_031126_BLK001_livewatch/31_gap_histogram_tool.py,tool running on both boxes at 22:20; results to be added
+C-033,03-11-2026,multi-day gap histogram from the day files supports a 90 s limit,PARTLY PROVEN (i7 complete; i5 still running),audit_031126_BLK001_livewatch/33_gap_histogram_i7.csv + 32_gap_histogram_i5_PARTIAL.csv,across ~10 normal days the longest gap was ticks 1-11 s; depth d20/d200 2-25 s; upstox 2-7 s; gaps >60 s occur only on days with a known failure (20-10 recorder nearly empty: ticks 33 rows, upstox 282 rows, fyers 52 rows; 29-10, 30-10 (about 1830 s), 02-11, 03-11); tickrec: ticks use the NIFTY token only; fyers_tbt has only 4 days; 15-10..03-11 only, so seasonality/expiry-day behaviour UNKNOWN
 C-034,03-11-2026,weekly NIFTY options are recorded on Dhan d20 and Upstox from the 04-11 session,DEPLOYED-NOT-YET-SEEN,audit_031126_NIGHT_weekly_extras_move/10_weekly_deploy_raw.txt + 09_unit_tests_output.txt,env confirmed inside containers; Fable audit fixed the monthly-week bug (A1) and set Upstox to the tested 5/5; first live proof = 04-11 09:15 check
 C-035,03-11-2026,Kite socket records indices/ETF/BANKNIFTY future + all 50 constituents (TICK_EXTRA=1 EQ=50; macro CDS/MCX off),DEPLOYED-NOT-YET-SEEN,audit_031126_NIGHT_weekly_extras_move/02_dp_tickrec_extra.py + 03 tests,8 tests; volume growth UNMEASURED; run_session not unit tested
 C-036,03-11-2026,inactive SSD files were moved to the HDD,FALSE / INCIDENT,audit_031126_NIGHT_weekly_extras_move/11_incident_ssd_move_raw.txt,v1 script moved two epoch-pointer targets (links dangled minutes; restored sha256-verified); with guards nothing on the i5 SSD is safely movable; script v3 is copy-only by default
@@ -136,6 +136,7 @@ C-038,03-11-2026,4 verified HDD copies under /volume1/docker/datapullers_ssd_ove
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:20 IST: multi-day gap histogram from the day files added (i7 complete, i5 partial): healthy-day max gaps 1-25 s, >60 s only on known-failure days; supports the 90 s limit for file-level freshness (C-033 partly proven).
 - 04-11-2026 00:10 IST: owner order 'add weekly expiry and the missing live-only recorders': weekly deployed (Dhan 6/5, Upstox 5/5), Kite extras (indices, ETF, BANKNIFTY fut, 50 constituents; macro off), DATA_NEEDED_FOR_EDGE list; Fable audit found 14 defects, fixed A1,A2,B1,B2,C (script copy-only),D; INCIDENT: SSD move script v1 moved two epoch-pointer files (restored). C-034..C-038. Corrections: weekly was on record on 15-10; four recorders not three.
 - 03-11-2026 22:30 IST: outside auditor round 2 stored; Fable verification of it stored (9 of 29 statements incorrect/unsupported); livewatch v3.1 (dry-run keeps every verdict, CSV log, bounded conn scan, never-connected conn = CONN_DEAD); dry-run daemons started on both boxes 22:16; gap-histogram tool added; C-028..C-033.
 - 03-11-2026 21:55 IST: independent Fable review + comparison with outside auditor stored (AUDITOR_RESPONSES/). livewatch v3 (22 tests, fail-closed, IST-explicit, per-day bound, frames-based freshness, alarm-only for multi-socket death, state dir off /tmp). CORRECTIONS: C-021 '~3 days' RETRACTED; C-027 'i5 has 3 routes' RETRACTED; C-022 now PROVEN; INDEX md5s were stale (regenerated). New files 02b, 20(v3), 25, 26, BLK002/05.
@@ -1478,4 +1479,84 @@ find "$SRC" -xdev -type f -size +${MIN_BYTES}c ! -name '*.part' ! -name '*.MOVED
   fi
 done
 log "done"
+```
+
+### FILE audit_031126_BLK001_livewatch/33_gap_histogram_i7.csv  sha256=527a08d1fde0f81a  bytes=2947
+```
+recorder,conn,day,rows,max_gap_s,>60,>90,>120,>180,first,last
+ticks,NIFTY,20261015,88794,11,0,0,0,0,09:19:14,15:29:59
+ticks,NIFTY,20261016,89767,2,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261019,16619,2,0,0,0,0,09:15:00,10:24:34
+ticks,NIFTY,20261020,33,531,32,32,32,32,09:17:41,12:20:25
+ticks,NIFTY,20261021,89730,3,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261022,89564,4,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261023,89769,4,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261026,89822,7,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261027,89742,3,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261028,89711,1,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261029,87596,516,1,1,1,1,09:15:00,15:29:59
+ticks,NIFTY,20261030,82358,1832,1,1,1,1,09:15:00,15:29:59
+ticks,NIFTY,20261102,66477,82,2,0,0,0,09:15:00,13:58:09
+ticks,NIFTY,20261103,83050,1295,2,2,2,2,09:15:00,15:29:59
+depth,d20,20261019,18177,2,0,0,0,0,09:15:00,10:24:42
+depth,d200,20261019,17347,2,0,0,0,0,09:15:00,10:24:42
+depth,d20,20261021,93815,20,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261021,93586,5,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261022,93852,25,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261022,93353,9,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261023,94263,2,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261023,102712,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261027,52503,3,0,0,0,0,11:29:49,15:29:59
+depth,d200,20261027,48716,3,0,0,0,0,11:29:49,15:29:59
+depth,d20,20261028,82131,3,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261028,76349,6,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261029,82853,478,1,1,1,1,09:15:24,15:29:59
+depth,d200,20261029,79125,479,1,1,1,1,09:15:00,15:29:59
+depth,d20,20261030,75508,1852,1,1,1,1,09:15:00,15:29:59
+depth,d200,20261030,70649,1858,1,1,1,1,09:15:00,15:29:59
+depth,d20,20261102,61864,26,0,0,0,0,09:15:45,13:57:56
+depth,d200,20261102,57395,15,0,0,0,0,09:15:00,13:57:56
+depth,d20,20261103,79920,1310,3,3,3,3,09:15:00,15:29:59
+depth,d200,20261103,69880,1310,2,2,2,2,09:15:00,15:29:59
+upstox_live,frames,20261019,13602,2,0,0,0,0,09:50:49,10:24:49
+upstox_live,frames,20261020,282,245,93,93,93,93,09:16:19,15:28:18
+upstox_live,frames,20261021,149996,4,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261022,149998,2,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261023,150014,2,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261026,150021,7,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261027,150020,3,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261028,150012,4,0,0,0,0,09:15:00,15:29:59
+upstox_live,frames,20261029,146883,471,1,1,1,1,09:15:00,15:29:59
+upstox_live,frames,20261030,137668,1826,1,1,1,1,09:15:00,15:29:59
+upstox_live,frames,20261102,113152,4,0,0,0,0,09:15:00,13:57:54
+upstox_live,frames,20261103,127376,1348,2,2,2,2,09:15:00,15:29:59
+fyers_tbt,frames,20261020,52,246,51,51,51,51,12:03:55,15:27:51
+fyers_tbt,frames,20261027,6334,1,0,0,0,0,14:59:27,15:29:59
+fyers_tbt,frames,20261028,41761,3,0,0,0,0,12:21:38,15:29:59
+fyers_tbt,frames,20261103,71027,1381,2,2,2,2,09:15:00,15:29:59
+```
+
+### FILE audit_031126_BLK001_livewatch/32_gap_histogram_i5_PARTIAL.csv  sha256=40dc8a93d4092bcb  bytes=1167
+```
+recorder,conn,day,rows,max_gap_s,>60,>90,>120,>180,first,last
+ticks,NIFTY,20261015,88985,11,0,0,0,0,09:18:06,15:29:59
+ticks,NIFTY,20261016,89784,1,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261019,89648,2,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261020,33,382,32,32,32,32,09:16:48,12:15:35
+ticks,NIFTY,20261021,89702,2,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261022,89726,4,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261023,89745,3,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261026,89619,7,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261027,87869,1,0,0,0,0,09:22:19,15:29:59
+ticks,NIFTY,20261028,89748,4,0,0,0,0,09:15:00,15:29:59
+ticks,NIFTY,20261029,86820,709,1,1,1,1,09:15:00,15:29:59
+ticks,NIFTY,20261030,82284,1844,1,1,1,1,09:15:00,15:29:59
+ticks,NIFTY,20261102,88396,235,1,1,1,1,09:15:00,15:29:59
+ticks,NIFTY,20261103,84142,1049,2,2,2,2,09:15:00,15:29:59
+depth,d20,20261016,94477,4,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261016,96770,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261019,95504,8,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261019,93305,6,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261021,94009,3,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261021,94592,4,0,0,0,0,09:15:00,15:29:59
 ```
