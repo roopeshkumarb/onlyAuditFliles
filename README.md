@@ -25,8 +25,18 @@ The author and any AI agent it spawns share one model family; you are the indepe
 
 ---
 
-# LATEST: open for verification (updated 03-11-2026 ~21:20 IST; newest first)
-Do not rely on a link pasted elsewhere: this file is the source of truth, and README.md inlines every evidence file named below. Answer using the format in AUDITOR_PROTOCOL.md.
+# LATEST: open for verification (updated 03-11-2026 ~21:58 IST; newest first)
+READ AUDITOR_RESPONSES/20261103_COMPARISON_outside_auditor_vs_fable.md FIRST: it shows where the outside auditor and an independent Fable review agree and differ, and what the author changed. README.md inlines every evidence file named below.
+
+## ROUND 2 (after the outside auditor's verdict and the Fable review)
+### V-001 v3 | livewatch (code: 02_livewatch.py; history 02a v1, 02b v2) | status: AWAITING AUDITOR (not deployed)
+New evidence (inlined): 26 diff v2->v3, 20 tests (22 pass), 25 mutations (7 caught), 18/19 raw d20 gaps, 23 diff v1->v2.
+Changes answering the two reviews: fail-closed on missing folders; IST computed from epoch; kill bound per IST day with hourly re-armed ESCALATE; freshness judged by frames.recv_ts for depth (per connection), upstox and tbt; multi-socket death = ALARM ONLY by default; state dir off /tmp; docker-start fallback now tested.
+Still OPEN (do not mark verified): tickrec freshness still mtime/last_tick; 09:16 first-pass kill risk; d20 never connecting = UNKNOWN; -shm readability as the daemon user; dp_watchdog vs livewatch overlap; name clash with the compose container livewatch; no dry-run sessions yet; 90 s comes from ONE day of data.
+Question to the auditor: is v3 enough to start THREE DRY-RUN sessions (no kills, every DEAD/UNKNOWN line kept), and what must the dry run record?
+### V-002 v2 | BLK-002 | status: AWAITING AUDITOR
+New: BLK002/05 (negative test of the auditor's path, symlink resolution, src_store group-by, puller-DB table search, TZ/uid, byte-level df). C-020 and C-021 updated; C-021's '~3 days' is RETRACTED.
+### V-003 | access | status: NOT VERIFIED; 12 corrected (i5 has 2 independent routes, not 3). Owner steps pending.
 
 ## RESUBMISSION after your first response (stored in AUDITOR_RESPONSES/): V-001 v2, V-002, V-003. Author's reply: AUDITOR_RESPONSES/20261103_author_reply_1.md
 ### V-001 v2 | livewatch with 90 s default and per-connection check | status: AWAITING AUDITOR (code written + tested, NOT deployed)
