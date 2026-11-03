@@ -1,0 +1,26 @@
+ACCESS ROUTE RAW TESTS, 03-11-2026 16:07 IST, from the cloud sandbox via tools/box_reach.sh (file 11). Hostnames are aliases.
+
+### box_reach.sh i5 'hostname'
+ROUTE: i5-cf
+i5-4590-dsm72
+
+### box_reach.sh i7 'hostname'
+route j1800-cf failed (rc=255: Bad Gateway Connection closed by UNKNOWN port 65535 )
+ROUTE: i5-cf>i7
+I7-3RD-exJ1800
+
+### box_reach.sh pi 'hostname'
+ROUTE: pi-cf
+a0d7b954-ssh
+
+### LAN hops (each line: from -> to : result)
+pi -> 192.168.2.91 (user roopeshkumarb): i5-4590-dsm72
+pi -> 192.168.2.100 (user roopeshkumarb): I7-3RD-exJ1800
+i5 -> i7: I7-3RD-exJ1800
+i5 -> pi (root): a0d7b954-ssh
+i7 -> i5: i5-4590-dsm72
+i7 -> pi (root): a0d7b954-ssh
+
+### direct alias tests
+j1800-cf: Bad Gateway
+sshpi-cf: Bad Gateway
