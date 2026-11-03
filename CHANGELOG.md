@@ -1,4 +1,5 @@
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
 - 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.
 - 04-11-2026 00:50 IST: 2nd Fable review: A/B/C/D verdicts stored; NEW DEFECT found and fixed (tickrec container did not receive nifty50_syms.txt: 0 constituents would have been recorded), proven inside both containers; df-unreadable hole in the move script fixed; corrections: November monthly is 23-11; C-041 volume estimate RETRACTED. C-039..C-041.
 - 04-11-2026 00:20 IST: multi-day gap histogram from the day files added (i7 complete, i5 partial): healthy-day max gaps 1-25 s, >60 s only on known-failure days; supports the 90 s limit for file-level freshness (C-033 partly proven).

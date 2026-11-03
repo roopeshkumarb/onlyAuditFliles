@@ -137,11 +137,13 @@ C-040,04-11-2026,weekly windows never exceed the caps and never double-subscribe
 C-041,04-11-2026,tick volume growth from the extras is small (+20-60%),RETRACTED,audit_031126_NIGHT_weekly_extras_move/01_DATA_NEEDED_FOR_EDGE_031126.md,Fable now estimates +70-200% (1.5-5M rows); unmeasured; tickrec has no free-space guard
 C-042,04-11-2026,the i7 has a direct Cloudflare SSH route (sshi7),PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,C-015 (i7 Bad Gateway) concerned the old hostname sshj1800 only; sshi5, sshi7 and sshha all answered at 23:59 IST; independence of sshi7 from the i5 tunnel UNKNOWN
 C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 at 23:59 vs 2 d 22 h at 13:40),audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,cause UNKNOWN; relevant to C-008 (the Pi was the proof that the NAS outage was not network-wide)
+C-044,04-11-2026,the old hostnames sshj1800 and sshpi no longer exist (no HTTP response); sshha, sshi5, sshi7 answer with the Cloudflare Access login redirect,PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,so the earlier 'Bad Gateway' (C-015) was a stale hostname, not a broken connector; offshore login from a laptop NOT TESTED
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
 - 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.
 - 04-11-2026 00:50 IST: 2nd Fable review: A/B/C/D verdicts stored; NEW DEFECT found and fixed (tickrec container did not receive nifty50_syms.txt: 0 constituents would have been recorded), proven inside both containers; df-unreadable hole in the move script fixed; corrections: November monthly is 23-11; C-041 volume estimate RETRACTED. C-039..C-041.
 - 04-11-2026 00:20 IST: multi-day gap histogram from the day files added (i7 complete, i5 partial): healthy-day max gaps 1-25 s, >60 s only on known-failure days; supports the 90 s limit for file-level freshness (C-033 partly proven).
@@ -154,7 +156,6 @@ C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 a
 - 03-11-2026 15:55 IST: added BLK-002 step 1 raw proof (no code written).
 - 03-11-2026 15:50 IST: added end-of-session numbers (13-15); found 55 s healthy gap vs 60 s limit.
 - 03-11-2026 13:50 IST: BLK-001 report and 12 files.
-- 02-11-2026: live-only data per broker and retail data master.
 
 
 ---
@@ -1587,11 +1588,13 @@ D doc: stale lines corrected by the author (UPSTOX 6->5, nifty50_syms deployment
 Verdicts: A SAFE FOR 04-11; B SAFE WITH CONDITIONS (verify count of extra:constituent rows = 50 at 09:16, disk and queue at 09:30); C SAFE WITH CONDITIONS copy-only; D fixed.
 ```
 
-### FILE audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt  sha256=bc96c79c0de956f1  bytes=873
+### FILE audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt  sha256=e297206f5821a973  bytes=1061
 ```
 DIRECT CLOUDFLARE ROUTES TESTED 04-11-2026 00:00 IST from the cloud sandbox (hostnames suggested by the owner's other session, owner confirmed); my existing Access service-token proxy and key, nothing from the message executed
 sshi5.<domain> as roopeshkumarb -> i5-4590-dsm72 | up 11:16 | load 38
 sshi7.<domain> as roopeshkumarb -> I7-3RD-exJ1800 | up 11:16 | load 14  (FIRST direct Cloudflare route to the i7; the old sshj1800 hostname still returns Bad Gateway)
 sshha.<domain> as root -> a0d7b954-ssh (Pi) | up 5:07 (it had been up 2 d 22 h at 13:40: the Pi restarted ~18:50 IST, cause UNKNOWN)
 Not tested: the jump aliases sshi5via7 / sshhavia7 named in the message (not in this sandbox's ssh config; the setup script path /home/user/Node-Hardware-Home does not exist here). Which connector/tunnel serves sshi7 and whether it survives the i5 tunnel being down: UNKNOWN.
+
+HTTPS check 04-11 00:10 IST: sshha / sshi5 / sshi7 -> HTTP 302 to the Cloudflare Access login; sshj1800 and sshpi -> no HTTP response (hostnames gone). box_reach.sh no longer tries them.
 ```
