@@ -1,11 +1,12 @@
-# AUDIT 03-11-2026: BLK-001 livewatch, power incident, access routes (regenerated 03-11-2026 21:58 IST; md5 per file)
+# AUDIT 03-11-2026: BLK-001 livewatch, power incident, access routes (regenerated 03-11-2026 22:30 IST; md5 per file)
 Raw links (plain text):
 - 00_BRIEF_FOR_AUDITOR.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/00_BRIEF_FOR_AUDITOR.md  md5=380a7cd5b443afbb02917a00841aeb14
 - 01_REPORT_BLK001.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/01_REPORT_BLK001.md  md5=8b15316098ddf7cc2fdf3c9fe03b6a55
-- 02_livewatch.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02_livewatch.py  md5=a5fdd90961c728630a4fd5d1057763bd
+- 02_livewatch.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02_livewatch.py  md5=9dba3f38dfdcf49a12eb8530bcdfbe06
 - 02a_livewatch_v1.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02a_livewatch_v1.py  md5=797db99be487259491a35dd5afd2751c
 - 02b_livewatch_v2.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02b_livewatch_v2.py  md5=ca711e8c12bca8cb11e4d53b79e0e037
-- 03_test_livewatch.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/03_test_livewatch.py  md5=9e83ca0688682d2112a9298903bd3725
+- 02c_livewatch_v3.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02c_livewatch_v3.py  md5=a5fdd90961c728630a4fd5d1057763bd
+- 03_test_livewatch.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/03_test_livewatch.py  md5=c113e0a4f9765adcf7a6ade10aa45b16
 - 04_proof_i5_raw.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/04_proof_i5_raw.txt  md5=220fba9aa090d3d14033f06b217143d6
 - 05_mutation_log.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/05_mutation_log.txt  md5=2963335d8753cea1e48273a80f41caa4
 - 06_unit_tests_output.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/06_unit_tests_output.txt  md5=1aa3477a5e7dc8084109765af9db5d84
@@ -28,3 +29,8 @@ Raw links (plain text):
 - 24_conn_last_on_real_db.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/24_conn_last_on_real_db.txt  md5=409a7b4c59855c22a1b1ac8f364649ad
 - 25_mutations_v3.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/25_mutations_v3.txt  md5=8920fcb1156c15dd5af8ad551e512bc8
 - 26_livewatch_v2_to_v3.diff  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/26_livewatch_v2_to_v3.diff  md5=d6f284c33b84ad329f77cc6566eec201
+- 27_livewatch_v3_to_v3.1.diff  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/27_livewatch_v3_to_v3.1.diff  md5=4be1b39e728c10952c4422a74fe6ba6a
+- 28_unit_tests_v3.1_output.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/28_unit_tests_v3.1_output.txt  md5=f9fecf5bd46276d5bfbcc77324d5fbb2
+- 29_mutations_v3.1.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/29_mutations_v3.1.txt  md5=fd232a121d89a9cf5be190f429db677c
+- 30_preflight_v3.1_real_files.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt  md5=389ca56368195986f59d2334c240cef7
+- 31_gap_histogram_tool.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/31_gap_histogram_tool.py  md5=5f78ce867d2e195978b1d3303e8f91bc

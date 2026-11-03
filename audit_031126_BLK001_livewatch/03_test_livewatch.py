@@ -152,6 +152,43 @@ class T(unittest.TestCase):
         self.assertEqual(livewatch.argparse.ArgumentParser.__name__, "ArgumentParser")
         self.assertIn("default=90.0", open(livewatch.__file__).read().replace(" ", ""))
 
+    def test_csv_log_has_one_row_per_recorder_and_dry_run_never_kills_or_starts(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=200, d200_age=2)
+        csvp = os.path.join(self.d, "dry.csv")
+        w = self.watch(dry_run=True, csv=csvp); w.once(MON_1030); w.once(MON_1030 + 20)
+        rows = [l.split(",") for l in open(csvp).read().strip().splitlines()]
+        self.assertEqual(len(rows), 1 + 2 * 4)                      # header + 2 passes x 4 recorders
+        self.assertIn("timestamp_ist", rows[0][1]); depth = [r for r in rows if r[3] == "depthrec"]
+        self.assertTrue(all(r[4] == "CONN_DEAD" for r in depth)); self.assertTrue(any("d20=" in x for x in depth[0]))
+        self.assertEqual([l for l in open(self.calls)] if os.path.exists(self.calls) else [], [l for l in (open(self.calls) if os.path.exists(self.calls) else []) if l.startswith("inspect")])  # only read-only inspect
+        self.assertEqual(self.kills(), [])
+
+    def test_never_connected_d20_is_conn_dead_not_unknown(self):
+        import sqlite3
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        p = self.files["depthrec"]; os.remove(p)
+        c = sqlite3.connect(p); c.execute("create table frames(recv_ts real, conn text, raw blob)")
+        c.execute("insert into frames values(?,?,?)", (MON_1030 - 2, "d200", b"x")); c.commit(); c.close()
+        self.touch("depthrec", MON_1030 - 2)
+        r = livewatch.evaluate("depthrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "CONN_DEAD"); self.assertIn("d20", r["why"])
+
+    def test_dry_run_logs_every_verdict_every_cycle_without_suppression(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 500)
+        csvp = os.path.join(self.d, "dry2.csv"); logp = os.path.join(self.d, "dry2.log"); w = self.watch(dry_run=True, csv=csvp, log=logp)
+        for i in range(8):
+            w.once(MON_1030 + i * 15)
+        lines = [l for l in open(logp) if "WOULD docker kill tickrec" in l]
+        self.assertEqual(len(lines), 8)                            # the LOG keeps every cycle too (Fable task 3.1), not only the csv
+        rows = [l.split(",") for l in open(csvp).read().strip().splitlines()][1:]
+        tick = [r for r in rows if r[3] == "tickrec"]
+        self.assertEqual(len(tick), 8); self.assertTrue(all(r[5] == "would_kill" for r in tick))   # no bound: all 8 cycles kept
+        self.assertEqual(self.kills(), [])
+
     def test_docker_start_fallback_runs_when_policy_did_not_restart(self):
         with open(self.fake, "w") as f:      # inspect says NOT running -> the start path must run (the real box needed it, file 04)
             f.write("#!/bin/sh\necho \"$@\" >> %s\n[ \"$1\" = inspect ] && echo false\nexit 0\n" % self.calls)

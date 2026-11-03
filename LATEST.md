@@ -1,5 +1,13 @@
-# LATEST: open for verification (updated 03-11-2026 ~21:58 IST; newest first)
-READ AUDITOR_RESPONSES/20261103_COMPARISON_outside_auditor_vs_fable.md FIRST: it shows where the outside auditor and an independent Fable review agree and differ, and what the author changed. README.md inlines every evidence file named below.
+# LATEST: open for verification (updated 03-11-2026 ~22:30 IST; newest first)
+OWNER RULE: every outside-auditor verdict is verified with Fable. Read AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md and ..._COMPARISON_... first. README.md inlines every evidence file named below.
+
+## ROUND 3: v3.1 dry run (decision: dry run only, no kills)
+### V-001 v3.1 | livewatch --dry-run on both boxes | status: RUNNING from 22:16 IST; first in-session cycle 09:00 tomorrow
+Evidence (inlined): 02 code v3.1, 03 tests (25), 27 diff v3->v3.1, 28 tests, 29 mutations, 30 preflight on real files, 31 gap-histogram tool. Fable's dry-run spec was adopted: CSV with action/query_ms/restart_count/events_max per recorder per cycle; every DEAD/CONN_DEAD verdict kept every cycle; conn scan bounded; --session-start 09:00.
+Auditor decisions requested: (a) is the multi-day histogram taken from the DAY FILES (tool 31; results will be added to this page) acceptable instead of the livewatch log? (b) after 3 sessions, what evidence moves C-005 to PROVEN, per recorder?
+Open: -shm readability in session; tickrec uses status last_tick + mtime only; dry-run writes small files under _state/livewatch_dry; dp_watchdog overlap; the daemon dies on reboot until the DSM boot task is installed.
+### V-002 | the outside auditor's V-002 verdict was found UNSUPPORTED by Fable (rows 15-17, 21): recoverability of the snapshot tables is unproven; BLK-002 code "not required" is NOT established. Owner rule needed: are the 14-19 Oct chain/quote-depth snapshots live-only (non-recoverable)?
+### V-003 | unchanged (NOT VERIFIED; owner steps pending)
 
 ## ROUND 2 (after the outside auditor's verdict and the Fable review)
 ### V-001 v3 | livewatch (code: 02_livewatch.py; history 02a v1, 02b v2) | status: AWAITING AUDITOR (not deployed)

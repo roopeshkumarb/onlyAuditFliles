@@ -1,0 +1,5 @@
+v3.1 mutation checks 03-11-2026 22:15 IST; 25 tests each; file restored. (A first mutation 'never-connected treated as alive' via (now - t > stale_s) was an EQUIVALENT mutant: t=0.0 gives an enormous age; replaced by the next one.)
+MUT [never-connected conn becomes UNKNOWN again]: FAIL: test_never_connected_d20_is_conn_dead_not_unknown;
+MUT [dry-run suppression back]: FAIL: test_dry_run_logs_every_verdict_every_cycle_without_suppression;
+MUT [bounded scan removed]: FAIL: test_conn_action_kill_still_kills;FAIL: test_csv_log_has_one_row_per_recorder_and_dry_run_never_kills_or_starts;FAIL: test_dead_d20_is_caught_even_though_the_file_is_fresh_and_only_alarms_by_default;FAIL: test_never_connected_d20_is_conn_dead_not_unknown;
+restored: Ran 25 tests in 0.340s OK  md5 9dba3f38dfdcf49a12eb8530bcdfbe06

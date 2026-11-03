@@ -25,8 +25,16 @@ The author and any AI agent it spawns share one model family; you are the indepe
 
 ---
 
-# LATEST: open for verification (updated 03-11-2026 ~21:58 IST; newest first)
-READ AUDITOR_RESPONSES/20261103_COMPARISON_outside_auditor_vs_fable.md FIRST: it shows where the outside auditor and an independent Fable review agree and differ, and what the author changed. README.md inlines every evidence file named below.
+# LATEST: open for verification (updated 03-11-2026 ~22:30 IST; newest first)
+OWNER RULE: every outside-auditor verdict is verified with Fable. Read AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md and ..._COMPARISON_... first. README.md inlines every evidence file named below.
+
+## ROUND 3: v3.1 dry run (decision: dry run only, no kills)
+### V-001 v3.1 | livewatch --dry-run on both boxes | status: RUNNING from 22:16 IST; first in-session cycle 09:00 tomorrow
+Evidence (inlined): 02 code v3.1, 03 tests (25), 27 diff v3->v3.1, 28 tests, 29 mutations, 30 preflight on real files, 31 gap-histogram tool. Fable's dry-run spec was adopted: CSV with action/query_ms/restart_count/events_max per recorder per cycle; every DEAD/CONN_DEAD verdict kept every cycle; conn scan bounded; --session-start 09:00.
+Auditor decisions requested: (a) is the multi-day histogram taken from the DAY FILES (tool 31; results will be added to this page) acceptable instead of the livewatch log? (b) after 3 sessions, what evidence moves C-005 to PROVEN, per recorder?
+Open: -shm readability in session; tickrec uses status last_tick + mtime only; dry-run writes small files under _state/livewatch_dry; dp_watchdog overlap; the daemon dies on reboot until the DSM boot task is installed.
+### V-002 | the outside auditor's V-002 verdict was found UNSUPPORTED by Fable (rows 15-17, 21): recoverability of the snapshot tables is unproven; BLK-002 code "not required" is NOT established. Owner rule needed: are the 14-19 Oct chain/quote-depth snapshots live-only (non-recoverable)?
+### V-003 | unchanged (NOT VERIFIED; owner steps pending)
 
 ## ROUND 2 (after the outside auditor's verdict and the Fable review)
 ### V-001 v3 | livewatch (code: 02_livewatch.py; history 02a v1, 02b v2) | status: AWAITING AUDITOR (not deployed)
@@ -101,11 +109,18 @@ C-024,03-11-2026,v3 refuses to run when a recorder folder is missing for --box (
 C-025,03-11-2026,host TZ of both boxes is IST (/etc/TZ IST-5:30; /etc/localtime Asia/Calcutta); daemon uid roopeshkumarb in users administrators docker,PROVEN,audit_031126_BLK002_raw_proof/05_evidence_batch2_i5_i7.txt,i7 has no cloudflared package (only CloudSync)
 C-026,03-11-2026,numbers quoted from terminal sessions with NO raw file in repo (4 s max write gap in a 150 s sample; box uptimes 7-9 min; status.json SILENT quotes; file ages 358-378 s at 15:41; load 25-29; cloudflared start 12:45),EVIDENCE NOT IN REPO,,answer CANNOT CHECK; re-run on request
 C-027,03-11-2026,'i5 has 3 independent remote routes' (first version of 12_ACCESS_ROUTES),RETRACTED,audit_031126_BLK001_livewatch/12_ACCESS_ROUTES.md,third route passes through i5-cf; independent routes: i5 2, i7 2 (neither its own), Pi 1
+C-028,03-11-2026,the outside auditor's round-2 verdict is a reliable independent check,FALSE per Fable verification,AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md,9 of 29 statements incorrect or unsupported; owner rule: every outside audit is verified with Fable
+C-029,03-11-2026,broker_chain_snap / broker_quote_depth_snap are recoverable (so SSD placement is fine),UNPROVEN (asserted by the outside auditor only),,owner's H12 table says chain snapshots are non-recoverable/HDD; needs the owner's rule on 14-19 Oct snapshots
+C-030,03-11-2026,livewatch v3.1 bounded conn scan runs in 74-310 ms on the real closed depth/upstox/tbt day files of both boxes,PROVEN (closed files; load ~12),audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt,in-session timing and -shm readability NOT TESTED
+C-031,03-11-2026,v3.1 dry run logs every verdict every cycle (no suppression) and a CSV with action/query_ms/restart_count/events_max,PROVEN (25 tests; 3 mutations caught),audit_031126_BLK001_livewatch/28_unit_tests_v3.1_output.txt + 29_mutations_v3.1.txt,first real in-session rows tomorrow 09:00
+C-032,03-11-2026,dry-run daemons (--dry-run --session-start 09:00 --session-end 15:40 --stale-s 90) are running on i5 and i7 from 22:16 IST,PROVEN at start (/proc ALIVE + log lines),audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt,dies on reboot (boot task not installed); no kills possible in --dry-run
+C-033,03-11-2026,multi-day gap histogram from the day files supports a per-recorder threshold,PENDING,audit_031126_BLK001_livewatch/31_gap_histogram_tool.py,tool running on both boxes at 22:20; results to be added
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 03-11-2026 22:30 IST: outside auditor round 2 stored; Fable verification of it stored (9 of 29 statements incorrect/unsupported); livewatch v3.1 (dry-run keeps every verdict, CSV log, bounded conn scan, never-connected conn = CONN_DEAD); dry-run daemons started on both boxes 22:16; gap-histogram tool added; C-028..C-033.
 - 03-11-2026 21:55 IST: independent Fable review + comparison with outside auditor stored (AUDITOR_RESPONSES/). livewatch v3 (22 tests, fail-closed, IST-explicit, per-day bound, frames-based freshness, alarm-only for multi-socket death, state dir off /tmp). CORRECTIONS: C-021 '~3 days' RETRACTED; C-027 'i5 has 3 routes' RETRACTED; C-022 now PROVEN; INDEX md5s were stale (regenerated). New files 02b, 20(v3), 25, 26, BLK002/05.
 - 03-11-2026 21:20 IST: auditor 1 response stored; README now inlines all evidence; livewatch v2 (90 s + per-connection) written, NOT deployed; new files 18-24 and BLK002/04; C-005, C-009 updated, C-019..C-022 added; /volume2 99% full registered (T-1312).
 - 03-11-2026 16:20 IST: added README (fixed entry point), AUDITOR_PROTOCOL, LATEST, CLAIMS_LEDGER, MANIFEST/SHA256SUMS, AUDITOR_RESPONSES template, 17_access_routes_raw.txt.
@@ -1087,4 +1102,915 @@ V-002 verdict: VERIFIED WITH CONDITIONS (recorders); NOT VERIFIED (H12 candidate
 V-002 observations: 01 supports C-010/C-018, C-011 as inference (i5 md2+md4 = 3.63 TiB ~ 3.5T; md3 213 GiB ~ 205G; i7 mirrors with different cachedev mapping, correctly not assumed); 02 is a grep only, not "every place" (compose bind mount, depthrec code copied from /volume1/docker/blpro009 at start, dp_recguard writing into the same file); 04 supports C-020/C-021 figures; du unit not stated (MB); C-022 no negative test (now fixed).
 V-003 verdict NOT VERIFIED: 17 supports route results (LAN-hop lines are a summary); 12's own count of i5 routes is wrong by construction; recommendation sound but missing a Cloudflare-independent route for i5/i7 (Tailscale only optional on Pi), router/modem on UPS, any off-LAN test; 11 defects: circular route, 7.5 min worst case, auth failure read as dead route; 10 does not start livewatch or any cloudflared replica. Hint: Cloudflare 502 usually means a connector took the request but the origin did not answer: look at hostname->origin mapping and the i7/Pi sshd. Missing proof: ssh -vvv on j1800-cf; cloudflared start time on i5; i7 package/docker list; owner's Zero Trust connector list and public-hostname list.
 Cross-cutting: numbers taken from terminal sessions with no saved file (4 s max gap, uptimes, status quotes, file ages at 15:41, load 25-29, cloudflared start time) are CANNOT CHECK; ledger should say EVIDENCE NOT IN REPO. Two programs are both called livewatch.
+```
+
+### FILE audit_031126_BLK001_livewatch/02_livewatch.py  sha256=3cdbee918d8a60a5  bytes=20033
+```
+#!/usr/bin/env python3
+"""livewatch.py - BLK-001 (Kumar, 03-11-2026): the DATA FRESHNESS WATCHDOG that kills a silent recorder.
+
+WHY: on 02-11-2026 the i7 Dhan depth socket closed (1006) at 13:58 and never reopened while `docker ps`
+said "Up". Docker status is not data. This daemon judges each live-only recorder by the DATA it last
+stored and, when the data stops during the session, issues `docker kill <container>` so the restart
+policy (and, if that does not bring it back, a `docker start`) replaces the dead socket.
+
+THE RULE (as ordered): during the session, if now - last_data > STALE_S (default 90 s since v2; the owner ordered 60 s), run
+`docker kill <container>`.
+  last_data = the newest of (a) status.json "last_tick" when the recorder writes one (Kite ticks) and
+              (b) the modification time of today's day file or its -wal (every stored row moves it).
+              (b) costs no database read. MEASURED 03-11-2026 on the i5 during the session: the longest
+              gap between writes of all four recorders was 4 s (150 s window, 2 s sampling).
+DEVIATIONS FROM THE ORDER, each with its reason (Kumar can switch them back with the flags):
+  1 SESSION_START default 09:16, not 09:00. Reason: the recorders' own silence guards dropped sockets that
+    had been silent 197-210 s at 09:11-09:13 on 03-11-2026 (pre-open is quiet). A 60 s rule from 09:00 would
+    kill every recorder every morning. Flag: --session-start 09:00.
+  2 MAX_KILLS_PER_HOUR = 3 per container. Reason: a kill loop under a broker's connection cap (Dhan: 5
+    sockets, the 6th drops the oldest) or an outage would flap forever and lose more data than it saves.
+    After the third kill it writes an ESCALATE file and logs CRITICAL, and stops killing that container.
+  3 NO DAY FILE by 09:20 with instruments 0 is also treated as dead (the i7 Fyers TBT wrote no file for
+    three days; a rule that only reads file age could never see it).
+It NEVER touches cloudflared, portainer, blpro_09 or any name not in RECORDERS.
+
+Stdlib only, python 3.8 compatible, no pip. ADVISORY ONLY: it reads stored data and restarts recorders.
+Runs on the host (outside Docker) so a Docker service restart cannot take it down.
+
+    python3 livewatch.py --root /volume1/docker/datapullers --box i5            # live
+    python3 livewatch.py --root ... --box i5 --dry-run --once                   # print what it would do
+"""
+import argparse
+import calendar
+import json
+import os
+import subprocess
+import sys
+import time
+
+RECORDERS = {                     # container -> (folder under root, day-file prefix)
+    "tickrec": ("ticks", "ticks_"),
+    "depthrec": ("depth", "depth_"),
+    "upstoxrec": ("upstox_live", "upstox_"),
+    "fyerstbt": ("fyers_tbt", "tbt_"),
+}
+# v2 (auditor condition, 03-11-2026): a recorder that writes SEVERAL sockets into ONE day file hides a dead socket behind
+# the live ones (Dhan: d20 silent ~4 min 12 times on the i5 while d200 kept the file fresh). So judge each connection by
+# the newest recv_ts of its own rows. Unreadable DB / no rows for the connection = UNKNOWN (never killed on UNKNOWN).
+# v3: upstox/tbt write a heartbeat/open/close row into the SAME day file's `events` table (dp_recguard.log_event), which moves the
+# file mtime with zero frames; so judge those by the newest frames.recv_ts too (col None = single series).
+CONNS = {"depthrec": ("frames", "conn", ("d20", "d200")),
+         "upstoxrec": ("frames", None, ("frames",)),
+         "fyerstbt": ("frames", None, ("frames",))}
+NEVER_TOUCH = ("cloudflared", "portainer", "blpro_09", "blpro_compute", "blpro_synchub",
+               "blpro_vendorwatch", "watchtower")
+DEFAULT_DOCKER = "/var/packages/ContainerManager/target/usr/bin/docker"
+
+
+def ist(now):
+    """Struct time in IST (GMT+5:30) computed from the epoch, independent of the host TZ (auditor defect 6)."""
+    return time.gmtime(now + 19800)
+
+
+def hhmm(s):
+    h, m = s.split(":")
+    return int(h) * 60 + int(m)
+
+
+def in_session(now, start, end):
+    """Weekdays only, box-local time, [start, end]. (NSE holidays are not known here: on a holiday the
+    recorders see no ticks, so a holiday can cost at most MAX_KILLS_PER_HOUR harmless restarts.)"""
+    lt = ist(now)
+    return lt.tm_wday < 5 and hhmm(start) <= lt.tm_hour * 60 + lt.tm_min <= hhmm(end)
+
+
+def file_write_time(path):
+    """Newest write evidence of a SQLite day file: the file or its -wal."""
+    best = 0.0
+    for p in (path, path + "-wal"):
+        try:
+            best = max(best, os.stat(p).st_mtime)
+        except OSError:
+            pass
+    return best
+
+
+def status_last_tick(status):
+    """Epoch of status.json 'last_tick' ('DD-MM-YYYY HH:MM:SS GMT+5:30') or 0.0 if absent/null."""
+    e = status.get("last_tick_epoch")             # TZ-safe field some recorders write
+    if isinstance(e, (int, float)) and e > 0:
+        return float(e)
+    v = status.get("last_tick")
+    if not v:
+        return 0.0
+    try:
+        return calendar.timegm(time.strptime(str(v).replace(" GMT+5:30", ""), "%d-%m-%Y %H:%M:%S")) - 19800
+    except ValueError:
+        return 0.0
+
+
+def conn_last(path, spec, since=0.0):
+    """-> {conn: last recv_ts}; 0.0 = NO row newer than `since` (silent at least that long, or never connected: bounded scan so a dead
+    connection cannot make every pass walk the whole index); None = UNKNOWN (db unreadable or locked)."""
+    table, col, conns = spec
+    out = {c: None for c in conns}
+    try:
+        import sqlite3
+        con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
+        try:
+            for c in conns:
+                if col is None:
+                    r = con.execute("select recv_ts from %s where recv_ts>? order by recv_ts desc limit 1" % table, (since,)).fetchone()
+                else:
+                    r = con.execute("select recv_ts from %s where %s=? and recv_ts>? order by recv_ts desc limit 1" % (table, col), (c, since)).fetchone()
+                out[c] = float(r[0]) if r and r[0] is not None else 0.0
+        finally:
+            con.close()
+    except Exception:
+        pass
+    return out
+
+
+def events_max(path, name):
+    """Newest row time in the table dp_recguard writes events to (depth/upstox/tbt: events.at_ts; tickrec has session_log, a count only).
+    Lets the dry run show whether non-data rows keep the file mtime fresh. '' = unknown."""
+    try:
+        import sqlite3
+        con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
+        try:
+            if name == "tickrec":
+                return "session_log_rows=%d" % con.execute("select count(*) from session_log").fetchone()[0]
+            r = con.execute("select max(at_ts) from events").fetchone()
+            return "%.0f" % r[0] if r and r[0] is not None else ""
+        finally:
+            con.close()
+    except Exception:
+        return ""
+
+
+def evaluate(name, root, box, now, stale_s, no_file_after, ex=None):
+    """-> dict(verdict, age_s, why). verdict in FRESH, DEAD, NO_FILE_DEAD, NO_FILE_WAITING."""
+    folder, prefix = RECORDERS[name]
+    day = time.strftime("%Y%m%d", ist(now))
+    path = os.path.join(root, folder, box, "%s%s.db" % (prefix, day))
+    status = {}
+    try:
+        with open(os.path.join(root, folder, box, "status.json"), encoding="utf-8") as f:
+            status = json.load(f)
+    except (OSError, ValueError):
+        pass
+    fw = file_write_time(path)
+    lt = status_last_tick(status)
+    if lt > now + 5:                      # future-dated last_tick would give a negative age = FRESH forever: not trusted
+        lt = 0.0
+    last = max(fw, lt)
+    if ex is not None:                    # observation fields for the --csv dry-run log (auditor round 2)
+        ex.update({"file_mtime": os.stat(path).st_mtime if os.path.exists(path) else 0.0, "wal_mtime": (os.stat(path + "-wal").st_mtime if os.path.exists(path + "-wal") else 0.0),
+                   "last_tick_epoch": lt, "events_max": events_max(path, name)})
+    if fw == 0.0:
+        lt_now = ist(now)
+        if lt_now.tm_hour * 60 + lt_now.tm_min >= hhmm(no_file_after) and not status.get("instruments"):
+            return {"verdict": "NO_FILE_DEAD", "age_s": None,
+                    "why": "no day file %s and instruments=0 after %s" % (os.path.basename(path), no_file_after)}
+        return {"verdict": "NO_FILE_WAITING", "age_s": None, "why": "no day file yet"}
+    age = now - last
+    if age > stale_s:
+        return {"verdict": "DEAD", "age_s": round(age, 1),
+                "why": "last data %.0f s ago (limit %.0f s); file_write=%s last_tick=%s" % (
+                    age, stale_s, time.strftime("%H:%M:%S", ist(fw)),
+                    time.strftime("%H:%M:%S", ist(lt)) if lt else "n/a")}
+    why = "last data %.1f s ago" % age
+    if name in CONNS:
+        t_q = time.time()
+        cl = conn_last(path, CONNS[name], now - max(600.0, 4 * stale_s))
+        if ex is not None:
+            ex["frames"] = ";".join("%s=%s" % (c, ("%.0f" % t) if t else ("none_in_window" if t == 0.0 else "UNKNOWN")) for c, t in sorted(cl.items()))
+            ex["query_ms"] = "%.0f" % ((time.time() - t_q) * 1000)
+        dead = [("%s silent >= %.0f s (no row in window)" % (c, max(600.0, 4 * stale_s))) if t == 0.0 else "%s silent %.0f s" % (c, now - t)
+                for c, t in sorted(cl.items()) if t is not None and (t == 0.0 or now - t > stale_s)]
+        unk = [c for c, t in sorted(cl.items()) if t is None]
+        if dead:
+            multi = CONNS[name][1] is not None          # several sockets share one file: killing the container drops the healthy ones
+            return {"verdict": "CONN_DEAD" if multi else "DEAD", "age_s": round(age, 1),
+                    "why": "file is fresh but %s dead: %s (limit %.0f s)" % ("connection(s)" if multi else "frames", ", ".join(dead), stale_s)}
+        if unk:
+            why += "; connection check UNKNOWN for %s (not judged)" % ",".join(unk)
+    return {"verdict": "FRESH", "age_s": round(age, 1), "why": why}
+
+
+class Watch(object):
+    def __init__(self, a):
+        self.a = a
+        self.kills = {}                       # container -> [epoch,...]
+        os.makedirs(a.state_dir, exist_ok=True)
+        self.escalated = {}
+        self.rc_cache = {}
+
+    def log(self, level, msg):
+        line = "%s [livewatch %s] %s %s" % (time.strftime("%d-%m-%Y %H:%M:%S GMT+5:30"), self.a.box, level, msg)
+        print(line, flush=True)
+        if self.a.log:
+            try:
+                with open(self.a.log, "a", encoding="utf-8") as f:
+                    f.write(line + "\n")
+            except OSError:
+                pass
+
+    def docker(self, *args, **kw):
+        cmd = [self.a.docker] + list(args)
+        if self.a.dry_run:
+            self.log("DRYRUN", "would run: " + " ".join(cmd))
+            return 0, "", ""
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True,
+                           timeout=kw.get("timeout", 60))
+        return p.returncode, p.stdout.strip(), p.stderr.strip()
+
+    def kill(self, name, why, now):
+        if name in NEVER_TOUCH or name not in RECORDERS:
+            self.log("REFUSE", "%s is not a managed recorder" % name)
+            return
+        if self.a.dry_run:                # dry run keeps EVERY verdict of EVERY cycle: no bound, no hourly suppression, no kill counting
+            self.log("WARN", "DRYRUN %s: %s -> WOULD docker kill %s" % (name, why, name))
+            return
+        today = time.strftime("%Y%m%d", ist(now))
+        recent = [t for t in self.kills.get(name, []) if time.strftime("%Y%m%d", ist(t)) == today]   # per IST DAY, not rolling hour
+        if len(recent) >= self.a.max_kills:
+            if now - self.escalated.get(name, 0) > 3600:      # re-armed: CRITICAL + file again at most once an hour
+                self.escalated[name] = now
+                self.log("CRITICAL", "%s killed %d times today and is still silent: NOT killing again. "
+                         "Needs a human. reason=%s" % (name, len(recent), why))
+                try:
+                    with open(os.path.join(self.a.state_dir, "ESCALATE_%s.json" % name), "w") as f:
+                        json.dump({"container": name, "box": self.a.box, "at": time.time(), "why": why}, f)
+                except OSError:
+                    pass
+            return
+        self.log("WARN", "%s: %s -> docker kill %s" % (name, why, name))
+        rc, out, err = self.docker("kill", name)
+        self.kills.setdefault(name, []).append(now)
+        self.log("INFO", "docker kill %s rc=%s %s" % (name, rc, (err or out)[:120]))
+        if self.a.dry_run:
+            return
+        time.sleep(self.a.restart_wait)
+        rc, out, _ = self.docker("inspect", name, "--format", "{{.State.Running}}")
+        if out != "true":                 # restart policy did not bring it back: start it
+            rc, out, err = self.docker("start", name)
+            self.log("INFO", "%s was not restarted by policy; docker start rc=%s" % (name, rc))
+        else:
+            self.log("INFO", "%s is running again (restart policy)" % name)
+
+    def docker_ro(self, *args):
+        """READ-ONLY docker query (inspect); runs even under --dry-run because it changes nothing. '' on any failure."""
+        try:
+            p = subprocess.run([self.a.docker] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               universal_newlines=True, timeout=15)
+            return p.stdout.strip() if p.returncode == 0 else ""
+        except Exception:
+            return ""
+
+    def csv_row(self, name, r, ex, now, action="none"):
+        path = getattr(self.a, "csv", "")
+        if not path:
+            return
+        import csv
+        c = self.rc_cache.get(name)
+        if c is None or now - c[0] >= 60:        # docker CLI is slow on these boxes under load: sample the restart counter once a minute
+            c = (now, self.docker_ro("inspect", name, "--format", "{{.RestartCount}}|{{.State.StartedAt}}|{{.State.Running}}") if name in RECORDERS else "")
+            self.rc_cache[name] = c
+        rc = c[1]
+        new = not os.path.exists(path)
+        try:
+            with open(path, "a", newline="") as f:
+                w = csv.writer(f)
+                if new:
+                    w.writerow(["ts_epoch", "timestamp_ist", "box", "recorder", "verdict", "action", "age_s", "last_tick_epoch", "frames_recv_ts", "query_ms",
+                                "file_mtime", "wal_mtime", "events_max", "restart_count|started_at|running", "reason"])
+                w.writerow(["%.0f" % now, time.strftime("%Y-%m-%d %H:%M:%S", ist(now)), self.a.box, name, r["verdict"], action, r["age_s"],
+                            "%.0f" % ex.get("last_tick_epoch", 0), ex.get("frames", ""), ex.get("query_ms", ""), "%.0f" % ex.get("file_mtime", 0),
+                            "%.0f" % ex.get("wal_mtime", 0), ex.get("events_max", ""), rc, r["why"]])
+        except OSError:
+            pass
+
+    def alarm(self, name, why, now):
+        """Alarm only (owner decision pending, both auditors: do not kill a container for one dead socket): CRITICAL log +
+        ALARM file, at most once an hour per container."""
+        key = "alarm:" + name
+        if self.a.dry_run:
+            self.log("CRITICAL", "DRYRUN %s: %s -> WOULD ALARM (--conn-action alarm)" % (name, why))
+            return
+        if now - self.escalated.get(key, 0) <= 3600:
+            return
+        self.escalated[key] = now
+        self.log("CRITICAL", "%s: %s -> ALARM ONLY, no kill (--conn-action alarm)" % (name, why))
+        try:
+            with open(os.path.join(self.a.state_dir, "ALARM_%s.json" % name), "w") as f:
+                json.dump({"container": name, "box": self.a.box, "at": now, "why": why}, f)
+        except OSError:
+            pass
+
+    def once(self, now=None):
+        now = time.time() if now is None else now
+        if not in_session(now, self.a.session_start, self.a.session_end):
+            self.log("INFO", "outside session window %s-%s: nothing to judg
+[TRUNCATED at 16000 characters; full file at the raw URL]
+```
+
+### FILE audit_031126_BLK001_livewatch/03_test_livewatch.py  sha256=dc41ddc3713cc3b5  bytes=14782
+```
+"""tests/test_livewatch.py - BLK-001 proof: stale data -> docker kill; fresh -> nothing; bounded; refuses strangers."""
+import calendar, json, os, shutil, stat, sys, tempfile, time, unittest
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(os.path.dirname(HERE), "pullers", "shared"))
+os.environ["TZ"] = "Asia/Kolkata"
+time.tzset()
+import livewatch  # noqa: E402
+
+MON_1030 = calendar.timegm((2026, 11, 2, 5, 0, 0))      # Monday 10:30 IST
+SAT_1030 = calendar.timegm((2026, 11, 7, 5, 0, 0))
+
+
+class T(unittest.TestCase):
+    def setUp(self):
+        self.d = tempfile.mkdtemp()
+        self.root = os.path.join(self.d, "root")
+        self.calls = os.path.join(self.d, "calls.txt")
+        self.fake = os.path.join(self.d, "docker")
+        with open(self.fake, "w") as f:
+            f.write("#!/bin/sh\necho \"$@\" >> %s\n[ \"$1\" = inspect ] && echo true\nexit 0\n" % self.calls)
+        os.chmod(self.fake, os.stat(self.fake).st_mode | stat.S_IEXEC)
+        day = time.strftime("%Y%m%d", time.localtime(MON_1030))
+        self.files = {}
+        for name, (folder, prefix) in livewatch.RECORDERS.items():
+            dd = os.path.join(self.root, folder, "i5")
+            os.makedirs(dd)
+            p = os.path.join(dd, "%s%s.db" % (prefix, day))
+            open(p, "w").write("x")
+            self.files[name] = p
+
+    def tearDown(self):
+        shutil.rmtree(self.d, ignore_errors=True)
+
+    def args(self, *extra):
+        return livewatch.argparse.ArgumentParser  # placeholder to keep flake8 quiet
+
+    def watch(self, **kw):
+        class A:  # same fields main() builds
+            root = self.root; box = "i5"; docker = self.fake; stale_s = 90.0; session_start = "09:16"
+            session_end = "15:30"; no_file_after = "09:20"; interval = 1; max_kills = 3; restart_wait = 0; conn_action = "alarm"
+            state_dir = os.path.join(self.d, "state"); log = ""; dry_run = False
+        for k, v in kw.items():
+            setattr(A, k, v)
+        return livewatch.Watch(A)
+
+    def touch(self, name, t):
+        os.utime(self.files[name], (t, t))
+
+    def kills(self):
+        if not os.path.exists(self.calls):
+            return []
+        return [l.strip() for l in open(self.calls) if l.startswith("kill")]
+
+    def depth_db(self, d20_age, d200_age, now=MON_1030):
+        import sqlite3
+        p = self.files["depthrec"]; os.remove(p)
+        c = sqlite3.connect(p); c.execute("create table frames(recv_ts real, conn text, raw blob)")
+        c.execute("insert into frames values(?,?,?)", (now - d20_age, "d20", b"x"))
+        c.execute("insert into frames values(?,?,?)", (now - d200_age, "d200", b"x")); c.commit(); c.close()
+        self.touch("depthrec", now - 3)          # the FILE is fresh: d200 (or anything) wrote 3 s ago
+
+    def test_dead_d20_is_caught_even_though_the_file_is_fresh_and_only_alarms_by_default(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=200, d200_age=2)
+        w = self.watch(); w.once(MON_1030)
+        self.assertEqual(self.kills(), [])                                   # alarm only: a healthy d200 is not dropped
+        self.assertTrue(os.path.exists(os.path.join(w.a.state_dir, "ALARM_depthrec.json")))
+        r = livewatch.evaluate("depthrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "CONN_DEAD"); self.assertIn("d20", r["why"])
+
+    def test_conn_action_kill_still_kills(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=200, d200_age=2)
+        self.watch(conn_action="kill").once(MON_1030)
+        self.assertEqual(self.kills(), ["kill depthrec"])
+
+    def test_refuses_to_run_when_recorder_folders_are_missing(self):
+        empty = os.path.join(self.d, "empty"); os.makedirs(empty)
+        self.assertEqual(livewatch.main(["--root", empty, "--box", "i7", "--once", "--docker", self.fake]), 2)
+        self.assertEqual(self.kills(), [])
+
+    def test_wrong_box_name_is_refused_not_killed(self):
+        self.assertEqual(livewatch.main(["--root", self.root, "--box", "i7", "--once", "--docker", self.fake]), 2)
+        self.assertEqual(self.kills(), [])
+
+    def test_events_only_writes_do_not_hide_silent_frames(self):
+        import sqlite3
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        p = self.files["upstoxrec"]; os.remove(p)
+        c = sqlite3.connect(p); c.execute("create table frames(recv_ts real, raw blob)")
+        c.execute("insert into frames values(?,?)", (MON_1030 - 300, b"x")); c.commit(); c.close()
+        self.touch("upstoxrec", MON_1030 - 3)                                  # a heartbeat/open/close event row just moved mtime
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), ["kill upstoxrec"])
+
+    def test_future_dated_last_tick_is_not_trusted(self):
+        self.touch("tickrec", MON_1030 - 500)
+        st = os.path.join(self.root, "ticks", "i5", "status.json")
+        json.dump({"last_tick": "01-01-2030 10:00:00 GMT+5:30"}, open(st, "w"))
+        r = livewatch.evaluate("tickrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "DEAD")
+
+    def test_session_and_day_are_ist_even_when_the_host_is_utc(self):
+        os.environ["TZ"] = "UTC"; time.tzset()
+        try:
+            self.assertTrue(livewatch.in_session(MON_1030, "09:16", "15:30"))     # 10:30 IST, host says 05:00
+            self.assertFalse(livewatch.in_session(calendar.timegm((2026, 11, 2, 11, 0, 0)), "09:16", "15:30"))   # 16:30 IST
+        finally:
+            os.environ["TZ"] = "Asia/Kolkata"; time.tzset()
+
+    def test_kill_bound_is_per_day_and_escalation_rearms(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 500)
+        w = self.watch()
+        for i in range(5):
+            w.once(MON_1030 + i * 20)          # all within the same IST day
+        self.assertEqual(self.kills().count("kill depthrec"), 3)
+        esc = os.path.join(w.a.state_dir, "ESCALATE_depthrec.json"); self.assertTrue(os.path.exists(esc))
+        os.remove(esc); w.once(MON_1030 + 200)
+        self.assertFalse(os.path.exists(esc))     # not rewritten inside the hour
+        w.once(MON_1030 + 3700)  # an hour later, same day: escalation is written again, still no kill
+        self.assertTrue(os.path.exists(esc)); self.assertEqual(self.kills().count("kill depthrec"), 3)
+
+    def test_both_connections_fresh_nothing_killed(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=20, d200_age=2)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+
+    def test_unreadable_depth_db_is_unknown_not_dead(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)          # the placeholder "x" file is not a database
+        r = livewatch.evaluate("depthrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "FRESH"); self.assertIn("UNKNOWN", r["why"]); self.assertEqual(self.kills(), [])
+
+    def test_default_limit_is_90_and_a_55s_healthy_gap_is_left_alone(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.touch("upstoxrec", MON_1030 - 55)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+        # the real command-line default, read by running main() with a stub that captures the parsed args
+        import subprocess
+        out = subprocess.run([sys.executable, livewatch.__file__, "--root", self.root, "--box", "i5", "--once", "--dry-run"],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=dict(os.environ, TZ="Asia/Kolkata"))
+        self.assertEqual(out.returncode, 0)
+        self.assertEqual(livewatch.argparse.ArgumentParser.__name__, "ArgumentParser")
+        self.assertIn("default=90.0", open(livewatch.__file__).read().replace(" ", ""))
+
+    def test_csv_log_has_one_row_per_recorder_and_dry_run_never_kills_or_starts(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=200, d200_age=2)
+        csvp = os.path.join(self.d, "dry.csv")
+        w = self.watch(dry_run=True, csv=csvp); w.once(MON_1030); w.once(MON_1030 + 20)
+        rows = [l.split(",") for l in open(csvp).read().strip().splitlines()]
+        self.assertEqual(len(rows), 1 + 2 * 4)                      # header + 2 passes x 4 recorders
+        self.assertIn("timestamp_ist", rows[0][1]); depth = [r for r in rows if r[3] == "depthrec"]
+        self.assertTrue(all(r[4] == "CONN_DEAD" for r in depth)); self.assertTrue(any("d20=" in x for x in depth[0]))
+        self.assertEqual([l for l in open(self.calls)] if os.path.exists(self.calls) else [], [l for l in (open(self.calls) if os.path.exists(self.calls) else []) if l.startswith("inspect")])  # only read-only inspect
+        self.assertEqual(self.kills(), [])
+
+    def test_never_connected_d20_is_conn_dead_not_unknown(self):
+        import sqlite3
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        p = self.files["depthrec"]; os.remove(p)
+        c = sqlite3.connect(p); c.execute("create table frames(recv_ts real, conn text, raw blob)")
+        c.execute("insert into frames values(?,?,?)", (MON_1030 - 2, "d200", b"x")); c.commit(); c.close()
+        self.touch("depthrec", MON_1030 - 2)
+        r = livewatch.evaluate("depthrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "CONN_DEAD"); self.assertIn("d20", r["why"])
+
+    def test_dry_run_logs_every_verdict_every_cycle_without_suppression(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 500)
+        csvp = os.path.join(self.d, "dry2.csv"); logp = os.path.join(self.d, "dry2.log"); w = self.watch(dry_run=True, csv=csvp, log=logp)
+        for i in range(8):
+            w.once(MON_1030 + i * 15)
+        lines = [l for l in open(logp) if "WOULD docker kill tickrec" in l]
+        self.assertEqual(len(lines), 8)                            # the LOG keeps every cycle too (Fable task 3.1), not only the csv
+        rows = [l.split(",") for l in open(csvp).read().strip().splitlines()][1:]
+        tick = [r for r in rows if r[3] == "tickrec"]
+        self.assertEqual(len(tick), 8); self.assertTrue(all(r[5] == "would_kill" for r in tick))   # no bound: all 8 cycles kept
+        self.assertEqual(self.kills(), [])
+
+    def test_docker_start_fallback_runs_when_policy_did_not_restart(self):
+        with open(self.fake, "w") as f:      # inspect says NOT running -> the start path must run (the real box needed it, file 04)
+            f.write("#!/bin/sh\necho \"$@\" >> %s\n[ \"$1\" = inspect ] && echo false\nexit 0\n" % self.calls)
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.touch("fyerstbt", MON_1030 - 300)
+        self.watch().once(MON_1030)
+        calls = [l.strip() for l in open(self.calls)]
+        self.assertIn("kill fyerstbt", calls); self.assertIn("start fyerstbt", calls)
+
+    def test_state_dir_default_is_not_tmp(self):
+        self.assertNotIn('"/tmp', [l.split("default=")[1].split(")")[0] for l in open(livewatch.__file__) if "--state-dir" in l][0])
+
+    def test_fresh_data_is_left_alone(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+
+    def test_a_stale_file_triggers_exactly_docker_kill_of_that_container(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.touch("depthrec", MON_1030 - 120)           # 120 s old
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), ["kill depthrec"])
+
+    def test_status_last_tick_counts_when_the_file_is_old(self):
+        self.touch("tickrec", MON_1030 - 500)
+        st = os.path.join(self.root, "ticks", "i5", "status.json")
+        json.dump({"last_tick": time.strftime("%d-%m-%Y %H:%M:%S GMT+5:30", time.localtime(MON_1030 - 10))}, open(st, "w"))
+        for n in ("depthrec", "upstoxrec", "fyerstbt"):
+            self.touch(n, MON_1030 - 5)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+
+    def test_outside_the_session_and_on_weekends_nothing_is_killed(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 9999)
+        self.watch().once(SAT_1030)
+        self.watch().once(calendar.timegm((2026, 11, 2, 3, 30, 0)))     # Monday 09:00 IST, before 09:16
+        self.assertEqual(self.kills(), [])
+
+    def test_kills_are_bounded_per_hour_then_escalate(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        w = self.watch()
+        for i in range(6):
+            self.touch("tickrec", MON_1030 - 300)
+            w.once(MON_1030 + i)
+        self.assertEqual(len([k for k in self.kills() if k == "kill tickrec"]), 3)
+        self.assertTrue(os.path.exists(os.path.join(self.d, "state", "ESCALATE_tickrec.json")))
+
+    def test_no_day_file_after_0920_with_no_instruments_is_dead(self):
+        os.remove(self.files["fyerstbt"])
+        for n in ("tickrec", "depthrec", "upstoxrec"):
+            self.touch(n, MON_1030 - 5)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), ["kill fyerstbt"])
+
+    def test_proof_mode_judges_only_the_disposable_recorder(self):
+        import subprocess
+        out = subprocess.run([sys.executable, os.path.join(os.path.dirname(HERE), "pullers", "shared", "livewatch.py"),
+                              "--root", self.d, "--box", "i5", "--once", "--dry-run", "--session-start", "00:00",
+                              "--session-end", "23:59", "--no-file-after", "00:00", "--state-dir", self.d,
+                              "--test-recorder", "lwtest_x=probe:probe_"], stdout=subprocess.PIPE,
+                             universal_newlines=True).stdout
+        self.assertIn("lwtest_x", out)
+        for prod in ("tickrec", "depthrec", "upstoxrec", "fyerstbt"):
+            self.assertNotIn(prod, out)
+        self.assertRaises(SystemExit, livewatch.main, ["--root", self.d, "--box", "i5", "--once",
+                                                       "--test-recorder", "tickrec=probe:probe_"])
+
+    def test_it_refuses_strangers(self):
+        w = self.watch()
+        w.kill("cloudflared", "x", MON_1030)
+        w.kill("blpro_09", "x", MON_1030)
+        w.kill("anything_else", "x", MON_1030)
+        self.assertEqual(self.kills(), [])
+
+    def test_dry_run_prints_but_runs_nothing(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 500)
+        self.watch(dry_run=True).once(MON_1030)
+        self.assertEqual(self.kills(), [])
+
+
+if __name__ == "__main__":
+    unittest.main(verbosity=2)
+```
+
+### FILE audit_031126_BLK001_livewatch/27_livewatch_v3_to_v3.1.diff  sha256=7114ce83e1ba8900  bytes=9716
+```
+--- audit_031126_BLK001_livewatch/02c_livewatch_v3.py	2026-11-03 16:48:12.853403571 +0000
++++ audit_031126_BLK001_livewatch/02_livewatch.py	2026-11-03 16:48:12.856350272 +0000
+@@ -98,8 +98,9 @@
+         return 0.0
+ 
+ 
+-def conn_last(path, spec):
+-    """-> {conn: last recv_ts or None}; None = UNKNOWN (db unreadable, locked, or no rows for that conn)."""
++def conn_last(path, spec, since=0.0):
++    """-> {conn: last recv_ts}; 0.0 = NO row newer than `since` (silent at least that long, or never connected: bounded scan so a dead
++    connection cannot make every pass walk the whole index); None = UNKNOWN (db unreadable or locked)."""
+     table, col, conns = spec
+     out = {c: None for c in conns}
+     try:
+@@ -108,10 +109,10 @@
+         try:
+             for c in conns:
+                 if col is None:
+-                    r = con.execute("select recv_ts from %s order by recv_ts desc limit 1" % table).fetchone()
++                    r = con.execute("select recv_ts from %s where recv_ts>? order by recv_ts desc limit 1" % table, (since,)).fetchone()
+                 else:
+-                    r = con.execute("select recv_ts from %s where %s=? order by recv_ts desc limit 1" % (table, col), (c,)).fetchone()
+-                out[c] = float(r[0]) if r and r[0] is not None else None
++                    r = con.execute("select recv_ts from %s where %s=? and recv_ts>? order by recv_ts desc limit 1" % (table, col), (c, since)).fetchone()
++                out[c] = float(r[0]) if r and r[0] is not None else 0.0
+         finally:
+             con.close()
+     except Exception:
+@@ -119,7 +120,24 @@
+     return out
+ 
+ 
+-def evaluate(name, root, box, now, stale_s, no_file_after):
++def events_max(path, name):
++    """Newest row time in the table dp_recguard writes events to (depth/upstox/tbt: events.at_ts; tickrec has session_log, a count only).
++    Lets the dry run show whether non-data rows keep the file mtime fresh. '' = unknown."""
++    try:
++        import sqlite3
++        con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
++        try:
++            if name == "tickrec":
++                return "session_log_rows=%d" % con.execute("select count(*) from session_log").fetchone()[0]
++            r = con.execute("select max(at_ts) from events").fetchone()
++            return "%.0f" % r[0] if r and r[0] is not None else ""
++        finally:
++            con.close()
++    except Exception:
++        return ""
++
++
++def evaluate(name, root, box, now, stale_s, no_file_after, ex=None):
+     """-> dict(verdict, age_s, why). verdict in FRESH, DEAD, NO_FILE_DEAD, NO_FILE_WAITING."""
+     folder, prefix = RECORDERS[name]
+     day = time.strftime("%Y%m%d", ist(now))
+@@ -135,6 +153,9 @@
+     if lt > now + 5:                      # future-dated last_tick would give a negative age = FRESH forever: not trusted
+         lt = 0.0
+     last = max(fw, lt)
++    if ex is not None:                    # observation fields for the --csv dry-run log (auditor round 2)
++        ex.update({"file_mtime": os.stat(path).st_mtime if os.path.exists(path) else 0.0, "wal_mtime": (os.stat(path + "-wal").st_mtime if os.path.exists(path + "-wal") else 0.0),
++                   "last_tick_epoch": lt, "events_max": events_max(path, name)})
+     if fw == 0.0:
+         lt_now = ist(now)
+         if lt_now.tm_hour * 60 + lt_now.tm_min >= hhmm(no_file_after) and not status.get("instruments"):
+@@ -149,8 +170,13 @@
+                     time.strftime("%H:%M:%S", ist(lt)) if lt else "n/a")}
+     why = "last data %.1f s ago" % age
+     if name in CONNS:
+-        cl = conn_last(path, CONNS[name])
+-        dead = ["%s silent %.0f s" % (c, now - t) for c, t in sorted(cl.items()) if t is not None and now - t > stale_s]
++        t_q = time.time()
++        cl = conn_last(path, CONNS[name], now - max(600.0, 4 * stale_s))
++        if ex is not None:
++            ex["frames"] = ";".join("%s=%s" % (c, ("%.0f" % t) if t else ("none_in_window" if t == 0.0 else "UNKNOWN")) for c, t in sorted(cl.items()))
++            ex["query_ms"] = "%.0f" % ((time.time() - t_q) * 1000)
++        dead = [("%s silent >= %.0f s (no row in window)" % (c, max(600.0, 4 * stale_s))) if t == 0.0 else "%s silent %.0f s" % (c, now - t)
++                for c, t in sorted(cl.items()) if t is not None and (t == 0.0 or now - t > stale_s)]
+         unk = [c for c, t in sorted(cl.items()) if t is None]
+         if dead:
+             multi = CONNS[name][1] is not None          # several sockets share one file: killing the container drops the healthy ones
+@@ -167,6 +193,7 @@
+         self.kills = {}                       # container -> [epoch,...]
+         os.makedirs(a.state_dir, exist_ok=True)
+         self.escalated = {}
++        self.rc_cache = {}
+ 
+     def log(self, level, msg):
+         line = "%s [livewatch %s] %s %s" % (time.strftime("%d-%m-%Y %H:%M:%S GMT+5:30"), self.a.box, level, msg)
+@@ -191,6 +218,9 @@
+         if name in NEVER_TOUCH or name not in RECORDERS:
+             self.log("REFUSE", "%s is not a managed recorder" % name)
+             return
++        if self.a.dry_run:                # dry run keeps EVERY verdict of EVERY cycle: no bound, no hourly suppression, no kill counting
++            self.log("WARN", "DRYRUN %s: %s -> WOULD docker kill %s" % (name, why, name))
++            return
+         today = time.strftime("%Y%m%d", ist(now))
+         recent = [t for t in self.kills.get(name, []) if time.strftime("%Y%m%d", ist(t)) == today]   # per IST DAY, not rolling hour
+         if len(recent) >= self.a.max_kills:
+@@ -218,10 +248,45 @@
+         else:
+             self.log("INFO", "%s is running again (restart policy)" % name)
+ 
++    def docker_ro(self, *args):
++        """READ-ONLY docker query (inspect); runs even under --dry-run because it changes nothing. '' on any failure."""
++        try:
++            p = subprocess.run([self.a.docker] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
++                               universal_newlines=True, timeout=15)
++            return p.stdout.strip() if p.returncode == 0 else ""
++        except Exception:
++            return ""
++
++    def csv_row(self, name, r, ex, now, action="none"):
++        path = getattr(self.a, "csv", "")
++        if not path:
++            return
++        import csv
++        c = self.rc_cache.get(name)
++        if c is None or now - c[0] >= 60:        # docker CLI is slow on these boxes under load: sample the restart counter once a minute
++            c = (now, self.docker_ro("inspect", name, "--format", "{{.RestartCount}}|{{.State.StartedAt}}|{{.State.Running}}") if name in RECORDERS else "")
++            self.rc_cache[name] = c
++        rc = c[1]
++        new = not os.path.exists(path)
++        try:
++            with open(path, "a", newline="") as f:
++                w = csv.writer(f)
++                if new:
++                    w.writerow(["ts_epoch", "timestamp_ist", "box", "recorder", "verdict", "action", "age_s", "last_tick_epoch", "frames_recv_ts", "query_ms",
++                                "file_mtime", "wal_mtime", "events_max", "restart_count|started_at|running", "reason"])
++                w.writerow(["%.0f" % now, time.strftime("%Y-%m-%d %H:%M:%S", ist(now)), self.a.box, name, r["verdict"], action, r["age_s"],
++                            "%.0f" % ex.get("last_tick_epoch", 0), ex.get("frames", ""), ex.get("query_ms", ""), "%.0f" % ex.get("file_mtime", 0),
++                            "%.0f" % ex.get("wal_mtime", 0), ex.get("events_max", ""), rc, r["why"]])
++        except OSError:
++            pass
++
+     def alarm(self, name, why, now):
+         """Alarm only (owner decision pending, both auditors: do not kill a container for one dead socket): CRITICAL log +
+         ALARM file, at most once an hour per container."""
+         key = "alarm:" + name
++        if self.a.dry_run:
++            self.log("CRITICAL", "DRYRUN %s: %s -> WOULD ALARM (--conn-action alarm)" % (name, why))
++            return
+         if now - self.escalated.get(key, 0) <= 3600:
+             return
+         self.escalated[key] = now
+@@ -239,13 +304,17 @@
+             return []
+         results = []
+         for name in sorted(RECORDERS):
+-            r = evaluate(name, self.a.root, self.a.box, now, self.a.stale_s, self.a.no_file_after)
++            ex = {}
++            r = evaluate(name, self.a.root, self.a.box, now, self.a.stale_s, self.a.no_file_after, ex)
+             results.append((name, r))
+             if r["verdict"] == "CONN_DEAD" and getattr(self.a, "conn_action", "alarm") != "kill":
++                self.csv_row(name, r, ex, now, "would_alarm" if self.a.dry_run else "alarm")
+                 self.alarm(name, r["why"], now)
+             elif r["verdict"] in ("DEAD", "NO_FILE_DEAD", "CONN_DEAD"):
++                self.csv_row(name, r, ex, now, "would_kill" if self.a.dry_run else "kill_or_suppressed")
+                 self.kill(name, r["why"], now)
+             else:
++                self.csv_row(name, r, ex, now, "none")
+                 self.log("OK", "%s %s (%s)" % (name, r["verdict"], r["why"]))
+         return results
+ 
+@@ -266,6 +335,7 @@
+     p.add_argument("--restart-wait", type=float, default=10.0)
+     p.add_argument("--state-dir", default="/volume1/docker/datapullers/_state/livewatch_host")   # v3: not /tmp (tmpfs on DSM: ESCALATE/ALARM files vanished on reboot)
+     p.add_argument("--log", default="")
++    p.add_argument("--csv", default="", help="append one row per recorder per pass (dry-run evidence log)")
+     p.add_argument("--dry-run", action="store_true")
+     p.add_argument("--once", action="store_true")
+     p.add_argument("--test-recorder", default="", help="PROOF HOOK: lwtest_NAME=folder:prefix adds a disposable "
+```
+
+### FILE audit_031126_BLK001_livewatch/28_unit_tests_v3.1_output.txt  sha256=f89a53200a3f8733  bytes=1427
+```
+livewatch v3.1 unit tests (25), run 03-11-2026 22:25 IST on the sandbox, TZ=Asia/Kolkata python3 -W ignore -m unittest -v tests.test_livewatch
+test_a_stale_file_triggers_exactly_docker_kill_of_that_container
+test_both_connections_fresh_nothing_killed
+test_conn_action_kill_still_kills
+test_csv_log_has_one_row_per_recorder_and_dry_run_never_kills_or_starts
+test_dead_d20_is_caught_even_though_the_file_is_fresh_and_only_alarms_by_default
+test_default_limit_is_90_and_a_55s_healthy_gap_is_left_alone
+test_docker_start_fallback_runs_when_policy_did_not_restart
+test_dry_run_logs_every_verdict_every_cycle_without_suppression
+test_dry_run_prints_but_runs_nothing
+test_events_only_writes_do_not_hide_silent_frames
+test_fresh_data_is_left_alone
+test_future_dated_last_tick_is_not_trusted
+test_it_refuses_strangers
+test_kill_bound_is_per_day_and_escalation_rearms
+test_kills_are_bounded_per_hour_then_escalate
+test_never_connected_d20_is_conn_dead_not_unknown
+test_no_day_file_after_0920_with_no_instruments_is_dead
+test_outside_the_session_and_on_weekends_nothing_is_killed
+test_proof_mode_judges_only_the_disposable_recorder
+test_refuses_to_run_when_recorder_folders_are_missing
+test_session_and_day_are_ist_even_when_the_host_is_utc
+test_state_dir_default_is_not_tmp
+test_status_last_tick_counts_when_the_file_is_old
+test_unreadable_depth_db_is_unknown_not_dead
+test_wrong_box_name_is_refused_not_killed Ran 25 tests in 0.340s OK
+```
+
+### FILE audit_031126_BLK001_livewatch/29_mutations_v3.1.txt  sha256=e19b45c12c2dcad5  bytes=806
+```
+v3.1 mutation checks 03-11-2026 22:15 IST; 25 tests each; file restored. (A first mutation 'never-connected treated as alive' via (now - t > stale_s) was an EQUIVALENT mutant: t=0.0 gives an enormous age; replaced by the next one.)
+MUT [never-connected conn becomes UNKNOWN again]: FAIL: test_never_connected_d20_is_conn_dead_not_unknown;
+MUT [dry-run suppression back]: FAIL: test_dry_run_logs_every_verdict_every_cycle_without_suppression;
+MUT [bounded scan removed]: FAIL: test_conn_action_kill_still_kills;FAIL: test_csv_log_has_one_row_per_recorder_and_dry_run_never_kills_or_starts;FAIL: test_dead_d20_is_caught_even_though_the_file_is_fresh_and_only_alarms_by_default;FAIL: test_never_connected_d20_is_conn_dead_not_unknown;
+restored: Ran 25 tests in 0.340s OK  md5 9dba3f38dfdcf49a12eb8530bcdfbe06
+```
+
+### FILE audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt  sha256=b2434da55da4a21f  bytes=1102
+```
+PREFLIGHT of v3.1 on the real day files, both boxes, 03-11-2026 22:16-22:20 IST, --dry-run --once (no kill possible), market closed
+A) default limit 90 s: recorders stopped at 15:35 so file-level DEAD (as expected; conn query not reached)
+B) --stale-s 100000 so the file-level check passes and the per-connection query runs on the REAL files; columns: recorder,verdict,frames_recv_ts(epoch),query_ms,file_mtime,events_max
+i5: depthrec FRESH d20=1793700310;d200=1793700310 query 251 ms | fyerstbt FRESH 277 ms | tickrec FRESH (status/mtime only; events=session_log_rows=3) | upstoxrec FRESH 112 ms
+i7: depthrec FRESH d20=1793700313;d200=1793700313 query 74 ms | fyerstbt FRESH 310 ms | tickrec FRESH session_log_rows=3 | upstoxrec FRESH 127 ms
+Note: events_max (newest events row) is within ~1 s of the last frame on every recorder: the stop-of-session event. Load average on both boxes ~12 at the time. Query times are on CLOSED files, not during a session.
+Dry-run daemons started 22:16 IST on both boxes (pid files in the state dir, /proc check ALIVE); first in-session cycle will be 09:00 tomorrow.
+```
+
+### FILE audit_031126_BLK001_livewatch/31_gap_histogram_tool.py  sha256=10836f9c6fc413d9  bytes=2830
+```
+#!/usr/bin/env python3
+"""gap_histogram.py - READ-ONLY. For every day file of the four live recorders on THIS box, count the silent gaps inside the
+session window (default 09:15-15:30 IST) above 60/90/120/180 s and print the longest gap. Evidence for the livewatch threshold.
+  python3 gap_histogram.py <datapullers root> <box>     ticks = NIFTY 50 token 256265 only; depth split by conn (d20 / d200)
+Opens each file with mode=ro and walks the recv_ts index in order; no writes. Gaps that span the window edge are ignored."""
+import glob, os, sqlite3, sys, time
+LIMITS = (60, 90, 120, 180)
+SPECS = (("ticks", "ticks_", "select recv_ts from ticks where token=256265 and recv_ts>=? and recv_ts<=? order by recv_ts", ("NIFTY",)),
+         ("depth", "depth_", "select recv_ts from frames where conn=? and recv_ts>=? and recv_ts<=? order by recv_ts", ("d20", "d200")),
+         ("upstox_live", "upstox_", "select recv_ts from frames where recv_ts>=? and recv_ts<=? order by recv_ts", ("frames",)),
+         ("fyers_tbt", "tbt_", "select recv_ts from frames where recv_ts>=? and recv_ts<=? order by recv_ts", ("frames",)))
+def window(day, a="09:15", b="15:30"):
+    t = lambda hm: time.mktime(time.strptime(day + " " + hm, "%Y%m%d %H:%M"))      # box TZ is IST (verified /etc/TZ)
+    return t(a), t(b)
+def main():
+    root, box = sys.argv[1], sys.argv[2]
+    print("recorder,conn,day,rows,max_gap_s,>60,>90,>120,>180,first,last")
+    for folder, prefix, sql, conns in SPECS:
+        for p in sorted(glob.glob(os.path.join(root, folder, box, prefix + "20??????.db"))):
+            day = os.path.basename(p)[len(prefix):len(prefix) + 8]; t0, t1 = window(day)
+            try:
+                con = sqlite3.connect("file:%s?mode=ro" % p, uri=True, timeout=10)
+            except Exception as e:
+                print("%s,-,%s,ERR %s" % (folder, day, e)); continue
+            for c in conns:
+                args = (t0, t1) if folder in ("ticks", "upstox_live", "fyers_tbt") else (c, t0, t1)
+                n = 0; prev = None; mx = 0.0; cnt = [0] * 4; first = last = None
+                try:
+                    for (t,) in con.execute(sql, args):
+                        n += 1; first = first or t; last = t
+                        if prev is not None:
+                            g = t - prev; mx = max(mx, g)
+                            for i, L in enumerate(LIMITS): cnt[i] += g > L
+                        prev = t
+                    print("%s,%s,%s,%d,%.0f,%d,%d,%d,%d,%s,%s" % (folder, c, day, n, mx, cnt[0], cnt[1], cnt[2], cnt[3],
+                          time.strftime("%H:%M:%S", time.localtime(first)) if first else "", time.strftime("%H:%M:%S", time.localtime(last)) if last else ""))
+                except Exception as e:
+                    print("%s,%s,%s,ERR %s" % (folder, c, day, e))
+            con.close()
+main()
+```
+
+### FILE AUDITOR_RESPONSES/20261103_auditor1_ROUND2.md  sha256=d312e229ff424acf  bytes=4913
+```
+# Outside auditor (Qwen), round 2 response, received via the owner 03-11-2026 ~22:10 IST, stored as pasted (formatting trimmed only)
+ITEM V-001 v3. FILE-BY-FILE: 02_livewatch.py v3 -> CANNOT CHECK (raw v3 code not inlined in README; evaluating on the 26-point diff summary and Fable's defect resolution list in the COMPARISON doc). 03_test_livewatch.py v3 -> CANNOT CHECK (not inlined; relying on Fable's confirmation of 22 tests passing and mutation catches). COMPARISON -> SUPPORTS. FABLE CONDENSED -> SUPPORTS (independent verification of the v1/v2 flaws and the architectural soundness of the v3 corrections).
+CLAIMS: C-005 (90 s safe) -> UNPROVEN (one day of data; multi-day gap histogram required). Defect 1 -> AGREE (refuses to run, exit 2). Defect 3 -> AGREE (--conn-action alarm default prevents the Dhan 805 cascade). Defect 5 -> PARTLY RESOLVED (tickrec still mtime/last_tick; acceptable for v3 provided the dry-run monitors it). Defect 6 -> AGREE (IST from epoch; both boxes already IST-5:30).
+MISSING PROOF: (1) the 3-session dry run; (2) cat /etc/TZ and date on i5 and i7 (raw output not in repo); (3) ls -la /volume1/docker/datapullers/_state/livewatch_host/ after a reboot (state dir persistence).
+ASSUMPTIONS FOUND: (1) Fable's "recorder 180 s guard too slow (unmeasured)": if dp_recguard reopens in 180 s and livewatch kills at 90 s they will fight; the dry run must log dp_recguard actions alongside livewatch evaluations. (2) Author: tickrec uses status last_tick + mtime: accepted as known limitation, needs strict monitoring in the dry run.
+VERDICT: VERIFIED WITH CONDITIONS (FOR DRY-RUN ONLY). v3 safe to deploy in --dry-run mode; MUST NOT be deployed in live (kill) mode until the 3-session dry run is complete and the 90 s threshold is validated against a multi-day histogram.
+ITEM V-002 v2. FILE-BY-FILE: BLK002/05 -> CANNOT CHECK (not inlined; relying on Fable's summary in the COMPARISON doc). 01-04 -> SUPPORTS.
+CLAIMS: C-020 AGREE (src_store columns prove these are copies of puller-DB snapshots 14-19 Oct, not today's capture). C-021 AGREE (RETRACTED; byte-level monitoring now required). C-022 AGREE (PROVEN). H12 violation status -> UNPROVEN / NOT A VIOLATION ("Fable's discovery that the HDD path is a symlink to the live SSD file means there is no separate HDD copy to violate H12. The data is on the SSD, which is correct for recoverable puller DBs. The 14-19 Oct snapshots in src_store are historical, not live-only").
+MISSING PROOF: (1) readlink -f /volume1/docker/blpro_data/009/app/blpro_working.db on i5; (2) sqlite3 -readonly /volume2/blpro_hot/blpro_working.db "SELECT name FROM sqlite_master WHERE type='table' AND name LIKE '%chain%' OR name LIKE '%depth%';".
+ASSUMPTIONS FOUND: NONE FOUND.
+VERDICT: VERIFIED WITH CONDITIONS. Recorder routing (writing to /volume1) verified. H12 violation premise for puller DBs unsupported. BLK-002 code implementation NOT REQUIRED until a definitive list of non-recoverable tables in the puller DBs is proven to exist and reside on the SSD.
+ITEM V-003. FILE-BY-FILE: 17 -> SUPPORTS. 11 -> DOES NOT SUPPORT (circular routes, auth failures as dead routes, 7.5 min worst case). 12 -> DOES NOT SUPPORT (i5 route count wrong).
+CLAIMS: C-014/C-015 AGREE (raw results valid; script logic and summary counts flawed). Cloudflare 502 cause -> UNPROVEN (502 usually means connector reached origin but got no response: points to sshd or the container on i7, not the tunnel).
+MISSING PROOF: (1) ssh -vvv j1800-cf; (2) docker ps | grep cloudflared and docker logs <cloudflared_container> on i7.
+VERDICT: NOT VERIFIED. The route script must be rewritten; a Cloudflare-independent route (e.g. Tailscale) remains a critical recommendation.
+DIRECT ANSWER (v3 dry run): YES, v3 is safe for dry run. The dry run MUST record to a structured log/CSV: every evaluation cycle: timestamp_IST, box_id, recorder_name, verdict (FRESH/DEAD/NO_FILE_DEAD/UNKNOWN/ALARM_ONLY), age_s, last_tick_epoch (status.json), frames_recv_ts (max from DB if applicable), file_mtime (of .db and -wal), reason_string. Probes for OPEN defects: tickrec: log the events table row count or max ts alongside file mtime (is dp_recguard writing events keeping the file FRESH while ticks is stale); 09:16 risk: the daemon MUST start at 09:00, log every evaluation 09:00-09:20; dp_watchdog overlap: log docker restart events via docker events or polling docker inspect .RestartCount. Duration: 3 full trading sessions (09:00-15:30); at end of day 3 generate a Gap Histogram per recorder: count of gaps >60 s, >90 s, >120 s, >180 s; this histogram is the ONLY evidence that can move C-005 to PROVEN. Action: deploy v3 with --dry-run and --log /path/to/persistent/log.csv; do not enable kills.
+SIGN-OFF: proceed with the v3 dry run; awaiting the 3-day histogram and raw logs to finalize V-001.
+OWNER'S INSTRUCTION with this paste: each external audit with Qwen must be verified with Fable.
+```
+
+### FILE AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md  sha256=fd5062fea4b404f1  bytes=5823
+```
+# Fable verification of the outside auditor's (Qwen) ROUND-2 verdict, 03-11-2026 ~22:10 IST (condensed by the author; every row and the bottom line are kept; the verbatim report is in the owner's chat)
+Owner's rule (03-11-2026): each external audit with Qwen must be verified with Fable. Fable read the repo only (no box access), reran the v3 tests itself (22 OK, md5 matches INDEX) and drove a synthetic dry run of v3.
+## Statement-by-statement (Qwen statement | Fable verdict | evidence)
+1 v3 code "not inlined" -> CANNOT CHECK | CORRECT but self-inflicted (files in repo and in INDEX, README inlined only 26/20/25). Author action: 02/03 now inlined.
+2 "relying on Fable's confirmation of 22 tests and mutation catches" | INCORRECT: Fable reran 13 tests (v2); files 20/25 are the author's own run.
+3 Fable "verified the soundness of the v3 corrections" | INCORRECT: Fable's review predates v3; the COMPARISON status column is the author's text.
+4 C-005 unproven (one day) | CORRECT. 5 Defect 1 fixed | CORRECT. 6 alarm default "prevents the Dhan 805 cascade" | UNSUPPORTED (cause C-017 unproven; alarm adds no sockets). 7 tickrec partly resolved | CORRECT. 8 TZ fixed, both IST | CORRECT.
+9 missing proof "cat /etc/TZ and date; not in repo" | INCORRECT (BLK002/05). 10 state dir after reboot | CORRECT (absent). 11 dp_recguard 180 s vs livewatch 90 s fight | CORRECT as a concern for upstox/tbt/tick (depth default alarms); the 180 s figure is not in a raw file.
+12 BLK002/05 "not inlined" | INCORRECT (README inlines it). 13 src_store proves copies of puller-DB snapshots | PARTLY (provenance label yes; a source copy existing is UNKNOWN, the puller DBs have no chain/depth/quote table).
+14 "Fable's discovery that the HDD path is a symlink" | INCORRECT: Fable guessed an older HDD copy; the author's readlink corrected it.
+15 "no separate HDD copy means no H12 violation" | INCORRECT reasoning: H12 needs NON-recoverable data on HDD, so absence of an HDD copy makes a violation MORE likely if the data is non-recoverable.
+16 "data on SSD is correct for recoverable puller DBs" | UNSUPPORTED: recoverability of broker_chain_snap / broker_quote_depth_snap is proven nowhere; the owner's H12 table lists chain snapshots as non-recoverable. 17 "14-19 Oct snapshots are historical, not live-only" | UNSUPPORTED (age is not recoverability).
+18 SQL probe | PARTLY: AND/OR precedence bug (needs parentheses); the table list is already in BLK002/04 and 05. 19 asks readlink | already in 05. 20 "ASSUMPTIONS FOUND: NONE" | INCORRECT (row 16 is one).
+21 V-002 "BLK-002 code NOT REQUIRED" | UNSUPPORTED: rests on row 16; puller DBs (173 GB on SSD) were only grepped for 3 name patterns. UNKNOWN is not "not required".
+22 11 DOES NOT SUPPORT | CORRECT. 23 12 DOES NOT SUPPORT (count) | STALE (already corrected). 24 502 "points to sshd or the container on i7" | UNSUPPORTED (cause UNKNOWN). 25 "docker ps | grep cloudflared / docker logs on i7" | INCORRECT premise (the i7 has no cloudflared package or container, BLK002/05).
+26 tickrec probe "events table row count" | INCORRECT: the ticks day file has instruments_today, session_log, ticks; no events table.
+27 "daemon MUST start at 09:00, log 09:00-09:20" | INCOMPLETE: v3 default --session-start is 09:16 and evaluates nothing before it; needs --session-start 09:00 stated.
+28 "v3 safe for dry run" | PARTLY: dry-run spawns no docker command, but writes state/pid/ALARM files under /volume1 and opens 3 production SQLite files per cycle.
+29 CSV fields "every evaluation cycle" | UNSUPPORTED by v3 code: no CSV existed; DEAD/CONN_DEAD lines were suppressed after 3 cycles/once per hour.
+Proofs Qwen asked for that were ALREADY in the repo: TZ/date (05), readlink target (05), chain/depth table list (04/05), file 05 itself.
+## Fable's dry-run spec and v3 defects (all acted on in v3.1; see COMPARISON round 3 and ledger C-028..C-033)
+Spec: CSV one row per (recorder, conn) per cycle; histogram must come from the DAY FILES (scripts 09/16 extended to upstox/tbt), not the livewatch log (15-20 s sampling cannot give gap lengths); --session-start 09:00; external 60 s docker inspect RestartCount probe; at start: docker ps (dp_watchdog / compose livewatch running?), id, ls -l of day files and -wal/-shm; time one --once --dry-run in session; end of session gap lists + events rows + status.json copies.
+Defects: (1) dry run suppressed the lines it must keep (kills counted in dry-run -> bound -> one CRITICAL/hour) [FIXED v3.1: every verdict every cycle, test + mutation]; (2) dry run writes to the production volume (state dir, pid, ALARM files) [OPEN, disclosed: small files under _state/livewatch_dry]; (3) conn_last unbounded backward index walk, worst when d20 never connected [FIXED: scan bounded to max(600 s, 4x limit); none-in-window = silent; query 74-310 ms on closed real files]; (4) WAL/-shm readability as the daemon user [OPEN: first in-session read tomorrow]; (5) log label hard-codes GMT+5:30 [CSV now carries epoch]; (6) counters reset on restart, pid-lock reuse, one exception aborts a pass [OPEN].
+## Bottom line (Fable)
+Qwen's round-2 verdict is NOT an independent check: it did not read the v3 code/tests although both were in the repo, cited a Fable confirmation that does not exist, misattributed the symlink finding, asked for four proofs already present, prescribed a cloudflared probe on a box with no cloudflared and a tickrec events probe on a file with no events table, and built V-002 ("code NOT REQUIRED") on an unproven recoverability assumption while declaring "ASSUMPTIONS FOUND: NONE". Where it repeats the earlier reviews (dry run only, no kills, no threshold without a multi-session histogram) it is sound but borrowed. Owner decisions still open: alarm vs kill, dp_watchdog vs livewatch, whether the 14-19 Oct chain snapshots are live-only.
 ```

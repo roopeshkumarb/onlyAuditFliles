@@ -98,8 +98,9 @@ def status_last_tick(status):
         return 0.0
 
 
-def conn_last(path, spec):
-    """-> {conn: last recv_ts or None}; None = UNKNOWN (db unreadable, locked, or no rows for that conn)."""
+def conn_last(path, spec, since=0.0):
+    """-> {conn: last recv_ts}; 0.0 = NO row newer than `since` (silent at least that long, or never connected: bounded scan so a dead
+    connection cannot make every pass walk the whole index); None = UNKNOWN (db unreadable or locked)."""
     table, col, conns = spec
     out = {c: None for c in conns}
     try:
@@ -108,10 +109,10 @@ def conn_last(path, spec):
         try:
             for c in conns:
                 if col is None:
-                    r = con.execute("select recv_ts from %s order by recv_ts desc limit 1" % table).fetchone()
+                    r = con.execute("select recv_ts from %s where recv_ts>? order by recv_ts desc limit 1" % table, (since,)).fetchone()
                 else:
-                    r = con.execute("select recv_ts from %s where %s=? order by recv_ts desc limit 1" % (table, col), (c,)).fetchone()
-                out[c] = float(r[0]) if r and r[0] is not None else None
+                    r = con.execute("select recv_ts from %s where %s=? and recv_ts>? order by recv_ts desc limit 1" % (table, col), (c, since)).fetchone()
+                out[c] = float(r[0]) if r and r[0] is not None else 0.0
         finally:
             con.close()
     except Exception:
@@ -119,7 +120,24 @@ def conn_last(path, spec):
     return out
 
 
-def evaluate(name, root, box, now, stale_s, no_file_after):
+def events_max(path, name):
+    """Newest row time in the table dp_recguard writes events to (depth/upstox/tbt: events.at_ts; tickrec has session_log, a count only).
+    Lets the dry run show whether non-data rows keep the file mtime fresh. '' = unknown."""
+    try:
+        import sqlite3
+        con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
+        try:
+            if name == "tickrec":
+                return "session_log_rows=%d" % con.execute("select count(*) from session_log").fetchone()[0]
+            r = con.execute("select max(at_ts) from events").fetchone()
+            return "%.0f" % r[0] if r and r[0] is not None else ""
+        finally:
+            con.close()
+    except Exception:
+        return ""
+
+
+def evaluate(name, root, box, now, stale_s, no_file_after, ex=None):
     """-> dict(verdict, age_s, why). verdict in FRESH, DEAD, NO_FILE_DEAD, NO_FILE_WAITING."""
     folder, prefix = RECORDERS[name]
     day = time.strftime("%Y%m%d", ist(now))
@@ -135,6 +153,9 @@ def evaluate(name, root, box, now, stale_s, no_file_after):
     if lt > now + 5:                      # future-dated last_tick would give a negative age = FRESH forever: not trusted
         lt = 0.0
     last = max(fw, lt)
+    if ex is not None:                    # observation fields for the --csv dry-run log (auditor round 2)
+        ex.update({"file_mtime": os.stat(path).st_mtime if os.path.exists(path) else 0.0, "wal_mtime": (os.stat(path + "-wal").st_mtime if os.path.exists(path + "-wal") else 0.0),
+                   "last_tick_epoch": lt, "events_max": events_max(path, name)})
     if fw == 0.0:
         lt_now = ist(now)
         if lt_now.tm_hour * 60 + lt_now.tm_min >= hhmm(no_file_after) and not status.get("instruments"):
@@ -149,8 +170,13 @@ def evaluate(name, root, box, now, stale_s, no_file_after):
                     time.strftime("%H:%M:%S", ist(lt)) if lt else "n/a")}
     why = "last data %.1f s ago" % age
     if name in CONNS:
-        cl = conn_last(path, CONNS[name])
-        dead = ["%s silent %.0f s" % (c, now - t) for c, t in sorted(cl.items()) if t is not None and now - t > stale_s]
+        t_q = time.time()
+        cl = conn_last(path, CONNS[name], now - max(600.0, 4 * stale_s))
+        if ex is not None:
+            ex["frames"] = ";".join("%s=%s" % (c, ("%.0f" % t) if t else ("none_in_window" if t == 0.0 else "UNKNOWN")) for c, t in sorted(cl.items()))
+            ex["query_ms"] = "%.0f" % ((time.time() - t_q) * 1000)
+        dead = [("%s silent >= %.0f s (no row in window)" % (c, max(600.0, 4 * stale_s))) if t == 0.0 else "%s silent %.0f s" % (c, now - t)
+                for c, t in sorted(cl.items()) if t is not None and (t == 0.0 or now - t > stale_s)]
         unk = [c for c, t in sorted(cl.items()) if t is None]
         if dead:
             multi = CONNS[name][1] is not None          # several sockets share one file: killing the container drops the healthy ones
@@ -167,6 +193,7 @@ class Watch(object):
         self.kills = {}                       # container -> [epoch,...]
         os.makedirs(a.state_dir, exist_ok=True)
         self.escalated = {}
+        self.rc_cache = {}
 
     def log(self, level, msg):
         line = "%s [livewatch %s] %s %s" % (time.strftime("%d-%m-%Y %H:%M:%S GMT+5:30"), self.a.box, level, msg)
@@ -190,6 +217,9 @@ class Watch(object):
     def kill(self, name, why, now):
         if name in NEVER_TOUCH or name not in RECORDERS:
             self.log("REFUSE", "%s is not a managed recorder" % name)
+            return
+        if self.a.dry_run:                # dry run keeps EVERY verdict of EVERY cycle: no bound, no hourly suppression, no kill counting
+            self.log("WARN", "DRYRUN %s: %s -> WOULD docker kill %s" % (name, why, name))
             return
         today = time.strftime("%Y%m%d", ist(now))
         recent = [t for t in self.kills.get(name, []) if time.strftime("%Y%m%d", ist(t)) == today]   # per IST DAY, not rolling hour
@@ -218,10 +248,45 @@ class Watch(object):
         else:
             self.log("INFO", "%s is running again (restart policy)" % name)
 
+    def docker_ro(self, *args):
+        """READ-ONLY docker query (inspect); runs even under --dry-run because it changes nothing. '' on any failure."""
+        try:
+            p = subprocess.run([self.a.docker] + list(args), stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               universal_newlines=True, timeout=15)
+            return p.stdout.strip() if p.returncode == 0 else ""
+        except Exception:
+            return ""
+
+    def csv_row(self, name, r, ex, now, action="none"):
+        path = getattr(self.a, "csv", "")
+        if not path:
+            return
+        import csv
+        c = self.rc_cache.get(name)
+        if c is None or now - c[0] >= 60:        # docker CLI is slow on these boxes under load: sample the restart counter once a minute
+            c = (now, self.docker_ro("inspect", name, "--format", "{{.RestartCount}}|{{.State.StartedAt}}|{{.State.Running}}") if name in RECORDERS else "")
+            self.rc_cache[name] = c
+        rc = c[1]
+        new = not os.path.exists(path)
+        try:
+            with open(path, "a", newline="") as f:
+                w = csv.writer(f)
+                if new:
+                    w.writerow(["ts_epoch", "timestamp_ist", "box", "recorder", "verdict", "action", "age_s", "last_tick_epoch", "frames_recv_ts", "query_ms",
+                                "file_mtime", "wal_mtime", "events_max", "restart_count|started_at|running", "reason"])
+                w.writerow(["%.0f" % now, time.strftime("%Y-%m-%d %H:%M:%S", ist(now)), self.a.box, name, r["verdict"], action, r["age_s"],
+                            "%.0f" % ex.get("last_tick_epoch", 0), ex.get("frames", ""), ex.get("query_ms", ""), "%.0f" % ex.get("file_mtime", 0),
+                            "%.0f" % ex.get("wal_mtime", 0), ex.get("events_max", ""), rc, r["why"]])
+        except OSError:
+            pass
+
     def alarm(self, name, why, now):
         """Alarm only (owner decision pending, both auditors: do not kill a container for one dead socket): CRITICAL log +
         ALARM file, at most once an hour per container."""
         key = "alarm:" + name
+        if self.a.dry_run:
+            self.log("CRITICAL", "DRYRUN %s: %s -> WOULD ALARM (--conn-action alarm)" % (name, why))
+            return
         if now - self.escalated.get(key, 0) <= 3600:
             return
         self.escalated[key] = now
@@ -239,13 +304,17 @@ class Watch(object):
             return []
         results = []
         for name in sorted(RECORDERS):
-            r = evaluate(name, self.a.root, self.a.box, now, self.a.stale_s, self.a.no_file_after)
+            ex = {}
+            r = evaluate(name, self.a.root, self.a.box, now, self.a.stale_s, self.a.no_file_after, ex)
             results.append((name, r))
             if r["verdict"] == "CONN_DEAD" and getattr(self.a, "conn_action", "alarm") != "kill":
+                self.csv_row(name, r, ex, now, "would_alarm" if self.a.dry_run else "alarm")
                 self.alarm(name, r["why"], now)
             elif r["verdict"] in ("DEAD", "NO_FILE_DEAD", "CONN_DEAD"):
+                self.csv_row(name, r, ex, now, "would_kill" if self.a.dry_run else "kill_or_suppressed")
                 self.kill(name, r["why"], now)
             else:
+                self.csv_row(name, r, ex, now, "none")
                 self.log("OK", "%s %s (%s)" % (name, r["verdict"], r["why"]))
         return results
 
@@ -266,6 +335,7 @@ def main(argv=None):
     p.add_argument("--restart-wait", type=float, default=10.0)
     p.add_argument("--state-dir", default="/volume1/docker/datapullers/_state/livewatch_host")   # v3: not /tmp (tmpfs on DSM: ESCALATE/ALARM files vanished on reboot)
     p.add_argument("--log", default="")
+    p.add_argument("--csv", default="", help="append one row per recorder per pass (dry-run evidence log)")
     p.add_argument("--dry-run", action="store_true")
     p.add_argument("--once", action="store_true")
     p.add_argument("--test-recorder", default="", help="PROOF HOOK: lwtest_NAME=folder:prefix adds a disposable "

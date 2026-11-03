@@ -1,0 +1,7 @@
+PREFLIGHT of v3.1 on the real day files, both boxes, 03-11-2026 22:16-22:20 IST, --dry-run --once (no kill possible), market closed
+A) default limit 90 s: recorders stopped at 15:35 so file-level DEAD (as expected; conn query not reached)
+B) --stale-s 100000 so the file-level check passes and the per-connection query runs on the REAL files; columns: recorder,verdict,frames_recv_ts(epoch),query_ms,file_mtime,events_max
+i5: depthrec FRESH d20=1793700310;d200=1793700310 query 251 ms | fyerstbt FRESH 277 ms | tickrec FRESH (status/mtime only; events=session_log_rows=3) | upstoxrec FRESH 112 ms
+i7: depthrec FRESH d20=1793700313;d200=1793700313 query 74 ms | fyerstbt FRESH 310 ms | tickrec FRESH session_log_rows=3 | upstoxrec FRESH 127 ms
+Note: events_max (newest events row) is within ~1 s of the last frame on every recorder: the stop-of-session event. Load average on both boxes ~12 at the time. Query times are on CLOSED files, not during a session.
+Dry-run daemons started 22:16 IST on both boxes (pid files in the state dir, /proc check ALIVE); first in-session cycle will be 09:00 tomorrow.
