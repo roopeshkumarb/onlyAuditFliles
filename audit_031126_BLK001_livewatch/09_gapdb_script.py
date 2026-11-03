@@ -17,7 +17,7 @@ for d,x,sql,args in (("ticks","ticks_","select recv_ts from ticks where token=25
     try:
         c=sqlite3.connect("file:%s?mode=ro"%p,uri=True,timeout=10)
         n,last,g=gaps(c,sql,args)
-        big=[(a,b) for a,b in g if b-a>60]
-        print("%s rows(since 09:15)=%d last=%s gaps>30s=%d  gaps>60s:"%(d,n,hm(last) if last else "-",len(g)))
+        big=[(a,b) for a,b in g if b-a>30]
+        print("%s rows(since 09:15)=%d last=%s gaps>30s=%d  gaps>30s:"%(d,n,hm(last) if last else "-",len(g)))
         for a,b in big[:12]: print("   %s -> %s  (%.0f s)"%(hm(a),hm(b),b-a))
     except Exception as e: print(d,"ERR",e)
