@@ -1,0 +1,47 @@
+BLK-002 / V-001 EVIDENCE BATCH 2, 03-11-2026 21:39 IST, read-only, requested by both auditors. Hostnames/aliases only.
+
+ROUTE: i5-cf
+### run 03-11-2026 21:39:33 on i5-4590-dsm72; TZ files:
+Tue Nov  3 21:39:33 IST 2026
+IST-5:30
+lrwxrwxrwx 1 root root 33 Nov 19  2025 /etc/localtime -> /usr/share/zoneinfo/Asia/Calcutta
+uid=1026(roopeshkumarb) gid=100(users) groups=100(users),101(administrators),65536(docker)
+### negative test + symlink
+ls: cannot access '/volume1/docker/blpro_data/blpro_working.db': No such file or directory
+/volume2/blpro_hot/blpro_working.db
+### df -B1 /volume2 (bytes)
+/dev/mapper/cachedev_1 219529871360 216063025152 3466846208  99% /volume2
+### src_store group-by, LIVE SSD copy
+-- broker_chain_snap
+puller930_upstox_151026-0033.db|15416|2026-10-19 09:15:00|2026-10-19 15:30:00|2026-10-19 22:12:14|2026-10-19 22:12:14
+pullerfull_dhan_151026-0031.db|25666|2026-10-16 09:57:00|2026-10-19 15:30:00|2026-10-17 21:18:35|2026-10-19 22:12:14
+pullerfull_upstox_151026-0031.db|24354|2026-10-15 09:15:00|2026-10-16 15:30:00|2026-10-17 21:18:35|2026-10-17 21:18:35
+upstox_121026-1533.db|7708|2026-10-14 11:34:00|2026-10-14 15:30:00|2026-10-17 21:18:35|2026-10-17 21:18:35
+-- broker_quote_depth_snap
+puller930_upstox_151026-0033.db|7896|2026-10-19 09:15:00|2026-10-19 15:30:00|2026-10-19 22:12:14|2026-10-19 22:12:14
+pullerfull_upstox_151026-0031.db|11235|2026-10-15 09:15:00|2026-10-16 15:30:00|2026-10-17 21:18:35|2026-10-17 21:18:35
+upstox_121026-1533.db|3906|2026-10-14 11:33:00|2026-10-14 15:30:00|2026-10-17 21:18:35|2026-10-17 21:18:35
+### HDD copy (symlink target) counts
+-- broker_chain_snap
+73144|2026-10-14 11:34:00|2026-10-19 15:30:00
+-- broker_quote_depth_snap
+23037|2026-10-14 11:33:00|2026-10-19 15:30:00
+### puller DB tables matching chain|depth|quote
+-- /volume2/datapullers/dhan/pullerfull_dhan_151026-0031.db
+
+-- /volume2/datapullers/upstox/pullerfull_upstox_151026-0031.db
+
+-- /volume2/datapullers/fyers/pullerfull_fyers_151026-0030.db
+
+######## i7
+route j1800-cf failed (rc=255: Bad Gateway Connection closed by UNKNOWN port 65535 )
+ROUTE: i5-cf>i7
+### i7 Tue Nov  3 21:39:38 IST 2026 
+Tue Nov  3 21:39:38 IST 2026
+IST-5:30
+lrwxrwxrwx 1 root root 33 Nov 19  2025 /etc/localtime -> /usr/share/zoneinfo/Asia/Calcutta
+uid=1026(roopeshkumarb) gid=100(users) groups=100(users),101(administrators),65536(docker)
+/dev/mapper/cachedev_0 449394507776 150459916288 298934591488  34% /volume2
+CloudSync
+pkgs listed above (none = no cloudflared package)
+ 21:39:38 up  8:55,  0 users,  load average: 12.63, 12.05, 13.86 [IO: 11.08, 10.10, 12.34 CPU: 1.55, 1.95, 1.50]

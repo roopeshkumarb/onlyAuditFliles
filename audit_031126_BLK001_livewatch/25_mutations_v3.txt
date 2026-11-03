@@ -1,0 +1,10 @@
+v3 mutation checks, 03-11-2026 21:40 IST; each applied to pullers/shared/livewatch.py, 20 tests run, file restored
+MUT [escalation spams (no hourly limit)]: FAIL: test_kill_bound_is_per_day_and_escalation_rearms;
+MUT [future-dated last_tick trusted]: FAIL: test_future_dated_last_tick_is_not_trusted;
+MUT [multi-socket death kills instead of alarming]: FAIL: test_dead_d20_is_caught_even_though_the_file_is_fresh_and_only_alarms_by_default;
+MUT [wrong --box not refused]: FAIL: test_refuses_to_run_when_recorder_folders_are_missing;FAIL: test_wrong_box_name_is_refused_not_killed;
+MUT [session window uses host TZ not IST]: FAIL: test_session_and_day_are_ist_even_when_the_host_is_utc;
+MUT [kill bound removed]: FAIL: test_kill_bound_is_per_day_and_escalation_rearms;FAIL: test_kills_are_bounded_per_hour_then_escalate;
+Ran 20 tests in 0.307s OK 
+restored md5 b2a82baadaf6d597b7e4dc45081e339a
+MUT [docker start fallback removed]: FAIL: test_docker_start_fallback_runs_when_policy_did_not_restart; (22 tests; restored md5 a5fdd90961c728630a4fd5d1057763bd)

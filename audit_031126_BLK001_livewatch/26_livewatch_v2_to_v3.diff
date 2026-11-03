@@ -1,0 +1,199 @@
+--- audit_031126_BLK001_livewatch/02b_livewatch_v2.py	2026-11-03 16:11:32.890909100 +0000
++++ audit_031126_BLK001_livewatch/02_livewatch.py	2026-11-03 16:11:32.893928761 +0000
+@@ -30,6 +30,7 @@
+     python3 livewatch.py --root ... --box i5 --dry-run --once                   # print what it would do
+ """
+ import argparse
++import calendar
+ import json
+ import os
+ import subprocess
+@@ -45,12 +46,21 @@
+ # v2 (auditor condition, 03-11-2026): a recorder that writes SEVERAL sockets into ONE day file hides a dead socket behind
+ # the live ones (Dhan: d20 silent ~4 min 12 times on the i5 while d200 kept the file fresh). So judge each connection by
+ # the newest recv_ts of its own rows. Unreadable DB / no rows for the connection = UNKNOWN (never killed on UNKNOWN).
+-CONNS = {"depthrec": ("frames", "conn", ("d20", "d200"))}
++# v3: upstox/tbt write a heartbeat/open/close row into the SAME day file's `events` table (dp_recguard.log_event), which moves the
++# file mtime with zero frames; so judge those by the newest frames.recv_ts too (col None = single series).
++CONNS = {"depthrec": ("frames", "conn", ("d20", "d200")),
++         "upstoxrec": ("frames", None, ("frames",)),
++         "fyerstbt": ("frames", None, ("frames",))}
+ NEVER_TOUCH = ("cloudflared", "portainer", "blpro_09", "blpro_compute", "blpro_synchub",
+                "blpro_vendorwatch", "watchtower")
+ DEFAULT_DOCKER = "/var/packages/ContainerManager/target/usr/bin/docker"
+ 
+ 
++def ist(now):
++    """Struct time in IST (GMT+5:30) computed from the epoch, independent of the host TZ (auditor defect 6)."""
++    return time.gmtime(now + 19800)
++
++
+ def hhmm(s):
+     h, m = s.split(":")
+     return int(h) * 60 + int(m)
+@@ -59,7 +69,7 @@
+ def in_session(now, start, end):
+     """Weekdays only, box-local time, [start, end]. (NSE holidays are not known here: on a holiday the
+     recorders see no ticks, so a holiday can cost at most MAX_KILLS_PER_HOUR harmless restarts.)"""
+-    lt = time.localtime(now)
++    lt = ist(now)
+     return lt.tm_wday < 5 and hhmm(start) <= lt.tm_hour * 60 + lt.tm_min <= hhmm(end)
+ 
+ 
+@@ -76,11 +86,14 @@
+ 
+ def status_last_tick(status):
+     """Epoch of status.json 'last_tick' ('DD-MM-YYYY HH:MM:SS GMT+5:30') or 0.0 if absent/null."""
++    e = status.get("last_tick_epoch")             # TZ-safe field some recorders write
++    if isinstance(e, (int, float)) and e > 0:
++        return float(e)
+     v = status.get("last_tick")
+     if not v:
+         return 0.0
+     try:
+-        return time.mktime(time.strptime(str(v).replace(" GMT+5:30", ""), "%d-%m-%Y %H:%M:%S"))
++        return calendar.timegm(time.strptime(str(v).replace(" GMT+5:30", ""), "%d-%m-%Y %H:%M:%S")) - 19800
+     except ValueError:
+         return 0.0
+ 
+@@ -94,7 +107,10 @@
+         con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
+         try:
+             for c in conns:
+-                r = con.execute("select recv_ts from %s where %s=? order by recv_ts desc limit 1" % (table, col), (c,)).fetchone()
++                if col is None:
++                    r = con.execute("select recv_ts from %s order by recv_ts desc limit 1" % table).fetchone()
++                else:
++                    r = con.execute("select recv_ts from %s where %s=? order by recv_ts desc limit 1" % (table, col), (c,)).fetchone()
+                 out[c] = float(r[0]) if r and r[0] is not None else None
+         finally:
+             con.close()
+@@ -106,7 +122,7 @@
+ def evaluate(name, root, box, now, stale_s, no_file_after):
+     """-> dict(verdict, age_s, why). verdict in FRESH, DEAD, NO_FILE_DEAD, NO_FILE_WAITING."""
+     folder, prefix = RECORDERS[name]
+-    day = time.strftime("%Y%m%d", time.localtime(now))
++    day = time.strftime("%Y%m%d", ist(now))
+     path = os.path.join(root, folder, box, "%s%s.db" % (prefix, day))
+     status = {}
+     try:
+@@ -116,9 +132,11 @@
+         pass
+     fw = file_write_time(path)
+     lt = status_last_tick(status)
++    if lt > now + 5:                      # future-dated last_tick would give a negative age = FRESH forever: not trusted
++        lt = 0.0
+     last = max(fw, lt)
+     if fw == 0.0:
+-        lt_now = time.localtime(now)
++        lt_now = ist(now)
+         if lt_now.tm_hour * 60 + lt_now.tm_min >= hhmm(no_file_after) and not status.get("instruments"):
+             return {"verdict": "NO_FILE_DEAD", "age_s": None,
+                     "why": "no day file %s and instruments=0 after %s" % (os.path.basename(path), no_file_after)}
+@@ -127,16 +145,17 @@
+     if age > stale_s:
+         return {"verdict": "DEAD", "age_s": round(age, 1),
+                 "why": "last data %.0f s ago (limit %.0f s); file_write=%s last_tick=%s" % (
+-                    age, stale_s, time.strftime("%H:%M:%S", time.localtime(fw)),
+-                    time.strftime("%H:%M:%S", time.localtime(lt)) if lt else "n/a")}
++                    age, stale_s, time.strftime("%H:%M:%S", ist(fw)),
++                    time.strftime("%H:%M:%S", ist(lt)) if lt else "n/a")}
+     why = "last data %.1f s ago" % age
+     if name in CONNS:
+         cl = conn_last(path, CONNS[name])
+         dead = ["%s silent %.0f s" % (c, now - t) for c, t in sorted(cl.items()) if t is not None and now - t > stale_s]
+         unk = [c for c, t in sorted(cl.items()) if t is None]
+         if dead:
+-            return {"verdict": "DEAD", "age_s": round(age, 1),
+-                    "why": "file is fresh but connection(s) dead: %s (limit %.0f s)" % (", ".join(dead), stale_s)}
++            multi = CONNS[name][1] is not None          # several sockets share one file: killing the container drops the healthy ones
++            return {"verdict": "CONN_DEAD" if multi else "DEAD", "age_s": round(age, 1),
++                    "why": "file is fresh but %s dead: %s (limit %.0f s)" % ("connection(s)" if multi else "frames", ", ".join(dead), stale_s)}
+         if unk:
+             why += "; connection check UNKNOWN for %s (not judged)" % ",".join(unk)
+     return {"verdict": "FRESH", "age_s": round(age, 1), "why": why}
+@@ -147,7 +166,7 @@
+         self.a = a
+         self.kills = {}                       # container -> [epoch,...]
+         os.makedirs(a.state_dir, exist_ok=True)
+-        self.escalated = set()
++        self.escalated = {}
+ 
+     def log(self, level, msg):
+         line = "%s [livewatch %s] %s %s" % (time.strftime("%d-%m-%Y %H:%M:%S GMT+5:30"), self.a.box, level, msg)
+@@ -172,11 +191,12 @@
+         if name in NEVER_TOUCH or name not in RECORDERS:
+             self.log("REFUSE", "%s is not a managed recorder" % name)
+             return
+-        recent = [t for t in self.kills.get(name, []) if t > now - 3600]
++        today = time.strftime("%Y%m%d", ist(now))
++        recent = [t for t in self.kills.get(name, []) if time.strftime("%Y%m%d", ist(t)) == today]   # per IST DAY, not rolling hour
+         if len(recent) >= self.a.max_kills:
+-            if name not in self.escalated:
+-                self.escalated.add(name)
+-                self.log("CRITICAL", "%s killed %d times in the last hour and is still silent: NOT killing again. "
++            if now - self.escalated.get(name, 0) > 3600:      # re-armed: CRITICAL + file again at most once an hour
++                self.escalated[name] = now
++                self.log("CRITICAL", "%s killed %d times today and is still silent: NOT killing again. "
+                          "Needs a human. reason=%s" % (name, len(recent), why))
+                 try:
+                     with open(os.path.join(self.a.state_dir, "ESCALATE_%s.json" % name), "w") as f:
+@@ -198,6 +218,20 @@
+         else:
+             self.log("INFO", "%s is running again (restart policy)" % name)
+ 
++    def alarm(self, name, why, now):
++        """Alarm only (owner decision pending, both auditors: do not kill a container for one dead socket): CRITICAL log +
++        ALARM file, at most once an hour per container."""
++        key = "alarm:" + name
++        if now - self.escalated.get(key, 0) <= 3600:
++            return
++        self.escalated[key] = now
++        self.log("CRITICAL", "%s: %s -> ALARM ONLY, no kill (--conn-action alarm)" % (name, why))
++        try:
++            with open(os.path.join(self.a.state_dir, "ALARM_%s.json" % name), "w") as f:
++                json.dump({"container": name, "box": self.a.box, "at": now, "why": why}, f)
++        except OSError:
++            pass
++
+     def once(self, now=None):
+         now = time.time() if now is None else now
+         if not in_session(now, self.a.session_start, self.a.session_end):
+@@ -207,7 +241,9 @@
+         for name in sorted(RECORDERS):
+             r = evaluate(name, self.a.root, self.a.box, now, self.a.stale_s, self.a.no_file_after)
+             results.append((name, r))
+-            if r["verdict"] in ("DEAD", "NO_FILE_DEAD"):
++            if r["verdict"] == "CONN_DEAD" and getattr(self.a, "conn_action", "alarm") != "kill":
++                self.alarm(name, r["why"], now)
++            elif r["verdict"] in ("DEAD", "NO_FILE_DEAD", "CONN_DEAD"):
+                 self.kill(name, r["why"], now)
+             else:
+                 self.log("OK", "%s %s (%s)" % (name, r["verdict"], r["why"]))
+@@ -224,9 +260,11 @@
+     p.add_argument("--session-end", default="15:30")
+     p.add_argument("--no-file-after", default="09:20")
+     p.add_argument("--interval", type=float, default=15.0)
+-    p.add_argument("--max-kills", type=int, default=3)
++    p.add_argument("--max-kills", type=int, default=3, help="kills per container per IST day")
++    p.add_argument("--conn-action", choices=("alarm", "kill"), default="alarm",
++                   help="what to do when ONE connection of a multi-socket recorder is silent while the file is fresh")
+     p.add_argument("--restart-wait", type=float, default=10.0)
+-    p.add_argument("--state-dir", default="/tmp/livewatch_state")
++    p.add_argument("--state-dir", default="/volume1/docker/datapullers/_state/livewatch_host")   # v3: not /tmp (tmpfs on DSM: ESCALATE/ALARM files vanished on reboot)
+     p.add_argument("--log", default="")
+     p.add_argument("--dry-run", action="store_true")
+     p.add_argument("--once", action="store_true")
+@@ -241,8 +279,10 @@
+         RECORDERS.clear()                 # PROOF MODE: ONLY the disposable recorder is judged; production names are gone
+         RECORDERS[nm] = (folder, prefix)
+     w = Watch(a)
+-    if not any(os.path.isdir(os.path.join(a.root, f, a.box)) for f, _ in RECORDERS.values()):
+-        w.log("INFO", "no recorder folders under %s for box %s: nothing to watch on this box" % (a.root, a.box))
++    missing = [n for n, (f, _) in sorted(RECORDERS.items()) if not os.path.isdir(os.path.join(a.root, f, a.box))]
++    if missing:      # fail closed (auditor defect 1): a wrong --box/--root or an unmounted volume must never read as "all recorders dead"
++        w.log("CRITICAL", "REFUSING TO RUN: no folder under %s for box '%s' for: %s (wrong --box? volume not mounted?)" % (a.root, a.box, ", ".join(missing)))
++        return 2
+     if a.once:
+         w.once()
+         return 0
