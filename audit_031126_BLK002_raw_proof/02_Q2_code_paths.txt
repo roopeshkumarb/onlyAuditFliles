@@ -1,0 +1,20 @@
+pullers/shared/dp_tickrec.py:42:DP_ROOT = os.environ.get("DP_ROOT", "/data")
+pullers/shared/dp_tickrec.py:43:BOX = (os.environ.get("BOX_NAME") or "unknown").lower()
+pullers/shared/dp_tickrec.py:44:OUT_DIR = os.path.join(DP_ROOT, "ticks", BOX)
+pullers/shared/dp_tickrec.py:154:def day_file(d: date | None = None) -> str:
+pullers/shared/dp_tickrec.py:161:    return os.path.join(OUT_DIR, "ticks_%s.db" % (d or now().date()).strftime("%Y%m%d"))
+pullers/shared/dp_depthrec.py:55:DP_ROOT = os.environ.get("DP_ROOT", "/data")
+pullers/shared/dp_depthrec.py:56:BOX = (os.environ.get("BOX_NAME") or "unknown").lower()
+pullers/shared/dp_depthrec.py:57:OUT_DIR = os.path.join(DP_ROOT, "depth", BOX)
+pullers/shared/dp_depthrec.py:293:    def day_file(self):
+pullers/shared/dp_depthrec.py:294:        return os.path.join(OUT_DIR, "depth_%s.db" % now().strftime("%Y%m%d"))
+pullers/shared/dp_upstoxrec.py:45:DP_ROOT = os.environ.get("DP_ROOT", "/data")
+pullers/shared/dp_upstoxrec.py:46:BOX = (os.environ.get("BOX_NAME") or "unknown").lower()
+pullers/shared/dp_upstoxrec.py:47:OUT_DIR = os.path.join(DP_ROOT, "upstox_live", BOX)
+pullers/shared/dp_upstoxrec.py:165:    def day_file(self):
+pullers/shared/dp_upstoxrec.py:166:        return os.path.join(OUT_DIR, "upstox_%s.db" % now().strftime("%Y%m%d"))
+pullers/shared/dp_fyerstbt.py:49:DP_ROOT = os.environ.get("DP_ROOT", "/data")
+pullers/shared/dp_fyerstbt.py:50:BOX = (os.environ.get("BOX_NAME") or "unknown").lower()
+pullers/shared/dp_fyerstbt.py:51:OUT_DIR = os.path.join(DP_ROOT, "fyers_tbt", BOX)
+pullers/shared/dp_fyerstbt.py:214:    def day_file(self):
+pullers/shared/dp_fyerstbt.py:215:        return os.path.join(OUT_DIR, "tbt_%s.db" % now().strftime("%Y%m%d"))

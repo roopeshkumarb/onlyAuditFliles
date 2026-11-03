@@ -1,0 +1,7 @@
+$ sqlite3 -readonly /volume1/docker/datapullers/depth/i5/depth_20261103.db .tables     -> events frames instruments
+$ sqlite3 -readonly /volume1/docker/datapullers/upstox_live/i5/upstox_20261103.db .tables -> events frames instruments
+$ sqlite3 -readonly /volume1/docker/datapullers/depth/j1800/depth_20261103.db .tables  -> events frames instruments
+$ sqlite3 -readonly /volume1/docker/datapullers/upstox_live/j1800/upstox_20261103.db .tables -> events frames instruments
+python3 sqlite_master (read-only):  ticks_20261103.db -> instruments_today session_log ticks   (both boxes)
+                                    tbt_20261103.db   -> events frames instruments texts       (both boxes)
+Rotational flags: i5 sata1 SSD(CT240BX500SSD1) rot=0; sata2,sata3 ST4000NM000B rot=1.  i7 sata1,sata2 ST4000NM000B rot=1; sata3 SATA SSD rot=0.

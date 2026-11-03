@@ -1,0 +1,109 @@
+BLK-002 STEP 1 RAW PROOF, 03-11-2026 ~16:00 IST. Commands run read-only via ssh. Nothing edited except that long outputs are in separate sections.
+
+######## i5: Q1 (df, lsblk, mount, mdstat, ls)
+### hostname
+i5-4590-dsm72
+### df -h
+Filesystem              Size  Used Avail Use% Mounted on
+/dev/md0                7.9G  1.7G  6.1G  22% /
+devtmpfs                7.7G     0  7.7G   0% /dev
+tmpfs                   7.7G  260K  7.7G   1% /dev/shm
+tmpfs                   7.7G   20M  7.7G   1% /run
+tmpfs                   7.7G     0  7.7G   0% /sys/fs/cgroup
+tmpfs                   7.7G   28M  7.7G   1% /tmp
+tmpfs                   1.6G     0  1.6G   0% /run/user/108668
+tmpfs                   1.6G     0  1.6G   0% /run/user/196791
+/dev/loop0               27M  767K   24M   4% /tmp/SynologyAuthService
+/dev/mapper/cachedev_1  205G  201G  3.6G  99% /volume2
+/dev/mapper/cachedev_0  3.5T  1.5T  2.1T  41% /volume1
+/dev/mapper/cachedev_1  205G  201G  3.6G  99% /volume1/@appdata/ContainerManager/all_shares/ssd_backup_gdrive
+### lsblk
+sh: line 1: lsblk: command not found
+lsblk: exit 127
+### mount | grep volume
+/dev/mapper/cachedev_1 on /volume2 type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_0 on /volume1 type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_0 on /volume1/@docker type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_0 on /volume1/@docker/btrfs type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_1 on /volume1/@appdata/ContainerManager/all_shares/ssd_backup_gdrive type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=257,subvol=/@syno/ssd_backup_gdrive)
+### cat /proc/mdstat
+Personalities : [raid1] 
+md4 : active raid1 sata2p6[0] sata3p6[1]
+      2930246912 blocks super 1.2 [2/2] [UU]
+      
+md2 : active raid1 sata2p5[2] sata3p5[3]
+      966035584 blocks super 1.2 [2/2] [UU]
+      
+md3 : active raid1 sata1p5[0]
+      223704064 blocks super 1.2 [1/1] [U]
+      
+md1 : active raid1 sata2p2[26](W) sata1p2[28] sata3p2[27](W)
+      2096128 blocks super 1.2 [26/3] [UUU_______________________]
+      
+md0 : active raid1 sata2p1[26](W) sata1p1[28] sata3p1[27](W)
+      8387584 blocks super 1.2 [26/3] [UUU_______________________]
+      
+unused devices: <none>
+### ls -ld datapullers dirs
+ls: cannot access '/volume2/docker/datapullers': No such file or directory
+drwxrwxrwx+ 1 roopeshkumarb users 1058 Nov  3 13:09 /volume1/docker/datapullers
+### df of recorder dirs
+Filesystem      Size  Used Avail Use% Mounted on
+-               3.5T  1.5T  2.1T  41% /volume1/docker
+-               3.5T  1.5T  2.1T  41% /volume1/docker
+-               3.5T  1.5T  2.1T  41% /volume1/docker
+-               3.5T  1.5T  2.1T  41% /volume1/docker
+
+######## i7: Q1
+### hostname
+I7-3RD-exJ1800
+### df -h
+Filesystem              Size  Used Avail Use% Mounted on
+/dev/md0                7.9G  1.7G  6.1G  21% /
+devtmpfs                7.7G     0  7.7G   0% /dev
+tmpfs                   7.7G  244K  7.7G   1% /dev/shm
+tmpfs                   7.7G   19M  7.7G   1% /run
+tmpfs                   7.7G     0  7.7G   0% /sys/fs/cgroup
+tmpfs                   7.7G   28M  7.7G   1% /tmp
+tmpfs                   1.6G     0  1.6G   0% /run/user/196791
+tmpfs                   1.6G     0  1.6G   0% /run/user/108668
+/dev/loop0               27M  767K   24M   4% /tmp/SynologyAuthService
+/dev/mapper/cachedev_0  419G  141G  279G  34% /volume2
+/dev/mapper/cachedev_1  3.5T  2.5T  1.1T  71% /volume1
+/dev/mapper/cachedev_0  419G  141G  279G  34% /volume1/@appdata/ContainerManager/all_shares/docker2
+### lsblk
+sh: line 1: lsblk: command not found
+lsblk: exit 127
+### mount | grep volume
+/dev/mapper/cachedev_0 on /volume2 type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_1 on /volume1 type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_1 on /volume1/@docker type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_1 on /volume1/@docker/btrfs type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=256,subvol=/@syno)
+/dev/mapper/cachedev_0 on /volume1/@appdata/ContainerManager/all_shares/docker2 type btrfs (rw,nodev,relatime,ssd,noacl,synoacl,space_cache=v2,metadata_ratio=50,auto_reclaim_space,block_group_cache_tree,syno_allocator,subvolid=257,subvol=/@syno/docker2)
+### cat /proc/mdstat
+Personalities : [raid1] 
+md4 : active raid1 sata3p5[0]
+      458124544 blocks super 1.2 [1/1] [U]
+      
+md3 : active raid1 sata2p6[0] sata1p6[1]
+      2930246912 blocks super 1.2 [2/2] [UU]
+      
+md2 : active raid1 sata2p5[2] sata1p5[3]
+      966035584 blocks super 1.2 [2/2] [UU]
+      
+md1 : active raid1 sata2p2[26](W) sata3p2[28] sata1p2[27](W)
+      2096128 blocks super 1.2 [26/3] [UUU_______________________]
+      
+md0 : active raid1 sata2p1[26](W) sata3p1[28] sata1p1[27](W)
+      8387584 blocks super 1.2 [26/3] [UUU_______________________]
+      
+unused devices: <none>
+### ls -ld datapullers dirs
+ls: cannot access '/volume2/docker/datapullers': No such file or directory
+drwxrwxrwx+ 1 roopeshkumarb users 746 Nov  3 13:09 /volume1/docker/datapullers
+### df of recorder dirs
+Filesystem      Size  Used Avail Use% Mounted on
+-               3.5T  2.5T  1.1T  71% /volume1/docker
+-               3.5T  2.5T  1.1T  71% /volume1/docker
+-               3.5T  2.5T  1.1T  71% /volume1/docker
+-               3.5T  2.5T  1.1T  71% /volume1/docker
