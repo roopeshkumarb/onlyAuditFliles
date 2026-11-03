@@ -31,7 +31,7 @@ def build_readme(root):
             if not os.path.exists(fp): ev += "\n### %s\nMISSING FILE\n" % rel; continue
             raw = open(fp, "rb").read(); txt = raw.decode("utf-8", "replace")
             cut = ""
-            if len(txt) > 16000: txt = txt[:16000]; cut = "\n[TRUNCATED at 16000 characters; full file at the raw URL]"
+            if len(txt) > 9000: txt = txt[:9000]; cut = "\n[TRUNCATED at 9000 characters; full file at the raw URL]"
             ev += "\n### FILE %s  sha256=%s  bytes=%d\n```\n%s%s\n```\n" % (rel, hashlib.sha256(raw).hexdigest()[:16], len(raw), txt.rstrip(), cut)
     body = head + r("AUDITOR_PROTOCOL.md") + "\n\n---\n\n" + r("LATEST.md") + "\n\n---\n\n## CLAIMS LEDGER (CSV)\n```\n" + r("CLAIMS_LEDGER.csv") + "\n```\n\n---\n\n" + chg + "\n" + ev
     open(os.path.join(root, "README.md"), "w", encoding="utf-8").write(body)
