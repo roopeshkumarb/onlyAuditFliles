@@ -1,3 +1,5 @@
+> UPDATE 04-11-2026 00:00 IST: the i7 NOW HAS A DIRECT CLOUDFLARE ROUTE: hostname sshi7 (tested, see 34_direct_cf_routes_tested.txt). The statements below that the i7 has no direct route describe the OLD hostname sshj1800, which still returns Bad Gateway. Open: which connector serves sshi7 and whether it survives the i5 tunnel being down (UNKNOWN); the Pi restarted at ~18:50 IST (cause UNKNOWN).
+
 # ACCESS ROUTES: reach every box with no single point of failure (prepared 03-11-2026 ~13:55 IST; owner leaves for offshore on 05-11)
 Hostnames are shown as aliases only (i5-cf, j1800-cf, pi-cf, sshpi-cf). No tokens or keys are in this file.
 

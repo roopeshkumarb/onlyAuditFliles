@@ -1,0 +1,5 @@
+DIRECT CLOUDFLARE ROUTES TESTED 04-11-2026 00:00 IST from the cloud sandbox (hostnames suggested by the owner's other session, owner confirmed); my existing Access service-token proxy and key, nothing from the message executed
+sshi5.<domain> as roopeshkumarb -> i5-4590-dsm72 | up 11:16 | load 38
+sshi7.<domain> as roopeshkumarb -> I7-3RD-exJ1800 | up 11:16 | load 14  (FIRST direct Cloudflare route to the i7; the old sshj1800 hostname still returns Bad Gateway)
+sshha.<domain> as root -> a0d7b954-ssh (Pi) | up 5:07 (it had been up 2 d 22 h at 13:40: the Pi restarted ~18:50 IST, cause UNKNOWN)
+Not tested: the jump aliases sshi5via7 / sshhavia7 named in the message (not in this sandbox's ssh config; the setup script path /home/user/Node-Hardware-Home does not exist here). Which connector/tunnel serves sshi7 and whether it survives the i5 tunnel being down: UNKNOWN.

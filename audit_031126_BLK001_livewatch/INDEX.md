@@ -1,4 +1,4 @@
-# AUDIT 03-11-2026: BLK-001 livewatch, power incident, access routes (regenerated 04-11-2026 00:20 IST; md5 per file)
+# AUDIT 03-11-2026: BLK-001 livewatch, power incident, access routes (regenerated 04-11-2026 00:05 IST; md5 per file)
 Raw links (plain text):
 - 00_BRIEF_FOR_AUDITOR.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/00_BRIEF_FOR_AUDITOR.md  md5=380a7cd5b443afbb02917a00841aeb14
 - 01_REPORT_BLK001.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/01_REPORT_BLK001.md  md5=8b15316098ddf7cc2fdf3c9fe03b6a55
@@ -15,7 +15,7 @@ Raw links (plain text):
 - 09_gapdb_script.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/09_gapdb_script.py  md5=1fe12153de034ca87cc044da04dee91e
 - 10_boot_start_containers.sh  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/10_boot_start_containers.sh  md5=3758a9cc1f198d187258fccda8da3238
 - 11_box_reach.sh  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/11_box_reach.sh  md5=2fb4e6658661961a3e1652707e7930e3
-- 12_ACCESS_ROUTES.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/12_ACCESS_ROUTES.md  md5=b89bddc98d96f527fd897e9002f711ab
+- 12_ACCESS_ROUTES.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/12_ACCESS_ROUTES.md  md5=1561fcb95ae8c7df7cfc8ada257c2a75
 - 13_ADDENDUM_end_of_session.md  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/13_ADDENDUM_end_of_session.md  md5=29684ccc63a206ca4a03200b537fae7d
 - 14_end_of_session_gaps_i5.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/14_end_of_session_gaps_i5.txt  md5=562cf7fc0e46a024fce8e1c0596d6aa5
 - 15_end_of_session_gaps_i7.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/15_end_of_session_gaps_i7.txt  md5=fddf9bc4dd829a8877c84493f48384d8
@@ -36,3 +36,4 @@ Raw links (plain text):
 - 31_gap_histogram_tool.py  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/31_gap_histogram_tool.py  md5=5f78ce867d2e195978b1d3303e8f91bc
 - 32_gap_histogram_i5_PARTIAL.csv  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/32_gap_histogram_i5_PARTIAL.csv  md5=b08f06a3782d374c86d23e9048df8a93
 - 33_gap_histogram_i7.csv  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/33_gap_histogram_i7.csv  md5=64d420bbd9772f09ccaa0b2d0635f1f0
+- 34_direct_cf_routes_tested.txt  https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt  md5=27740e74f28a43e887ac99de1e395fbf

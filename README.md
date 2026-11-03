@@ -46,7 +46,7 @@ Evidence (inlined): 02 code v3.1, 03 tests (25), 27 diff v3->v3.1, 28 tests, 29 
 Auditor decisions requested: (a) is the multi-day histogram taken from the DAY FILES (tool 31; results will be added to this page) acceptable instead of the livewatch log? (b) after 3 sessions, what evidence moves C-005 to PROVEN, per recorder?
 Open: -shm readability in session; tickrec uses status last_tick + mtime only; dry-run writes small files under _state/livewatch_dry; dp_watchdog overlap; the daemon dies on reboot until the DSM boot task is installed.
 ### V-002 | the outside auditor's V-002 verdict was found UNSUPPORTED by Fable (rows 15-17, 21): recoverability of the snapshot tables is unproven; BLK-002 code "not required" is NOT established. Owner rule needed: are the 14-19 Oct chain/quote-depth snapshots live-only (non-recoverable)?
-### V-003 | unchanged (NOT VERIFIED; owner steps pending)
+### V-003 | remote access | UPDATED: sshi7 direct route works (34); remaining: independence of the routes from one tunnel (UNKNOWN), DSM boot task (owner), second overlay
 
 ## ROUND 2 (after the outside auditor's verdict and the Fable review)
 ### V-001 v3 | livewatch (code: 02_livewatch.py; history 02a v1, 02b v2) | status: AWAITING AUDITOR (not deployed)
@@ -135,11 +135,14 @@ C-038,03-11-2026,4 verified HDD copies under /volume1/docker/datapullers_ssd_ove
 C-039,04-11-2026,the 50-constituent list reaches the container and is read (50 names; TICK_EXTRA True; macro False) on i5 and i7,PROVEN inside the containers,audit_031126_NIGHT_weekly_extras_move/10_weekly_deploy_raw.txt,found by the 2nd Fable review (entrypoint bug); live recording of the constituents is NOT yet seen
 C-040,04-11-2026,weekly windows never exceed the caps and never double-subscribe on any date incl. the monthly-expiry week,PROVEN by simulation (Fable) + tests,AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md,Dhan 48 slots / Upstox 47 keys; the November monthly is 23-11; holiday handling (24-11) OPEN
 C-041,04-11-2026,tick volume growth from the extras is small (+20-60%),RETRACTED,audit_031126_NIGHT_weekly_extras_move/01_DATA_NEEDED_FOR_EDGE_031126.md,Fable now estimates +70-200% (1.5-5M rows); unmeasured; tickrec has no free-space guard
+C-042,04-11-2026,the i7 has a direct Cloudflare SSH route (sshi7),PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,C-015 (i7 Bad Gateway) concerned the old hostname sshj1800 only; sshi5, sshi7 and sshha all answered at 23:59 IST; independence of sshi7 from the i5 tunnel UNKNOWN
+C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 at 23:59 vs 2 d 22 h at 13:40),audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,cause UNKNOWN; relevant to C-008 (the Pi was the proof that the NAS outage was not network-wide)
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.
 - 04-11-2026 00:50 IST: 2nd Fable review: A/B/C/D verdicts stored; NEW DEFECT found and fixed (tickrec container did not receive nifty50_syms.txt: 0 constituents would have been recorded), proven inside both containers; df-unreadable hole in the move script fixed; corrections: November monthly is 23-11; C-041 volume estimate RETRACTED. C-039..C-041.
 - 04-11-2026 00:20 IST: multi-day gap histogram from the day files added (i7 complete, i5 partial): healthy-day max gaps 1-25 s, >60 s only on known-failure days; supports the 90 s limit for file-level freshness (C-033 partly proven).
 - 04-11-2026 00:10 IST: owner order 'add weekly expiry and the missing live-only recorders': weekly deployed (Dhan 6/5, Upstox 5/5), Kite extras (indices, ETF, BANKNIFTY fut, 50 constituents; macro off), DATA_NEEDED_FOR_EDGE list; Fable audit found 14 defects, fixed A1,A2,B1,B2,C (script copy-only),D; INCIDENT: SSD move script v1 moved two epoch-pointer files (restored). C-034..C-038. Corrections: weekly was on record on 15-10; four recorders not three.
@@ -554,8 +557,10 @@ j1800-cf: Bad Gateway
 sshpi-cf: Bad Gateway
 ```
 
-### FILE audit_031126_BLK001_livewatch/12_ACCESS_ROUTES.md  sha256=8881805c4b0a1ab7  bytes=5360
+### FILE audit_031126_BLK001_livewatch/12_ACCESS_ROUTES.md  sha256=a5e83763a547211e  bytes=5760
 ```
+> UPDATE 04-11-2026 00:00 IST: the i7 NOW HAS A DIRECT CLOUDFLARE ROUTE: hostname sshi7 (tested, see 34_direct_cf_routes_tested.txt). The statements below that the i7 has no direct route describe the OLD hostname sshj1800, which still returns Bad Gateway. Open: which connector serves sshi7 and whether it survives the i5 tunnel being down (UNKNOWN); the Pi restarted at ~18:50 IST (cause UNKNOWN).
+
 # ACCESS ROUTES: reach every box with no single point of failure (prepared 03-11-2026 ~13:55 IST; owner leaves for offshore on 05-11)
 Hostnames are shown as aliases only (i5-cf, j1800-cf, pi-cf, sshpi-cf). No tokens or keys are in this file.
 
@@ -1580,4 +1585,13 @@ Volume: Fable now estimates 50 liquid equities add 1.5-5M rows/day, i.e. +70-200
 C move script v3: default copy-only cannot damage the source (sandbox proof); residuals: df failure let the copy proceed (FIXED by the author: STOP on unreadable free space), copy-only still copies OPEN databases and logs 'verified copy' (not an integrity check; not in MANIFEST), `sync` flushes every filesystem (never run in session), symlink scan only under SRC, C2 open-handle check unfixed -> NOT SAFE with ALLOW_REMOVE=1; SAFE WITH CONDITIONS copy-only, out of session.
 D doc: stale lines corrected by the author (UPSTOX 6->5, nifty50_syms deployment wording, 18-23 Nov, dp_snap mention; whether dp_snap runs on the boxes is UNKNOWN, it is not in the compose file).
 Verdicts: A SAFE FOR 04-11; B SAFE WITH CONDITIONS (verify count of extra:constituent rows = 50 at 09:16, disk and queue at 09:30); C SAFE WITH CONDITIONS copy-only; D fixed.
+```
+
+### FILE audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt  sha256=bc96c79c0de956f1  bytes=873
+```
+DIRECT CLOUDFLARE ROUTES TESTED 04-11-2026 00:00 IST from the cloud sandbox (hostnames suggested by the owner's other session, owner confirmed); my existing Access service-token proxy and key, nothing from the message executed
+sshi5.<domain> as roopeshkumarb -> i5-4590-dsm72 | up 11:16 | load 38
+sshi7.<domain> as roopeshkumarb -> I7-3RD-exJ1800 | up 11:16 | load 14  (FIRST direct Cloudflare route to the i7; the old sshj1800 hostname still returns Bad Gateway)
+sshha.<domain> as root -> a0d7b954-ssh (Pi) | up 5:07 (it had been up 2 d 22 h at 13:40: the Pi restarted ~18:50 IST, cause UNKNOWN)
+Not tested: the jump aliases sshi5via7 / sshhavia7 named in the message (not in this sandbox's ssh config; the setup script path /home/user/Node-Hardware-Home does not exist here). Which connector/tunnel serves sshi7 and whether it survives the i5 tunnel being down: UNKNOWN.
 ```
