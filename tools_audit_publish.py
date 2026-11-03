@@ -14,8 +14,20 @@ def files(root):
             if rel in ("MANIFEST.json", "SHA256SUMS"): continue
             yield rel, p
 def sha(p): return hashlib.sha256(open(p, "rb").read()).hexdigest()
+def build_readme(root):
+    """README.md = ONE self-contained page: protocol + LATEST + claims ledger + recent changelog, so a single fetch is enough."""
+    r = lambda n: open(os.path.join(root, n), encoding="utf-8").read().strip()
+    head = ("# onlyAuditFliles: THE ONE LINK (auto-built from LATEST.md, AUDITOR_PROTOCOL.md, CLAIMS_LEDGER.csv, CHANGELOG.md; do not edit by hand)\n"
+            "Page URL (never changes): https://github.com/roopeshkumarb/onlyAuditFliles   Raw text: " + BASE + "README.md\n"
+            "Retail NIFTY 50 data-capture system, advisory only (no orders). Evidence files are linked below as <folder>/<file>: prefix them with " + BASE + "\n"
+            "Every file's sha256 is in MANIFEST.json / SHA256SUMS. Raw cache can lag a few minutes after a push.\n\n")
+    chg = "\n".join(r("CHANGELOG.md").splitlines()[:12])
+    body = head + r("AUDITOR_PROTOCOL.md") + "\n\n---\n\n" + r("LATEST.md") + "\n\n---\n\n## CLAIMS LEDGER (CSV)\n```\n" + r("CLAIMS_LEDGER.csv") + "\n```\n\n---\n\n" + chg + "\n"
+    open(os.path.join(root, "README.md"), "w", encoding="utf-8").write(body)
+
 def main():
     root = sys.argv[1]; items = []
+    if "--verify" not in sys.argv: build_readme(root)
     for rel, p in sorted(files(root)):
         data = open(p, "rb").read()
         if SECRET.search(data.decode("utf-8", "ignore")): print("SECRET-LIKE TEXT in", rel); sys.exit(1)
