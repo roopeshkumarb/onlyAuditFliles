@@ -1,5 +1,5 @@
 --- /tmp/bx/compose_i5.yml	2026-11-03 16:57:11.858431098 +0000
-+++ /home/user/blpro/docker-compose.datapullers.yml	2026-11-03 17:23:39.689310537 +0000
++++ /home/user/blpro/docker-compose.datapullers.yml	2026-11-03 17:37:36.148562991 +0000
 @@ -71,6 +71,10 @@
      # value never reached the container at all, because .env is only substituted into
      # the compose file and is not passed through unless it is named here.
@@ -31,6 +31,15 @@
        - ${DP_DHAN_DIR:-/volume1/docker/datapullers/dhan}:/data/dhan
        - ${DP_FYERS_DIR:-/volume1/docker/datapullers/fyers}:/data/fyers
        - ${DP_KITE_DIR:-/volume1/docker/datapullers/kite}:/data/kite
+@@ -304,7 +314,7 @@
+     profiles: ["ticks"]
+     image: fullpuller:latest
+     container_name: tickrec
+-    entrypoint: ["sh", "-c", "cp /src/dp_tickrec.py /app/ && exec python3 -u /app/dp_tickrec.py"]
++    entrypoint: ["sh", "-c", "cp /src/dp_tickrec.py /src/nifty50_syms.txt /app/ && exec python3 -u /app/dp_tickrec.py"]
+     volumes:
+       - /volume1/docker/datapullers:/data
+       - /volume1/docker/datapullers/_auth:/data/_auth:ro
 @@ -312,6 +322,10 @@
      environment:
        <<: *env

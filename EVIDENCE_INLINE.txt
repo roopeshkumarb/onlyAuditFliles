@@ -30,3 +30,5 @@ AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md
 audit_031126_NIGHT_weekly_extras_move/04_ssd_to_hdd_move_v3.sh
 audit_031126_BLK001_livewatch/33_gap_histogram_i7.csv
 audit_031126_BLK001_livewatch/32_gap_histogram_i5_PARTIAL.csv
+AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md
+

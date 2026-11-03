@@ -1,6 +1,8 @@
-tests run 03-11-2026 ~00:00 IST on the sandbox (tickrec extras 8 + weekly recorders 18) after the Fable fixes
+tests run 04-11-2026 ~00:45 IST on the sandbox (tickrec extras 10 + weekly recorders 18) after the 2nd Fable review
+test_compose_entrypoint_copies_the_symbol_file_into_the_container
 test_constituent_count_is_capped
 test_default_is_off
+test_empty_constituent_list_is_reported_not_silent
 test_failed_exchange_lists_are_skipped_not_fatal
 test_macro_defaults_off_and_constituents_default_to_all_50
 test_nifty50_symbols_come_from_the_config
@@ -24,4 +26,4 @@ test_upstox_monthly_week_same_rule_and_cap
 test_upstox_on_inside_50_keys_all_expiries
 test_upstox_on_no_weekly_in_master_keeps_old_list
 test_upstox_over_ask_is_capped
-test_window_sizes_normal_week_unchanged Ran 26 tests in 0.198s OK
+test_window_sizes_normal_week_unchanged Ran 28 tests in 0.223s OK

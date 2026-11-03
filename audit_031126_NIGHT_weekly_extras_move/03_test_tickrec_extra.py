@@ -52,6 +52,13 @@ class X(unittest.TestCase):
         toks = [i["instrument_token"] for i in got]
         self.assertEqual(len(toks), len(set(toks)))
 
+    def test_compose_entrypoint_copies_the_symbol_file_into_the_container(self):
+        y = open(os.path.join(os.path.dirname(HERE), "docker-compose.datapullers.yml")).read()
+        self.assertIn("cp /src/dp_tickrec.py /src/nifty50_syms.txt /app/", y)     # found by the 2nd Fable review: the first version copied only the .py
+
+    def test_empty_constituent_list_is_reported_not_silent(self):
+        self.assertIn("constituent list EMPTY", open(T.__file__).read())
+
     def test_nifty50_symbols_come_from_the_config(self):
         syms = T._eq_syms()
         self.assertGreaterEqual(len(syms), 45); self.assertIn("RELIANCE", syms); self.assertIn("BAJAJ-AUTO", syms)

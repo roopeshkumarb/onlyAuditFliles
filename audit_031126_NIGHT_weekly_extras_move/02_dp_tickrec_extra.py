@@ -174,9 +174,9 @@ def pick_extra(nse, nfo, cds, mcx, today, eq_syms, n_eq=20):
 def _eq_syms():
     """NSE trading symbols of the NIFTY 50 from config/nifty50.py (derived from the Fyers ticker 'NSE:SYM-EQ'); [] if unreadable."""
     try:        # the container mounts only pullers/shared: read the generated list beside this file first
-        f = os.path.join(os.path.dirname(os.path.abspath(__file__)), "nifty50_syms.txt")
-        if os.path.exists(f):
-            return [l.strip() for l in open(f) if l.strip() and not l.startswith("#")]
+        for f in (os.path.join(os.path.dirname(os.path.abspath(__file__)), "nifty50_syms.txt"), "/src/nifty50_syms.txt"):
+            if os.path.exists(f):
+                return [l.strip() for l in open(f) if l.strip() and not l.startswith("#")]
     except OSError:
         pass
     try:
@@ -297,6 +297,8 @@ def run_session():
                 STATE["errors"] = (STATE["errors"] + ["extra: instruments(%s) failed: %s" % (ex, str(e)[:80])])[-10:]
                 return []
         try:                              # the baseline list must NEVER be lost because an extra failed
+            if TICK_EXTRA_EQ > 0 and not _eq_syms():
+                STATE["errors"] = (STATE["errors"] + ["extra: constituent list EMPTY (nifty50_syms.txt not found): no constituents recorded"])[-10:]
             extra = pick_extra(_get("NSE"), nfo, _get("CDS") if TICK_EXTRA_MACRO else [], _get("MCX") if TICK_EXTRA_MACRO else [],
                                now().date(), _eq_syms(), TICK_EXTRA_EQ)
             picked = picked + extra

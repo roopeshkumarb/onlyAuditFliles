@@ -1,4 +1,5 @@
-# LATEST: open for verification (updated 04-11-2026 ~00:15 IST; newest first)
+# LATEST: open for verification (updated 04-11-2026 ~00:55 IST; newest first)
+SECOND FABLE REVIEW stored: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md (found and fixed a silent defect: 0 constituents would have been recorded). Please verify fixes N-1..N-4 against it.
 OWNER RULE: every outside-auditor verdict is verified with Fable. Fable's audit of tonight's changes: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md. README.md inlines the evidence.
 
 ## ROUND 4 (night 03-11): weekly expiry + extra live-only instruments + SSD move incident + data-needed list

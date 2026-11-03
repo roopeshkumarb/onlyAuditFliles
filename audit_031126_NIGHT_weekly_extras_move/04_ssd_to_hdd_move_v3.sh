@@ -25,7 +25,7 @@ find "$SRC" -xdev -type f -size +${MIN_BYTES}c ! -name '*.part' ! -name '*.MOVED
   if [ -s "$f-wal" ]; then log "SKIP has a non-empty -wal (possible unflushed data): $f"; continue; fi
   if [ ! -w "$dir" ]; then log "SKIP directory not writable by $(id -un): $dir"; continue; fi
   rel=${f#$SRC/}; dest="$DST/$rel"; [ -e "$dest" ] && { log "SKIP dest exists: $dest"; continue; }
-  free=$(df -B1 "$DST" | tail -1 | awk '{print $4}'); [ "$free" -lt $(( s * 2 + 10737418240 )) ] && { log "STOP not enough free space on HDD for $f"; break; }
+  free=$(df -B1 "$DST" | tail -1 | awk '{print $4}'); case "$free" in ''|*[!0-9]*) log "STOP cannot read free space of $DST"; break;; esac; [ "$free" -lt $(( s * 2 + 10737418240 )) ] && { log "STOP not enough free space on HDD for $f"; break; }
   [ "$DRY" = 1 ] && { log "DRYRUN would move ${s} bytes: $f -> $dest"; continue; }
   mkdir -p "$(dirname "$dest")"
   log "COPY $f ($((s/1048576)) MB)"
