@@ -1,0 +1,64 @@
+--- /tmp/bx/compose_i5.yml	2026-11-03 16:57:11.858431098 +0000
++++ /home/user/blpro/docker-compose.datapullers.yml	2026-11-03 17:23:39.689310537 +0000
+@@ -71,6 +71,10 @@
+     # value never reached the container at all, because .env is only substituted into
+     # the compose file and is not passed through unless it is named here.
+     DP_RPS_SHARE: "${DP_RPS_SHARE:-}"
++    # MAX CONCURRENT PULL JOBS. Default 12 is fine for a 4-core box, but the J1800
++    # (2 cores, load 18+) cannot sustain it. Set DP_MAX_CONCURRENT in .env per box:
++    # j1800=4, i5=8. Empty = code default (12).
++    DP_MAX_CONCURRENT: "${DP_MAX_CONCURRENT:-}"
+   # Synology's kernel ships WITHOUT the CPU CFS scheduler, so any non-zero `cpus`
+   # value fails at `up` with "NanoCPUs can not be set". Keep the default 0.
+   cpus: ${PULLER_CPUS:-0}
+@@ -198,6 +202,9 @@
+       # local .env to /volume2/datapullers/upstox. A nested bind mount, exactly like
+       # the _auth one above.
+       - ${DP_UPSTOX_DIR:-/volume1/docker/datapullers/upstox}:/data/upstox
++      # T-0432 (23-10): dhan/fyers/kite may likewise live on the i5 SSD (/volume2) to get
++      # off the saturated spinning disk. i5 sets DP_<BROKER>_DIR in its local .env; j1800
++      # (no /volume2) keeps the spinning default, so it is unaffected. Nested bind, as above.
+       - ${DP_DHAN_DIR:-/volume1/docker/datapullers/dhan}:/data/dhan
+       - ${DP_FYERS_DIR:-/volume1/docker/datapullers/fyers}:/data/fyers
+       - ${DP_KITE_DIR:-/volume1/docker/datapullers/kite}:/data/kite
+@@ -269,6 +276,9 @@
+       # local .env to /volume2/datapullers/upstox. A nested bind mount, exactly like
+       # the _auth one above.
+       - ${DP_UPSTOX_DIR:-/volume1/docker/datapullers/upstox}:/data/upstox
++      # T-0432 (23-10): dhan/fyers/kite may likewise live on the i5 SSD (/volume2) to get
++      # off the saturated spinning disk. i5 sets DP_<BROKER>_DIR in its local .env; j1800
++      # (no /volume2) keeps the spinning default, so it is unaffected. Nested bind, as above.
+       - ${DP_DHAN_DIR:-/volume1/docker/datapullers/dhan}:/data/dhan
+       - ${DP_FYERS_DIR:-/volume1/docker/datapullers/fyers}:/data/fyers
+       - ${DP_KITE_DIR:-/volume1/docker/datapullers/kite}:/data/kite
+@@ -312,6 +322,10 @@
+     environment:
+       <<: *env
+       DP_SERVICE: tickrec
++      # EXTRA live-only instruments on the same socket (Bank Nifty/Fin Nifty indices, NIFTYBEES, BANKNIFTY/USDINR/CRUDE/GOLD futures, first N constituents). 0 = off.
++      TICK_EXTRA: "${TICK_EXTRA:-0}"
++      TICK_EXTRA_EQ: "${TICK_EXTRA_EQ:-50}"
++      TICK_EXTRA_MACRO: "${TICK_EXTRA_MACRO:-0}"   # 1 = also USDINR (CDS) + MCX crude/gold tokens; OFF until proven on a live session
+     mem_limit: ${TICKREC_MEM:-512m}
+     healthcheck:
+       test: ["CMD", "python3", "-c",
+@@ -346,6 +360,9 @@
+     environment:
+       <<: *env
+       DP_SERVICE: depthrec
++      # NEAREST WEEKLY: 0 = off = today's list. Not passed through unless named here.
++      DEPTH_WEEKLY_STRIKES: "${DEPTH_WEEKLY_STRIKES:-0}"
++      DEPTH_MONTHLY_STRIKES_WITH_WEEKLY: "${DEPTH_MONTHLY_STRIKES_WITH_WEEKLY:-5}"
+     mem_limit: ${DEPTHREC_MEM:-384m}
+     healthcheck:
+       test: ["CMD", "python3", "-c",
+@@ -375,6 +392,9 @@
+     environment:
+       <<: *env
+       DP_SERVICE: upstoxrec
++      # NEAREST WEEKLY: 0 = off = today's list. Not passed through unless named here.
++      UPSTOX_WEEKLY_STRIKES: "${UPSTOX_WEEKLY_STRIKES:-0}"
++      UPSTOX_MONTHLY_STRIKES_WITH_WEEKLY: "${UPSTOX_MONTHLY_STRIKES_WITH_WEEKLY:-5}"
+     mem_limit: ${UPSTOXREC_MEM:-384m}
+     healthcheck:
+       test: ["CMD", "python3", "-c",

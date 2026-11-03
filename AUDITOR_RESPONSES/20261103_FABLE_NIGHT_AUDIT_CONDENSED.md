@@ -1,0 +1,21 @@
+# Fable audit of the night's changes (weekly, tick extras, SSD move, data-needed doc), 03-11-2026 ~23:00 IST, condensed by the author with every defect and the author's status. Verbatim report is in the owner's chat.
+Tests Fable ran: weekly 15/15 OK, tick extras 6/6 OK. No .env in the repo, so every 'deployed with X' value was CANNOT CHECK for Fable (raw evidence: NIGHT/10_weekly_deploy_raw.txt).
+## A) WEEKLY  verdict: SAFE WITH CONDITIONS
+A1 MEDIUM monthly-expiry week wrong: nifty_weekly skips the date equal to the monthly and returns NEXT week's weekly, so in 18-24 Nov (and every month-end week) 26 of 50 Dhan slots (and 25 of 47 Upstox keys) went to a contract one week out and the EXPIRING monthly got +/-5. The old test hid it. -> FIXED (window_sizes() swaps the windows when wexp > monthly; test test_monthly_expiry_week_gives_the_expiring_monthly_the_wide_window; 18 weekly tests pass; deployed both boxes).
+A2 LOW Upstox deployed 6/5 = exactly 50 keys, asymmetric, untested. -> FIXED: UPSTOX_WEEKLY_STRIKES=5 (the tested value).
+A3 LOW depth/upstox in_session is weekday-only (no holiday calendar): pre-existing, OPEN.
+A4 INFO monthly window shrinks from +/-12 to +/-5 on Dhan 20-level and Upstox 30-level; Kite 5-level still has +/-20: defensible for intraday; accepted.
+Restart-safety confirmed: first weekly list is chosen at the 04-11 start (stored_plan reads only TODAY's day file).
+## B) TICK EXTRAS  verdict: SAFE WITH CONDITIONS
+B1 MEDIUM unentitled MCX/CDS tokens might flap the socket and lose the baseline (not verifiable). -> FIXED by default: TICK_EXTRA_MACRO=0 (no CDS/MCX call, no such tokens); enable on one box after a clean session.
+B2 MEDIUM 'first 20 constituents' were the first 20 ALPHABETICALLY. -> FIXED: TICK_EXTRA_EQ=50 (all 50).
+B3 LOW volume growth unmeasured (+20-60% plausible on ~845 MB/day per box); writer capacity fine on paper. OPEN: measured at the 09:15 check.
+B4 LOW Kite field assumptions (expiry '' vs None, tradingsymbols) guarded; TMPV listing asserted by config only. B5 LOW three extra master downloads at 09:00. B6 INFO run_session not unit tested. All OPEN/accepted.
+## C) MOVE SCRIPT  verdict: NOT SAFE as it was
+C1 HIGH sidecars (-wal/-shm) ignored; C2 HIGH open handles not checked; C3 MEDIUM DST mount not verified; C4 MEDIUM no lock; C5 LOW df failure/space names; C6 LOW moves recoverable files too (reverses H12 placement). Consumers that lose the path: dp_paths.list_epochs lists *.db in the source dir (moved epochs vanish silently), daily_segsync, puller_coverage (overflow dir is not a root), ssd_backup_gdrive (overflow backed up by nothing).
+-> v3: copy-only unless ALLOW_REMOVE=1; skips symlink targets, -wal, -shm (when removing), unwritable dirs; mount check; lock dir. C2 (open-handle check) NOT fixed (fuser not available to a non-root user): removal stays disabled by default. The earlier real run (v1) is NIFTY incident T-1313: dhan_current.db / fyers_current.db dangled for minutes, restored from sha256-verified copies. Fable asks: verify every manifest entry has no orphan -wal and that the HDD copy passes integrity_check before trusting it (the 4 extra HDD copies are NOT to be trusted until that runs).
+## D) DOC  (DATA_NEEDED_FOR_EDGE_031126.md)
+D1 weekly appears in more need-list rows than listed + ALGOTEST_FEATURES_DATA_151026-0808.md:70 (15-10) -> FIXED in the doc. D2 Kite '25+25 strikes' unsupported (code +/-20 / +/-15) -> FIXED. D3 '26+22' is Dhan only -> FIXED. D4 '2 of 3 depth recorders' wrong: four recorders; Fyers TBT monthly-only and NOT fixed -> FIXED text, B9 added. D5 Sensex is offered but unsubscribed -> FIXED (B12).
+Same-kind gaps Fable listed (all now in the doc): Fyers TBT monthly only; Dhan d200 one monthly future (owner's split not done); India VIX/index not on Dhan; next-month future only on Kite; BANKNIFTY options nowhere; breadth only on Kite; chain snapshots in dp_snap DO take the weekly (DP_SNAP_WEEKLY default 1), i.e. the snapshots were ahead of the recorders.
+Still missing for the engine: GIFT NIFTY, event calendar, costs, a measured day of the new feeds.
+Owner decisions Fable lists: A1 (decided: fixed), Upstox 6 vs 5 (decided: 5), constituent set (decided: all 50), whether to rerun the move script (decided: no), Fyers TBT weekly (queued B9).

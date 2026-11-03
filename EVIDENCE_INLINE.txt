@@ -22,4 +22,9 @@ audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt
 audit_031126_BLK001_livewatch/31_gap_histogram_tool.py
 AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md
 
-# dropped from the inline list to keep README small (still in the folders and in MANIFEST): v1/v2 test+mutation outputs, 23/26 diffs, 24, 10, 11, Fable condensed round 1, Qwen round 2 text
+audit_031126_NIGHT_weekly_extras_move/01_DATA_NEEDED_FOR_EDGE_031126.md
+audit_031126_NIGHT_weekly_extras_move/10_weekly_deploy_raw.txt
+audit_031126_NIGHT_weekly_extras_move/11_incident_ssd_move_raw.txt
+audit_031126_NIGHT_weekly_extras_move/09_unit_tests_output.txt
+AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md
+audit_031126_NIGHT_weekly_extras_move/04_ssd_to_hdd_move_v3.sh

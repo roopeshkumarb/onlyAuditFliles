@@ -25,8 +25,19 @@ The author and any AI agent it spawns share one model family; you are the indepe
 
 ---
 
-# LATEST: open for verification (updated 03-11-2026 ~22:30 IST; newest first)
-OWNER RULE: every outside-auditor verdict is verified with Fable. Read AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md and ..._COMPARISON_... first. README.md inlines every evidence file named below.
+# LATEST: open for verification (updated 04-11-2026 ~00:15 IST; newest first)
+OWNER RULE: every outside-auditor verdict is verified with Fable. Fable's audit of tonight's changes: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md. README.md inlines the evidence.
+
+## ROUND 4 (night 03-11): weekly expiry + extra live-only instruments + SSD move incident + data-needed list
+### N-1 | weekly expiry recording (Dhan d20, Upstox) | DEPLOYED-NOT-YET-SEEN (first live proof 04-11 09:15)
+Evidence: NIGHT/05,06,07 code+tests, 08 compose diff, 09 test output, 10 deploy raw. Fable audit fixed: monthly-expiry-week window swap (A1), Upstox 6->5 (A2). Still open: no holiday calendar in depth/upstox in_session; Fyers TBT weekly (B9).
+Auditor questions: (a) is splitting the 50 slots (26 weekly + 22 monthly on Dhan) the right trade for an intraday regime/direction edge? (b) what must the 04-11 proof show (instrument counts, expiry_weekly=2026-11-10, no baseline loss)?
+### N-2 | Kite extras: indices, NIFTYBEES, BANKNIFTY future, all 50 constituents (macro CDS/MCX OFF) | DEPLOYED-NOT-YET-SEEN
+Evidence: NIGHT/02,03. Open: volume growth unmeasured; run_session untested; macro enable plan.
+### N-3 | INCIDENT: SSD to HDD move | RESOLVED for data, OPEN for design
+Evidence: NIGHT/11 raw + 04 script v3 (copy-only). Two epoch-pointer files were moved and restored (sha256). Fable verdict on the script: NOT SAFE (C1-C4) -> v3 guards; removal disabled by default. Nothing on the i5 SSD is safely movable without changing the old pullers' mounts. Question: is the plan (mount the HDD overflow path into the containers, or replace the old pullers) acceptable, and what must be proven first?
+### N-4 | DATA NEEDED FOR EDGE list | AWAITING AUDITOR
+Evidence: NIGHT/01 (corrected by Fable D1-D5). Questions: (a) are groups G1-G14 sufficient for an intraday regime/direction engine under the no-GEX/no-signed-flow limits? (b) which of B1-B12 would you build first? (c) any feed of the same kind as the weekly miss that is still not listed?
 
 ## ROUND 3: v3.1 dry run (decision: dry run only, no kills)
 ### V-001 v3.1 | livewatch --dry-run on both boxes | status: RUNNING from 22:16 IST; first in-session cycle 09:00 tomorrow
@@ -115,11 +126,17 @@ C-030,03-11-2026,livewatch v3.1 bounded conn scan runs in 74-310 ms on the real 
 C-031,03-11-2026,v3.1 dry run logs every verdict every cycle (no suppression) and a CSV with action/query_ms/restart_count/events_max,PROVEN (25 tests; 3 mutations caught),audit_031126_BLK001_livewatch/28_unit_tests_v3.1_output.txt + 29_mutations_v3.1.txt,first real in-session rows tomorrow 09:00
 C-032,03-11-2026,dry-run daemons (--dry-run --session-start 09:00 --session-end 15:40 --stale-s 90) are running on i5 and i7 from 22:16 IST,PROVEN at start (/proc ALIVE + log lines),audit_031126_BLK001_livewatch/30_preflight_v3.1_real_files.txt,dies on reboot (boot task not installed); no kills possible in --dry-run
 C-033,03-11-2026,multi-day gap histogram from the day files supports a per-recorder threshold,PENDING,audit_031126_BLK001_livewatch/31_gap_histogram_tool.py,tool running on both boxes at 22:20; results to be added
+C-034,03-11-2026,weekly NIFTY options are recorded on Dhan d20 and Upstox from the 04-11 session,DEPLOYED-NOT-YET-SEEN,audit_031126_NIGHT_weekly_extras_move/10_weekly_deploy_raw.txt + 09_unit_tests_output.txt,env confirmed inside containers; Fable audit fixed the monthly-week bug (A1) and set Upstox to the tested 5/5; first live proof = 04-11 09:15 check
+C-035,03-11-2026,Kite socket records indices/ETF/BANKNIFTY future + all 50 constituents (TICK_EXTRA=1 EQ=50; macro CDS/MCX off),DEPLOYED-NOT-YET-SEEN,audit_031126_NIGHT_weekly_extras_move/02_dp_tickrec_extra.py + 03 tests,8 tests; volume growth UNMEASURED; run_session not unit tested
+C-036,03-11-2026,inactive SSD files were moved to the HDD,FALSE / INCIDENT,audit_031126_NIGHT_weekly_extras_move/11_incident_ssd_move_raw.txt,v1 script moved two epoch-pointer targets (links dangled minutes; restored sha256-verified); with guards nothing on the i5 SSD is safely movable; script v3 is copy-only by default
+C-037,03-11-2026,the 'why weekly expiry was not covered' section is accurate,CORRECTED after Fable,audit_031126_NIGHT_weekly_extras_move/01_DATA_NEEDED_FOR_EDGE_031126.md,weekly was on record as a feature need on 15-10 (ALGOTEST_FEATURES_DATA); four recorders not three; Fyers TBT weekly still missing
+C-038,03-11-2026,4 verified HDD copies under /volume1/docker/datapullers_ssd_overflow are trustworthy,UNPROVEN,audit_031126_NIGHT_weekly_extras_move/11_incident_ssd_move_raw.txt,sha256 matched source at copy time; integrity_check and orphan -wal check not run
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:10 IST: owner order 'add weekly expiry and the missing live-only recorders': weekly deployed (Dhan 6/5, Upstox 5/5), Kite extras (indices, ETF, BANKNIFTY fut, 50 constituents; macro off), DATA_NEEDED_FOR_EDGE list; Fable audit found 14 defects, fixed A1,A2,B1,B2,C (script copy-only),D; INCIDENT: SSD move script v1 moved two epoch-pointer files (restored). C-034..C-038. Corrections: weekly was on record on 15-10; four recorders not three.
 - 03-11-2026 22:30 IST: outside auditor round 2 stored; Fable verification of it stored (9 of 29 statements incorrect/unsupported); livewatch v3.1 (dry-run keeps every verdict, CSV log, bounded conn scan, never-connected conn = CONN_DEAD); dry-run daemons started on both boxes 22:16; gap-histogram tool added; C-028..C-033.
 - 03-11-2026 21:55 IST: independent Fable review + comparison with outside auditor stored (AUDITOR_RESPONSES/). livewatch v3 (22 tests, fail-closed, IST-explicit, per-day bound, frames-based freshness, alarm-only for multi-socket death, state dir off /tmp). CORRECTIONS: C-021 '~3 days' RETRACTED; C-027 'i5 has 3 routes' RETRACTED; C-022 now PROVEN; INDEX md5s were stale (regenerated). New files 02b, 20(v3), 25, 26, BLK002/05.
 - 03-11-2026 21:20 IST: auditor 1 response stored; README now inlines all evidence; livewatch v2 (90 s + per-connection) written, NOT deployed; new files 18-24 and BLK002/04; C-005, C-009 updated, C-019..C-022 added; /volume2 99% full registered (T-1312).
@@ -1280,4 +1297,185 @@ Spec: CSV one row per (recorder, conn) per cycle; histogram must come from the D
 Defects: (1) dry run suppressed the lines it must keep (kills counted in dry-run -> bound -> one CRITICAL/hour) [FIXED v3.1: every verdict every cycle, test + mutation]; (2) dry run writes to the production volume (state dir, pid, ALARM files) [OPEN, disclosed: small files under _state/livewatch_dry]; (3) conn_last unbounded backward index walk, worst when d20 never connected [FIXED: scan bounded to max(600 s, 4x limit); none-in-window = silent; query 74-310 ms on closed real files]; (4) WAL/-shm readability as the daemon user [OPEN: first in-session read tomorrow]; (5) log label hard-codes GMT+5:30 [CSV now carries epoch]; (6) counters reset on restart, pid-lock reuse, one exception aborts a pass [OPEN].
 ## Bottom line (Fable)
 Qwen's round-2 verdict is NOT an independent check: it did not read the v3 code/tests although both were in the repo, cited a Fable confirmation that does not exist, misattributed the symlink finding, asked for four proofs already present, prescribed a cloudflared probe on a box with no cloudflared and a tickrec events probe on a file with no events table, and built V-002 ("code NOT REQUIRED") on an unproven recoverability assumption while declaring "ASSUMPTIONS FOUND: NONE". Where it repeats the earlier reviews (dry run only, no kills, no threshold without a multi-session histogram) it is sound but borrowed. Owner decisions still open: alarm vs kill, dp_watchdog vs livewatch, whether the 14-19 Oct chain snapshots are live-only.
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/01_DATA_NEEDED_FOR_EDGE_031126.md  sha256=3f6a089e85242326  bytes=10264
+```
+# DATA NEEDED FOR EDGE (retail, API-limited) - one list, live-only vs recoverable, recorder status. 03-11-2026 23:00 IST
+Owner order: record the weekly expiry and every missing live-only feed; do not ask. Status words: RECORDING (day-file proof exists), DEPLOYED-NOT-YET-SEEN (code+env on both boxes, first proof = 04-11 09:00 session), MISSING (no recorder), UNKNOWN.
+
+## 0. Why weekly expiry was not covered (facts, not excuses)
+- The older need lists (docs/framework/data_need/NEED_BACKTEST/ML/PAPER/LIVE_291026.md and NEW_SYSTEM_NEED_LIST_301026.md) are organised by CONSUMER of the old engine (backtest, ML, paper, live). They mention weekly only as an expiry RULE or a history flag: BT-09, N4, L24, NEED_BACKTEST E2, NEED_PAPER P7, ML-12, ML-05 ("weekly rows exist only from the weekly start dates"), OFFER_VS_HELD row 19. None of them says "record the live ticks/depth/chain of the weekly contracts". CORRECTION after the Fable audit: the weekly WAS on record as a data FEATURE need earlier: docs/research/ALGOTEST_FEATURES_DATA_151026-0808.md line 70 (15-10-2026) "G2 weekly and next-weekly expiries ... add WEEK AFTER monthly". It was never turned into a recorder requirement.
+- The live-only work (02-11) was organised BY BROKER. The audit scoreboard listed "weekly options only on Kite; Dhan and Upstox record only the monthly" as ACCEPTED, NEEDS YOUR DECISION (AUDIT_SCOREBOARD_021126.md section 3b) and I left it there instead of promoting it into the need list. That was my miss: a recommendation I had already made ("Yes") needed no decision.
+- Consequence: weekly expiry (Tuesday) is the contract family where most intraday option activity sits, and 2 of 3 depth recorders did not have it. Fixed tonight (section 3). Two corrections from the Fable audit: there are FOUR depth/tick recorders (Kite, Dhan, Upstox, Fyers TBT), not three; Fyers TBT is monthly-only by construction (dp_fyerstbt.py:106-111 'a weekly symbol never matches') and is STILL not fixed (B9).
+
+## 1. Feature groups the engine needs (multi-timeframe regime, direction, edge after costs)
+| # | Group | What exactly | Live-only? | Source (per CLAUDE.md constraints) | Status |
+|---|---|---|---|---|---|
+| G1 | Spot and futures | NIFTY 50 index, near + next futures: price, traded volume (futures volume only; index volume is vendor-aggregate), OI | candles recoverable (SSD); live L1+5-depth NOT | Kite ticks; Upstox feed; Dhan | RECORDING (Kite: near+next fut, index). Dhan d200 = one monthly future |
+| G2 | Options, monthly | ATM+/- strikes: ticks, depth, OI | live-only | Kite (code defaults +/-20 monthly, +/-15 nearest, dp_tickrec.py:47-48; env override UNKNOWN); Dhan d20; Upstox | RECORDING |
+| G3 | Options, WEEKLY (nearest) | ATM+/- strikes: ticks, depth, OI | live-only | Kite (already); Dhan d20 + Upstox via weekly patch | Kite RECORDING; Dhan/Upstox DEPLOYED-NOT-YET-SEEN (final settings: Dhan DEPTH_WEEKLY_STRIKES=6 + monthly 5 = 26 + 22 = 48 of 50 slots; Upstox UPSTOX_WEEKLY_STRIKES=5 + monthly 5 inside 50 keys incl. index, VIX, future; no new socket). Monthly-expiry week (18-24 Nov and every month) fixed after the Fable audit: the expiring monthly gets the wide window |
+| G4 | Option chain snapshots with Greeks/IV | per strike: OI, prev OI, IV, delta/gamma/theta/vega, bid/ask | live-only (no history anywhere) | Upstox /v2/option/chain, Dhan /optionchain, Fyers options-chain-v3, NSE | PARTIAL: old pullers (fullpuller/puller930) store snapshots in puller DB table rows_raw on SSD (content and cadence UNMEASURED, see 4) |
+| G5 | Volatility | India VIX live; realized vol from futures | VIX live in Kite+Upstox feeds; history only since 2025-08-11 | Kite token 264969; Upstox NSE_INDEX|India VIX | RECORDING |
+| G6 | Breadth | all 50 NIFTY constituents live (TICK_EXTRA_EQ=50; the first version took the first 20 alphabetically, a poor sample, changed after the Fable audit); candles recoverable | live L1/depth live-only | Kite websocket | DEPLOYED-NOT-YET-SEEN (TICK_EXTRA=1) |
+| G7 | Cross-index / ETF | NIFTY BANK, NIFTY FIN SERVICE, NIFTYBEES (ETF vs futures divergence), BANKNIFTY near future | live-only for ticks | Kite websocket | DEPLOYED-NOT-YET-SEEN |
+| G8 | Macro stress | USDINR near future (CDS), MCX CRUDEOIL and GOLD near futures | live ticks live-only | Kite websocket (CDS/MCX entitlement UNKNOWN) | CODE READY, OFF (TICK_EXTRA_MACRO=0): Fable could not exclude that an unentitled token flaps the socket and loses the baseline; enable on one box after a clean session |
+| G9 | Pre-market gap | GIFT NIFTY | live-only (history UNKNOWN) | Upstox master (instrument_key NOT found yet) | MISSING (B7) |
+| G10 | Microstructure depth | 5/20/30/50/200 level books | live-only | Kite 5; Dhan 20+200; Upstox 30; Fyers TBT 50 | RECORDING (Fyers TBT: 5 symbols; Upstox 30-level request UNVERIFIED) |
+| G11 | Auction / quote extras | closing-auction fields, quotes with CAS, option-Greek quote, market status | live-only | Dhan CAS feed; Upstox quote V3/option-greek; Fyers quotes+marketStatus | MISSING (B1-B4) |
+| G12 | Flows and positions | FII/DII (EOD only), participant OI (EOD) | EOD reports recoverable | NSE reports | outside the live recorders |
+| G13 | Events and news | RBI/FOMC/CPI calendar (manual file), news | news live-only (Upstox 7-day window; Dhan blocked) | manual data/event_calendar.yaml; Upstox /v2/news | calendar MISSING (B6), news NEAR ZERO |
+| G14 | Costs | brokerage, STT, exchange charges, slippage | not market data | broker schedules | MISSING: needed before any edge claim |
+
+## 2. Live-only items the old pullers/recorders do NOT cover (build queue, in order; none needs a new broker socket except B8)
+| id | item | broker | how | blocker |
+|---|---|---|---|---|
+| B1 | Option-Greek quote V3 | Upstox | REST snapshot every N s inside the API budget | must go through the pull-lease/budget system; key cap CONFLICT 50 vs 500 (docs) |
+| B2 | Closing-auction live feed (CAS) | Dhan | websocket subscribe 23 on the existing feed host | socket cap (4 of 5 used) |
+| B3 | Futures chain + market status + quotes with call-auction fields | Fyers | REST | rate budget |
+| B4 | Quote snapshots (5-level, OI, circuits) | Kite | REST /quote | quote group 1 req/s |
+| B5 | Live indices cadence; live option chain | NSE | REST scripts | NSE says scripted collection not allowed (terms unread) |
+| B6 | News + manual event calendar | Upstox/Dhan/manual | puller + yaml | Dhan news blocked (DH-902) |
+| B7 | GIFT NIFTY | Upstox | find instrument_key in the Upstox master, add to feed | key unknown; one connection is full at 50 keys |
+| B8 | Extra index keys (Bank Nifty, ETF) on Upstox | Upstox | a SECOND websocket connection | connection count on Plus UNVERIFIED (5? contested) |
+| B9 | Weekly NIFTY options on Fyers TBT 50-level | Fyers | extend dp_fyerstbt.py symbol picker to the weekly symbol format | weekly symbol format and the TBT symbol cap (5 today) must be read from the Fyers master first |
+| B10 | Split the Dhan d200 contract between the boxes (i5 future, i7 nearest weekly ATM) | Dhan | env/plan change | owner's earlier accepted split, not done |
+| B11 | NIFTY index + India VIX on Dhan | Dhan | d20 is NSE_FNO only today | slot/segment rules |
+| B12 | BANKNIFTY options (none anywhere); Sensex (BSE F&O is offered by Kite BFO / Upstox BSE_FO but not subscribed) | Kite/Upstox | add to Kite socket | decide value; Bank Nifty weekly discontinued by NSE (UNVERIFIED) |
+B1-B5 are REST pollers: they must be built behind the lease/budget controller and tested supervised in a session, so they are NOT deployed tonight.
+
+## 3. Done tonight (03-11-2026 22:28-00:10 IST)  [final state after the Fable audit fixes]
+- WEEKLY: dp_depthrec.py, dp_upstoxrec.py and the compose file deployed on i5 and i7 (originals kept as *.bak_031126_*), .env DEPTH_WEEKLY_STRIKES=6 and UPSTOX_WEEKLY_STRIKES=6, recorders recreated (env confirmed inside the containers). The recorders reuse today's list from today's day file, so the first weekly list is chosen at the 04-11 start. Revert: set both to 0 in .env and recreate.
+- TICK_EXTRA: dp_tickrec.py (+ nifty50_syms.txt) deployed on both boxes, TICK_EXTRA=1 TICK_EXTRA_EQ=50 TICK_EXTRA_MACRO=0 in .env, tickrec recreated (final). Never replaces the baseline list; any failure is logged to status.json errors.
+- SSD to HDD: DID NOT HAPPEN, and one attempt caused an incident. The first version of tools/ssd_to_hdd_move.sh moved dhan_121026-1533.db and fyers_121026-1534.db, which dhan_current.db / fyers_current.db point at; the links dangled for several minutes until both files were restored from the sha256-verified HDD copies (T-1313). With the guards added (never a symlink target, never a file with a -wal/-shm, never an unwritable directory, copy-only unless ALLOW_REMOVE=1) a dry run finds NOTHING on the i5 SSD that is safely movable: every file over 100 MB is written today, an epoch-pointer target, or in a root-owned directory. The real fix needs the old pullers' mounts changed (epoch DBs on the HDD volume wit
+[TRUNCATED at 9000 characters; full file at the raw URL]
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/10_weekly_deploy_raw.txt  sha256=e2ce257ba6996513  bytes=2559
+```
+WEEKLY DEPLOY, raw, 03-11-2026 22:28-22:37 IST (summary of tool output; boxes i5 and i7)
+Before: box code md5 dp_depthrec.py b9c85a15304302f169016000ca22eb72, dp_upstoxrec.py 86fc351328bd6d5fce2bd25fc1be95f4; compose = Oct 23 version (no WEEKLY env). Repo versions: dp_depthrec eb9835fe6d75b7cca8b714a3ec57cfd4, dp_upstoxrec 67e5ede15641de448579c003fea55460. Box shared-code diff vs repo = only those two files + livewatch.py.
+i5: all three files md5-verified after copy; .env gets DEPTH_WEEKLY_STRIKES=6 UPSTOX_WEEKLY_STRIKES=6; compose up -d depthrec upstoxrec (profiles depth, upstox). In-container env confirmed: DEPTH_WEEKLY_STRIKES=6, DEPTH_MONTHLY_STRIKES_WITH_WEEKLY=5, UPSTOX_WEEKLY_STRIKES=6, UPSTOX_MONTHLY_STRIKES_WITH_WEEKLY=5. NOTE: my first ssh route timed out mid-run and the script re-ran on a second route: two sets of backups exist (.bak_031126_2228 = true originals, md5 b9c8.../86fc...; .bak_031126_2230 = already-new files). status.json after restart: "plan: reused today's list from the day file (restart-safe)", so the weekly list is first chosen at the 04-11 start.
+i7: same files/env deployed. The compose recreate was interrupted twice by route timeouts and left the old containers removed and two new containers created-but-not-started with hash-prefixed names (8a5c6d4f245b_depthrec, 9ac0aec13393_upstoxrec). Fixed by starting them with compose up and `docker rename` back to depthrec / upstoxrec; env verified inside both. Recording is not affected tonight (market closed), first live proof is the 04-11 session.
+tickrec (extras): files deployed and md5-verified on both boxes; TICK_EXTRA=1, TICK_EXTRA_EQ=20 in .env; i7 recreated cleanly (running 22:43); i5 recreate was cancelled ("context canceled", exit 128) when my ssh route dropped, started again with `docker start` at 22:51; env verified on both.
+
+FIX DEPLOY after the Fable audit, 03-11-2026 ~23:15-23:35 IST (both boxes): dp_depthrec.py, dp_upstoxrec.py, dp_tickrec.py and the compose file re-deployed (md5 verified, backups *.bak_fix_*); .env now UPSTOX_WEEKLY_STRIKES=5, TICK_EXTRA_EQ=50, TICK_EXTRA_MACRO=0 (DEPTH_WEEKLY_STRIKES=6, DEPTH_MONTHLY_STRIKES_WITH_WEEKLY=5, UPSTOX_MONTHLY_STRIKES_WITH_WEEKLY=5, TICK_EXTRA=1 unchanged). upstoxrec and tickrec recreated by a background script (so a dropped ssh route could not cut it), depthrec restarted. Final state seen: i5 upstoxrec/tickrec/depthrec Up healthy (i5 recreate took ~5 min under IO load: 'Removal In Progress' for minutes); i7 all three Up. In-container env confirmed on i5; i7 env set by the same .env.
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/11_incident_ssd_move_raw.txt  sha256=76ee3961d4710d56  bytes=2252
+```
+INCIDENT 03-11-2026 22:39-22:50 IST (author's error), i5, raw facts
+1. tools/ssd_to_hdd_move.sh v1 copied, sha256-verified and removed 'inactive' files older than 168 h from /volume2/datapullers to /volume1/docker/datapullers_ssd_overflow. It did NOT check what pointed at them. MANIFEST.tsv listed 4 moves: dhan/dhan_121026-1533.db, fyers/fyers_121026-1534.db, kite/kite_121026-1533.db, kite/pullerfull_kite_141026-1722.db (the two kite sources could not be removed: /volume2/datapullers/kite is root:root 755, we are user roopeshkumarb).
+2. After I stopped the script (pkill) a symlink scan showed: /volume2/datapullers/dhan/dhan_current.db -> dhan_121026-1533.db DANGLING and /volume2/datapullers/fyers/fyers_current.db -> fyers_121026-1534.db DANGLING. (Containers mount /volume2/datapullers/<broker> and cannot follow a link into another volume.)
+3. Restore: both files copied back from the HDD copies to .part, sha256 compared with MANIFEST, renamed: dhan 4936bb5242e2495ed26dc982c0f2bf9dbf6f57f4a1777cd2a91695fe0e5bd2b4 RESTORED, fyers 1c9e3099942fc3e9222e0400bec7ec2b96fde95e96a8df9eeb6954bc68a291d4 RESTORED; links OK again. Dangling window about 4-10 minutes, market closed. Who reads these links during that window: UNKNOWN.
+4. v2 of the script (file 04): skips any file a symlink points at, any file with a non-empty -wal, any directory not writable, writes the marker/manifest only after the source is really gone; sandbox test proved the symlink, wal and fresh-file guards (the unwritable-directory guard is not proven in the sandbox because it runs as root). Dry run on the i5 with v2: EVERY file over 100 MB on the SSD is either active (written today) or an epoch-pointer target or in a root-owned directory: NOTHING is safely movable now.
+5. SSD space after restore: /volume2 99% (3.3 GB free, byte readings: 21:39 used 216063025152 / avail 3466846208). Extra verified HDD copies remain under /volume1/docker/datapullers_ssd_overflow (dhan_121026, fyers_121026, kite_121026, kite 141026): harmless, deletable.
+6. Measured: the big active puller DBs did not grow between ~21:00 (72727 MiB upstox pullerfull, 26973 MiB dhan) and 22:50 (same byte sizes), so the SSD fills slowly outside market hours; rate in session UNMEASURED (T-1312).
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/09_unit_tests_output.txt  sha256=90a8f381449d4398  bytes=1303
+```
+tests run 03-11-2026 ~00:00 IST on the sandbox (tickrec extras 8 + weekly recorders 18) after the Fable fixes
+test_constituent_count_is_capped
+test_default_is_off
+test_failed_exchange_lists_are_skipped_not_fatal
+test_macro_defaults_off_and_constituents_default_to_all_50
+test_nifty50_symbols_come_from_the_config
+test_no_duplicate_tokens
+test_picks_indices_etf_constituents_and_nearest_futures
+test_run_session_does_not_ask_for_cds_or_mcx_unless_macro_is_on
+test_default_ignores_the_monthly_with_weekly_knob
+test_defaults_when_env_unset_in_a_fresh_process
+test_dhan_default_list_identical_to_old_code
+test_module_defaults
+test_upstox_default_list_identical_to_old_code
+test_dhan_on_but_no_weekly_in_master_keeps_old_list
+test_dhan_on_split_inside_50_and_both_expiries
+test_dhan_over_ask_is_capped_at_50_not_exceeded
+test_dhan_sockets_unchanged_and_sub_within_limit
+test_env_switch_end_to_end_in_a_fresh_process
+test_expiry_day_itself_still_included
+test_monthly_expiry_week_gives_the_expiring_monthly_the_wide_window
+test_nearest_weekly_not_other_index_not_monthly_date
+test_upstox_monthly_week_same_rule_and_cap
+test_upstox_on_inside_50_keys_all_expiries
+test_upstox_on_no_weekly_in_master_keeps_old_list
+test_upstox_over_ask_is_capped
+test_window_sizes_normal_week_unchanged Ran 26 tests in 0.198s OK
+```
+
+### FILE AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md  sha256=78ee5836cec5bdd2  bytes=4277
+```
+# Fable audit of the night's changes (weekly, tick extras, SSD move, data-needed doc), 03-11-2026 ~23:00 IST, condensed by the author with every defect and the author's status. Verbatim report is in the owner's chat.
+Tests Fable ran: weekly 15/15 OK, tick extras 6/6 OK. No .env in the repo, so every 'deployed with X' value was CANNOT CHECK for Fable (raw evidence: NIGHT/10_weekly_deploy_raw.txt).
+## A) WEEKLY  verdict: SAFE WITH CONDITIONS
+A1 MEDIUM monthly-expiry week wrong: nifty_weekly skips the date equal to the monthly and returns NEXT week's weekly, so in 18-24 Nov (and every month-end week) 26 of 50 Dhan slots (and 25 of 47 Upstox keys) went to a contract one week out and the EXPIRING monthly got +/-5. The old test hid it. -> FIXED (window_sizes() swaps the windows when wexp > monthly; test test_monthly_expiry_week_gives_the_expiring_monthly_the_wide_window; 18 weekly tests pass; deployed both boxes).
+A2 LOW Upstox deployed 6/5 = exactly 50 keys, asymmetric, untested. -> FIXED: UPSTOX_WEEKLY_STRIKES=5 (the tested value).
+A3 LOW depth/upstox in_session is weekday-only (no holiday calendar): pre-existing, OPEN.
+A4 INFO monthly window shrinks from +/-12 to +/-5 on Dhan 20-level and Upstox 30-level; Kite 5-level still has +/-20: defensible for intraday; accepted.
+Restart-safety confirmed: first weekly list is chosen at the 04-11 start (stored_plan reads only TODAY's day file).
+## B) TICK EXTRAS  verdict: SAFE WITH CONDITIONS
+B1 MEDIUM unentitled MCX/CDS tokens might flap the socket and lose the baseline (not verifiable). -> FIXED by default: TICK_EXTRA_MACRO=0 (no CDS/MCX call, no such tokens); enable on one box after a clean session.
+B2 MEDIUM 'first 20 constituents' were the first 20 ALPHABETICALLY. -> FIXED: TICK_EXTRA_EQ=50 (all 50).
+B3 LOW volume growth unmeasured (+20-60% plausible on ~845 MB/day per box); writer capacity fine on paper. OPEN: measured at the 09:15 check.
+B4 LOW Kite field assumptions (expiry '' vs None, tradingsymbols) guarded; TMPV listing asserted by config only. B5 LOW three extra master downloads at 09:00. B6 INFO run_session not unit tested. All OPEN/accepted.
+## C) MOVE SCRIPT  verdict: NOT SAFE as it was
+C1 HIGH sidecars (-wal/-shm) ignored; C2 HIGH open handles not checked; C3 MEDIUM DST mount not verified; C4 MEDIUM no lock; C5 LOW df failure/space names; C6 LOW moves recoverable files too (reverses H12 placement). Consumers that lose the path: dp_paths.list_epochs lists *.db in the source dir (moved epochs vanish silently), daily_segsync, puller_coverage (overflow dir is not a root), ssd_backup_gdrive (overflow backed up by nothing).
+-> v3: copy-only unless ALLOW_REMOVE=1; skips symlink targets, -wal, -shm (when removing), unwritable dirs; mount check; lock dir. C2 (open-handle check) NOT fixed (fuser not available to a non-root user): removal stays disabled by default. The earlier real run (v1) is NIFTY incident T-1313: dhan_current.db / fyers_current.db dangled for minutes, restored from sha256-verified copies. Fable asks: verify every manifest entry has no orphan -wal and that the HDD copy passes integrity_check before trusting it (the 4 extra HDD copies are NOT to be trusted until that runs).
+## D) DOC  (DATA_NEEDED_FOR_EDGE_031126.md)
+D1 weekly appears in more need-list rows than listed + ALGOTEST_FEATURES_DATA_151026-0808.md:70 (15-10) -> FIXED in the doc. D2 Kite '25+25 strikes' unsupported (code +/-20 / +/-15) -> FIXED. D3 '26+22' is Dhan only -> FIXED. D4 '2 of 3 depth recorders' wrong: four recorders; Fyers TBT monthly-only and NOT fixed -> FIXED text, B9 added. D5 Sensex is offered but unsubscribed -> FIXED (B12).
+Same-kind gaps Fable listed (all now in the doc): Fyers TBT monthly only; Dhan d200 one monthly future (owner's split not done); India VIX/index not on Dhan; next-month future only on Kite; BANKNIFTY options nowhere; breadth only on Kite; chain snapshots in dp_snap DO take the weekly (DP_SNAP_WEEKLY default 1), i.e. the snapshots were ahead of the recorders.
+Still missing for the engine: GIFT NIFTY, event calendar, costs, a measured day of the new feeds.
+Owner decisions Fable lists: A1 (decided: fixed), Upstox 6 vs 5 (decided: 5), constituent set (decided: all 50), whether to rerun the move script (decided: no), Fyers TBT weekly (queued B9).
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/04_ssd_to_hdd_move_v3.sh  sha256=38c8e32c4eb86e8c  bytes=4094
+```
+#!/bin/sh
+# ssd_to_hdd_move.sh - move INACTIVE big files from the SSD share to the HDD RAID volume, with proof. Kumar 03-11-2026.
+# Rules (his standing rules): copy -> sha256 of source and copy -> atomic rename on the HDD volume -> only then remove the source.
+# Never touches a file modified in the last MIN_AGE_H hours (an active DB), never a file under 100 MB, never overwrites.
+# Leaves <name>.MOVED_TO_HDD (dest + sha256) where the file was, and appends every move to MANIFEST (sha256, bytes, src, dest, time).
+#   usage: ssd_to_hdd_move.sh [--dry-run]     env: SRC=/volume2/datapullers  DST=/volume1/docker/datapullers_ssd_overflow  MIN_AGE_H=168
+SRC=${SRC:-/volume2/datapullers}; DST=${DST:-/volume1/docker/datapullers_ssd_overflow}; MIN_AGE_H=${MIN_AGE_H:-168}; MIN_BYTES=${MIN_BYTES:-104857600}
+MAN=$DST/MANIFEST.tsv; LOG=$DST/move.log; DRY=0; [ "$1" = "--dry-run" ] && DRY=1
+# v3 (03-11-2026, after Fable audit C1-C4): COPY-ONLY unless ALLOW_REMOVE=1; the HDD volume must really be mounted; one run at a time; -shm too.
+case "$DST" in /volume1/*) mountpoint -q /volume1 2>/dev/null || grep -q " /volume1 " /proc/mounts || { echo "REFUSE: /volume1 is not mounted"; exit 1; } ;; esac
+mkdir -p "$DST" || exit 1
+LOCK=$DST/.move.lock; mkdir "$LOCK" 2>/dev/null || { echo "REFUSE: another run holds $LOCK (rm -r it only if no run is active)"; exit 1; }
+trap 'rmdir "$LOCK" 2>/dev/null' EXIT INT TERM
+ALLOW_REMOVE=${ALLOW_REMOVE:-0}
+log(){ echo "$(date '+%d-%m-%Y %H:%M:%S') $*" | tee -a "$LOG"; }
+now=$(date +%s); moved=0; failed=0
+find "$SRC" -xdev -type f -size +${MIN_BYTES}c ! -name '*.part' ! -name '*.MOVED_TO_HDD' 2>/dev/null | sort | while read -r f; do
+  m=$(stat -c %Y "$f"); s=$(stat -c %s "$f"); age=$(( (now - m) / 3600 ))
+  [ "$age" -lt "$MIN_AGE_H" ] && { log "SKIP active/recent (age ${age} h < $MIN_AGE_H): $f"; continue; }
+  # v2 (03-11-2026 after the dhan/fyers incident): NEVER move a file that a symlink points at (*_current.db, *_raw_current.db are
+  # epoch pointers read by containers that cannot follow a link into another volume), nor one with a live -wal/-shm sidecar, nor from a directory we cannot write.
+  base=$(basename "$f"); dir=$(dirname "$f")
+  if find "$SRC" -xdev -type l -lname "*$base" 2>/dev/null | grep -q .; then log "SKIP referenced by a symlink (epoch pointer): $f"; continue; fi
+  if [ -e "$f-shm" ] && [ "$ALLOW_REMOVE" = 1 ]; then log "SKIP has a -shm sidecar (open or recently open SQLite): $f"; continue; fi
+  if [ -s "$f-wal" ]; then log "SKIP has a non-empty -wal (possible unflushed data): $f"; continue; fi
+  if [ ! -w "$dir" ]; then log "SKIP directory not writable by $(id -un): $dir"; continue; fi
+  rel=${f#$SRC/}; dest="$DST/$rel"; [ -e "$dest" ] && { log "SKIP dest exists: $dest"; continue; }
+  free=$(df -B1 "$DST" | tail -1 | awk '{print $4}'); [ "$free" -lt $(( s * 2 + 10737418240 )) ] && { log "STOP not enough free space on HDD for $f"; break; }
+  [ "$DRY" = 1 ] && { log "DRYRUN would move ${s} bytes: $f -> $dest"; continue; }
+  mkdir -p "$(dirname "$dest")"
+  log "COPY $f ($((s/1048576)) MB)"
+  if ! nice cp -p "$f" "$dest.part"; then log "FAIL copy $f"; rm -f "$dest.part"; continue; fi
+  sync
+  a=$(nice sha256sum "$f" | cut -d' ' -f1); b=$(nice sha256sum "$dest.part" | cut -d' ' -f1)
+  m2=$(stat -c %Y "$f")
+  if [ "$a" != "$b" ] || [ "$m2" != "$m" ]; then log "FAIL verify (hash or source changed) $f src=$a copy=$b"; rm -f "$dest.part"; continue; fi
+  mv "$dest.part" "$dest" || { log "FAIL rename $dest"; continue; }
+  if [ "$ALLOW_REMOVE" != 1 ]; then log "COPIED-ONLY (ALLOW_REMOVE!=1, source left in place; verified copy at $dest sha256=$a)"; continue; fi
+  if rm -f "$f" && [ ! -e "$f" ]; then
+    printf 'moved to HDD %s\nsha256 %s\nbytes %s\nmoved %s\n' "$dest" "$a" "$s" "$(date '+%d-%m-%Y %H:%M:%S')" > "$f.MOVED_TO_HDD"
+    printf '%s\t%s\t%s\t%s\t%s\n' "$a" "$s" "$f" "$dest" "$(date '+%d-%m-%Y %H:%M:%S')" >> "$MAN"
+    log "MOVED $f -> $dest sha256=$a"
+  else
+    log "COPIED-NOT-MOVED (source could not be removed; it is still in place; extra verified copy at $dest sha256=$a)"
+  fi
+done
+log "done"
 ```

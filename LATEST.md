@@ -1,5 +1,16 @@
-# LATEST: open for verification (updated 03-11-2026 ~22:30 IST; newest first)
-OWNER RULE: every outside-auditor verdict is verified with Fable. Read AUDITOR_RESPONSES/20261103_FABLE_VERIFICATION_of_QWEN_round2.md and ..._COMPARISON_... first. README.md inlines every evidence file named below.
+# LATEST: open for verification (updated 04-11-2026 ~00:15 IST; newest first)
+OWNER RULE: every outside-auditor verdict is verified with Fable. Fable's audit of tonight's changes: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md. README.md inlines the evidence.
+
+## ROUND 4 (night 03-11): weekly expiry + extra live-only instruments + SSD move incident + data-needed list
+### N-1 | weekly expiry recording (Dhan d20, Upstox) | DEPLOYED-NOT-YET-SEEN (first live proof 04-11 09:15)
+Evidence: NIGHT/05,06,07 code+tests, 08 compose diff, 09 test output, 10 deploy raw. Fable audit fixed: monthly-expiry-week window swap (A1), Upstox 6->5 (A2). Still open: no holiday calendar in depth/upstox in_session; Fyers TBT weekly (B9).
+Auditor questions: (a) is splitting the 50 slots (26 weekly + 22 monthly on Dhan) the right trade for an intraday regime/direction edge? (b) what must the 04-11 proof show (instrument counts, expiry_weekly=2026-11-10, no baseline loss)?
+### N-2 | Kite extras: indices, NIFTYBEES, BANKNIFTY future, all 50 constituents (macro CDS/MCX OFF) | DEPLOYED-NOT-YET-SEEN
+Evidence: NIGHT/02,03. Open: volume growth unmeasured; run_session untested; macro enable plan.
+### N-3 | INCIDENT: SSD to HDD move | RESOLVED for data, OPEN for design
+Evidence: NIGHT/11 raw + 04 script v3 (copy-only). Two epoch-pointer files were moved and restored (sha256). Fable verdict on the script: NOT SAFE (C1-C4) -> v3 guards; removal disabled by default. Nothing on the i5 SSD is safely movable without changing the old pullers' mounts. Question: is the plan (mount the HDD overflow path into the containers, or replace the old pullers) acceptable, and what must be proven first?
+### N-4 | DATA NEEDED FOR EDGE list | AWAITING AUDITOR
+Evidence: NIGHT/01 (corrected by Fable D1-D5). Questions: (a) are groups G1-G14 sufficient for an intraday regime/direction engine under the no-GEX/no-signed-flow limits? (b) which of B1-B12 would you build first? (c) any feed of the same kind as the weekly miss that is still not listed?
 
 ## ROUND 3: v3.1 dry run (decision: dry run only, no kills)
 ### V-001 v3.1 | livewatch --dry-run on both boxes | status: RUNNING from 22:16 IST; first in-session cycle 09:00 tomorrow
