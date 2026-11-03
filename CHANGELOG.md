@@ -1,4 +1,5 @@
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 01:15 IST: tools/home_connect.sh (SOCKS + forwards to the whole LAN, Pi as jump host) tested from outside the LAN; i5/i7 forbid forwarding. C-046.
 - 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.
 - 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
 - 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.

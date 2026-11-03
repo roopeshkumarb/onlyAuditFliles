@@ -139,11 +139,13 @@ C-042,04-11-2026,the i7 has a direct Cloudflare SSH route (sshi7),PROVEN,audit_0
 C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 at 23:59 vs 2 d 22 h at 13:40),audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,cause UNKNOWN; relevant to C-008 (the Pi was the proof that the NAS outage was not network-wide)
 C-044,04-11-2026,the old hostnames sshj1800 and sshpi no longer exist (no HTTP response); sshha, sshi5, sshi7 answer with the Cloudflare Access login redirect,PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,so the earlier 'Bad Gateway' (C-015) was a stale hostname, not a broken connector; offshore login from a laptop NOT TESTED
 C-045,04-11-2026,containers restart after a power cut without a DSM task,CONFIGURED NOT PROVEN,audit_031126_BLK001_livewatch/35_restart_policy_always.txt,'unless-stopped' did not bring recorders back after the 03-11 power losses (they exited with code 0/137/143 and stayed down: consistent with Synology stopping containers at shutdown = a manual stop); 'always' restarts regardless per Docker documentation; applied with docker update on 10 containers per box and in the compose; behaviour on these boxes only provable by a reboot
+C-046,04-11-2026,the whole home LAN can be reached through Cloudflare Access with ssh -D / -L from a device with cloudflared,PROVEN from the cloud sandbox (outside the LAN) via the Pi only,audit_031126_BLK001_livewatch/36_home_connect_tested.txt,SOCKS via the Pi reached i5/i7/Pi ssh banners and Home Assistant (HTTP 200); local forwards to DSM i5 and i7 returned HTTP 200; via the i5 and i7 forwarding is REFUSED (Synology sshd: administratively prohibited); from the owner's own laptop on the hotspot NOT TESTED; not usable on a company-managed laptop (policy/XDR)
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 01:15 IST: tools/home_connect.sh (SOCKS + forwards to the whole LAN, Pi as jump host) tested from outside the LAN; i5/i7 forbid forwarding. C-046.
 - 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.
 - 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
 - 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.
@@ -156,7 +158,6 @@ C-045,04-11-2026,containers restart after a power cut without a DSM task,CONFIGU
 - 03-11-2026 16:20 IST: added README (fixed entry point), AUDITOR_PROTOCOL, LATEST, CLAIMS_LEDGER, MANIFEST/SHA256SUMS, AUDITOR_RESPONSES template, 17_access_routes_raw.txt.
 - 03-11-2026 16:10 IST: CORRECTION to 13_ADDENDUM: Dhan d20 gaps were hidden because the gap script merged d20 and d200 frames. Claim C-006 RETRACTED. livewatch consequence added.
 - 03-11-2026 15:55 IST: added BLK-002 step 1 raw proof (no code written).
-- 03-11-2026 15:50 IST: added end-of-session numbers (13-15); found 55 s healthy gap vs 60 s limit.
 
 
 ---
@@ -1608,4 +1609,14 @@ Hypothesis (UNPROVEN): the NAS shutdown stops containers like a manual 'docker s
 Applied: docker update --restart=always on broker_login, pull_lease_ctl, tickrec, depthrec, upstoxrec, fyerstbt, dp_guard, fullpuller, puller930, dp_voter (all present on both boxes; inspect shows 'always' after; i7 dp_voter was already exited and stays so). NOT touched: cloudflared, portainer, blpro_09, watchtower and every unrelated container.
 Compose: restart: always added to broker_login, dp_voter, fullpuller, puller930, tickrec, depthrec, upstoxrec, fyerstbt (pull_lease_ctl and dp_guard are not in this compose: their setting lives only in the container until whatever created them recreates them). Compose deployed to both boxes (md5 checked), no container recreated.
 Proof still missing: a real reboot or Docker restart at a quiet time. Not done tonight because the market opens in a few hours.
+```
+
+### FILE audit_031126_BLK001_livewatch/36_home_connect_tested.txt  sha256=2e712e581e208ef1  bytes=1119
+```
+tools/home_connect.sh tested 04-11-2026 ~01:10 IST from the cloud sandbox (outside the LAN) with the existing Access service-token proxy; hostnames are aliases here.
+Jump via i5 and via i7: every SOCKS CONNECT refused; ssh log: 'channel N: open failed: administratively prohibited' (Synology default, cannot be changed without root).
+Jump via Pi (root, sshha): SOCKS5 CONNECT to 192.168.2.130:8123 -> HTTP/1.0 200 OK; 192.168.2.91:22 and 192.168.2.100:22 -> SSH-2.0-OpenSSH_8.2 banners; 192.168.2.130:22 -> SSH-2.0-OpenSSH_10.3. (Plain HTTP port 5000 on the NAS boxes: no reply; DSM uses https 5001.)
+Script 'up' via the Pi: status shows the three ssh banners through the proxy; local forward 127.0.0.1:8123 -> HA HTTP 200; 127.0.0.1:5101 (DSM i5) and :5102 (DSM i7) over TLS -> HTTP/1.1 200 OK; 'down' closes it.
+Artifact: an earlier curl test of http://192.168.2.1 returned 403: that came from the sandbox's own egress proxy, NOT from the home router; ignore it.
+Defects found and fixed while testing: ssh -f held the terminal's output open (now -E logfile); status used a fragile nc call (now a python SOCKS probe).
 ```

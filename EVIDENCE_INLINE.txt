@@ -33,4 +33,5 @@ audit_031126_BLK001_livewatch/32_gap_histogram_i5_PARTIAL.csv
 AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md
 audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt
 audit_031126_BLK001_livewatch/35_restart_policy_always.txt
+audit_031126_BLK001_livewatch/36_home_connect_tested.txt
 

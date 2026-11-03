@@ -1,0 +1,6 @@
+tools/home_connect.sh tested 04-11-2026 ~01:10 IST from the cloud sandbox (outside the LAN) with the existing Access service-token proxy; hostnames are aliases here.
+Jump via i5 and via i7: every SOCKS CONNECT refused; ssh log: 'channel N: open failed: administratively prohibited' (Synology default, cannot be changed without root).
+Jump via Pi (root, sshha): SOCKS5 CONNECT to 192.168.2.130:8123 -> HTTP/1.0 200 OK; 192.168.2.91:22 and 192.168.2.100:22 -> SSH-2.0-OpenSSH_8.2 banners; 192.168.2.130:22 -> SSH-2.0-OpenSSH_10.3. (Plain HTTP port 5000 on the NAS boxes: no reply; DSM uses https 5001.)
+Script 'up' via the Pi: status shows the three ssh banners through the proxy; local forward 127.0.0.1:8123 -> HA HTTP 200; 127.0.0.1:5101 (DSM i5) and :5102 (DSM i7) over TLS -> HTTP/1.1 200 OK; 'down' closes it.
+Artifact: an earlier curl test of http://192.168.2.1 returned 403: that came from the sandbox's own egress proxy, NOT from the home router; ignore it.
+Defects found and fixed while testing: ssh -f held the terminal's output open (now -E logfile); status used a fragile nc call (now a python SOCKS probe).
