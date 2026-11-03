@@ -1,0 +1,3 @@
+v2 mutation checks, 03-11-2026 evening, applied to pullers/shared/livewatch.py, then restored (md5 after restore ca711e8c12bca8cb11e4d53b79e0e037, 13 tests OK):
+M1 per-connection comparison weakened (now - t > stale_s  ->  now - t > stale_s*100): FAIL test_dead_d20_is_caught_even_though_the_file_is_fresh  (Ran 13, FAILED failures=1)
+M2 command-line default changed back (default=90.0 -> default=60.0): FAIL test_default_limit_is_90_and_a_55s_healthy_gap_is_left_alone  (Ran 13, FAILED failures=1)

@@ -1,0 +1,4 @@
+livewatch v2 function conn_last() run READ-ONLY on the real 03-11 depth files (copy of the v2 file in /tmp, deleted after; NOT deployed):
+i5: {'d20': '15:35:09', 'd200': '15:35:09'} took 0.00 s
+i7: {'d20': '15:35:13', 'd200': '15:35:12'} took 0.85 s
+LIMIT: the market was closed, so this proves the query runs on the real file and is fast; it does NOT prove detection on a live dead socket (only the synthetic-DB test does).

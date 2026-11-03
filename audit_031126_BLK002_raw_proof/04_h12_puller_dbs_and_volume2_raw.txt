@@ -1,0 +1,74 @@
+H12 CHECK ON PULLER/ENGINE DATABASES, i5, 03-11-2026 ~21:00 IST (read-only). Requested by the auditor (V-002).
+
+ROUTE: i5-cf
+### /volume1/docker/blpro009/data/blpro_working.db
+249856 03-11-2026 21:00 
+$ sqlite3 -readonly /volume1/docker/blpro009/data/blpro_working.db ".tables" | grep -iE 'chain|depth|tick|tbt|quote'
+
+total tables: 1
+### /volume1/docker/blpro_data/009/app/blpro_working.db
+35 20-10-2026 02:33 ->
+8662638592 20-10-2026 02:00 
+32768 20-10-2026 02:32 
+8816832 20-10-2026 02:32 
+2339078144 11-09-2026 17:48 
+32768 16-09-2026 22:01 
+0 16-09-2026 21:45 
+$ sqlite3 -readonly /volume1/docker/blpro_data/009/app/blpro_working.db ".tables" | grep -iE 'chain|depth|tick|tbt|quote'
+broker_chain_snap broker_quote_depth_snap depth_1m depth_top_1m equity_depth_1m opt_chain_1m opt_chain_1m_replaced opt_depth_1m options_chain_summary quarantine__options_chain_summary tick_minute_1m 
+total tables: 124
+### /volume2/blpro_hot/blpro_working.db
+9181708288 03-11-2026 19:08 
+32768 03-11-2026 21:01 
+6089392 03-11-2026 21:01 
+$ sqlite3 -readonly /volume2/blpro_hot/blpro_working.db ".tables" | grep -iE 'chain|depth|tick|tbt|quote'
+broker_chain_snap broker_quote_depth_snap depth_1m depth_top_1m equity_depth_1m opt_chain_1m opt_chain_1m_replaced opt_depth_1m options_chain_summary quarantine__options_chain_summary tick_minute_1m 
+total tables: 124
+### df -h /volume1 /volume2
+Filesystem              Size  Used Avail Use% Mounted on
+/dev/mapper/cachedev_0  3.5T  1.5T  2.1T  41% /volume1
+/dev/mapper/cachedev_1  205G  202G  3.3G  99% /volume2
+
+### columns, size, rows of the two H12 candidates in /volume2/blpro_hot/blpro_working.db
+ROUTE: i5-cf
+### broker_chain_snap columns:
+ts,src,expiry,strike,spot,ce_ltp,ce_oi,ce_prev_oi,ce_vol,ce_iv,ce_delta,ce_gamma,ce_theta,ce_vega,ce_bid,ce_ask,pe_ltp,pe_oi,pe_prev_oi,pe_vol,pe_iv,pe_delta,pe_gamma,pe_theta,pe_vega,pe_bid,pe_ask,src_store,copied_at
+### broker_chain_snap approx size (dbstat bytes):
+20172800
+### broker_chain_snap count(*):
+73144
+### broker_quote_depth_snap columns:
+ts,src,instrument_key,symbol,ltp,volume,oi,total_buy_qty,total_sell_qty,bid1,bid1_qty,ask1,ask1_qty,bid_qty5,ask_qty5,exch_ts,src_store,copied_at
+### broker_quote_depth_snap approx size (dbstat bytes):
+4464640
+### broker_quote_depth_snap count(*):
+23037
+
+### du of /volume2 (i5)
+ROUTE: i5-cf
+173324	datapullers
+8763	blpro_hot
+1	ssd_backup_gdrive
+1	@eaDir
+0	@tmp
+---
+root /volume2/@eaDir
+root /volume2/@tmp
+root /volume2/blpro_hot
+root /volume2/datapullers
+root /volume2/ssd_backup_gdrive
+--- docker root
+ROUTE: i5-cf
+81379	upstox
+49228	fyers
+29708	dhan
+10251	nse
+2760	kite
+--- big files
+71.021 GB 03-11 21:01 ./upstox/pullerfull_upstox_151026-0031.db
+41.6305 GB 03-11 21:00 ./fyers/pullerfull_fyers_151026-0030.db
+26.3393 GB 03-11 21:01 ./dhan/pullerfull_dhan_151026-0031.db
+9.15853 GB 15-10 00:42 ./nse/nse_121026-1534.db
+7.13031 GB 03-11 21:01 ./upstox/puller930_upstox_151026-0033.db
+5.63263 GB 15-10 03:26 ./fyers/fyers_121026-1534.db
+2.6683 GB 14-10 16:51 ./dhan/dhan_121026-1533.db

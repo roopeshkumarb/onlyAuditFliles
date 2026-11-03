@@ -1,0 +1,75 @@
+--- 02a_livewatch_v1.py	2026-11-03 15:33:21.376920875 +0000
++++ 02_livewatch.py	2026-11-03 15:33:21.426122472 +0000
+@@ -6,7 +6,7 @@
+ stored and, when the data stops during the session, issues `docker kill <container>` so the restart
+ policy (and, if that does not bring it back, a `docker start`) replaces the dead socket.
+ 
+-THE RULE (as ordered): during the session, if now - last_data > STALE_S (default 60 s), run
++THE RULE (as ordered): during the session, if now - last_data > STALE_S (default 90 s since v2; the owner ordered 60 s), run
+ `docker kill <container>`.
+   last_data = the newest of (a) status.json "last_tick" when the recorder writes one (Kite ticks) and
+               (b) the modification time of today's day file or its -wal (every stored row moves it).
+@@ -42,6 +42,10 @@
+     "upstoxrec": ("upstox_live", "upstox_"),
+     "fyerstbt": ("fyers_tbt", "tbt_"),
+ }
++# v2 (auditor condition, 03-11-2026): a recorder that writes SEVERAL sockets into ONE day file hides a dead socket behind
++# the live ones (Dhan: d20 silent ~4 min 12 times on the i5 while d200 kept the file fresh). So judge each connection by
++# the newest recv_ts of its own rows. Unreadable DB / no rows for the connection = UNKNOWN (never killed on UNKNOWN).
++CONNS = {"depthrec": ("frames", "conn", ("d20", "d200"))}
+ NEVER_TOUCH = ("cloudflared", "portainer", "blpro_09", "blpro_compute", "blpro_synchub",
+                "blpro_vendorwatch", "watchtower")
+ DEFAULT_DOCKER = "/var/packages/ContainerManager/target/usr/bin/docker"
+@@ -81,6 +85,24 @@
+         return 0.0
+ 
+ 
++def conn_last(path, spec):
++    """-> {conn: last recv_ts or None}; None = UNKNOWN (db unreadable, locked, or no rows for that conn)."""
++    table, col, conns = spec
++    out = {c: None for c in conns}
++    try:
++        import sqlite3
++        con = sqlite3.connect("file:%s?mode=ro" % path, uri=True, timeout=3)
++        try:
++            for c in conns:
++                r = con.execute("select recv_ts from %s where %s=? order by recv_ts desc limit 1" % (table, col), (c,)).fetchone()
++                out[c] = float(r[0]) if r and r[0] is not None else None
++        finally:
++            con.close()
++    except Exception:
++        pass
++    return out
++
++
+ def evaluate(name, root, box, now, stale_s, no_file_after):
+     """-> dict(verdict, age_s, why). verdict in FRESH, DEAD, NO_FILE_DEAD, NO_FILE_WAITING."""
+     folder, prefix = RECORDERS[name]
+@@ -107,7 +129,17 @@
+                 "why": "last data %.0f s ago (limit %.0f s); file_write=%s last_tick=%s" % (
+                     age, stale_s, time.strftime("%H:%M:%S", time.localtime(fw)),
+                     time.strftime("%H:%M:%S", time.localtime(lt)) if lt else "n/a")}
+-    return {"verdict": "FRESH", "age_s": round(age, 1), "why": "last data %.1f s ago" % age}
++    why = "last data %.1f s ago" % age
++    if name in CONNS:
++        cl = conn_last(path, CONNS[name])
++        dead = ["%s silent %.0f s" % (c, now - t) for c, t in sorted(cl.items()) if t is not None and now - t > stale_s]
++        unk = [c for c, t in sorted(cl.items()) if t is None]
++        if dead:
++            return {"verdict": "DEAD", "age_s": round(age, 1),
++                    "why": "file is fresh but connection(s) dead: %s (limit %.0f s)" % (", ".join(dead), stale_s)}
++        if unk:
++            why += "; connection check UNKNOWN for %s (not judged)" % ",".join(unk)
++    return {"verdict": "FRESH", "age_s": round(age, 1), "why": why}
+ 
+ 
+ class Watch(object):
+@@ -187,7 +219,7 @@
+     p.add_argument("--root", required=True)
+     p.add_argument("--box", required=True)
+     p.add_argument("--docker", default=DEFAULT_DOCKER)
+-    p.add_argument("--stale-s", type=float, default=60.0)
++    p.add_argument("--stale-s", type=float, default=90.0)   # v2: 60 s was 5 s from a healthy 55 s gap (i5 upstox 14:24:57-14:25:52)
+     p.add_argument("--session-start", default="09:16")
+     p.add_argument("--session-end", default="15:30")
+     p.add_argument("--no-file-after", default="09:20")

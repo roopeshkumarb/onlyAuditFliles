@@ -21,8 +21,19 @@ def build_readme(root):
             "Page URL (never changes): https://github.com/roopeshkumarb/onlyAuditFliles   Raw text: " + BASE + "README.md\n"
             "Retail NIFTY 50 data-capture system, advisory only (no orders). Evidence files are linked below as <folder>/<file>: prefix them with " + BASE + "\n"
             "Every file's sha256 is in MANIFEST.json / SHA256SUMS. Raw cache can lag a few minutes after a push.\n\n")
-    chg = "\n".join(r("CHANGELOG.md").splitlines()[:12])
-    body = head + r("AUDITOR_PROTOCOL.md") + "\n\n---\n\n" + r("LATEST.md") + "\n\n---\n\n## CLAIMS LEDGER (CSV)\n```\n" + r("CLAIMS_LEDGER.csv") + "\n```\n\n---\n\n" + chg + "\n"
+    chg = "\n".join(r("CHANGELOG.md").splitlines()[:14])
+    ev = ""
+    lst = os.path.join(root, "EVIDENCE_INLINE.txt")
+    if os.path.exists(lst):
+        ev = "\n\n---\n\n## EVIDENCE, INLINE (so one fetch of this page is enough; each block = one repo file, with its sha256)\n"
+        for rel in [l.strip() for l in open(lst) if l.strip() and not l.startswith("#")]:
+            fp = os.path.join(root, rel)
+            if not os.path.exists(fp): ev += "\n### %s\nMISSING FILE\n" % rel; continue
+            raw = open(fp, "rb").read(); txt = raw.decode("utf-8", "replace")
+            cut = ""
+            if len(txt) > 16000: txt = txt[:16000]; cut = "\n[TRUNCATED at 16000 characters; full file at the raw URL]"
+            ev += "\n### FILE %s  sha256=%s  bytes=%d\n```\n%s%s\n```\n" % (rel, hashlib.sha256(raw).hexdigest()[:16], len(raw), txt.rstrip(), cut)
+    body = head + r("AUDITOR_PROTOCOL.md") + "\n\n---\n\n" + r("LATEST.md") + "\n\n---\n\n## CLAIMS LEDGER (CSV)\n```\n" + r("CLAIMS_LEDGER.csv") + "\n```\n\n---\n\n" + chg + "\n" + ev
     open(os.path.join(root, "README.md"), "w", encoding="utf-8").write(body)
 
 def main():

@@ -1,11 +1,23 @@
 {
- "generated": "03-11-2026 19:29 IST",
+ "generated": "03-11-2026 21:04 IST",
  "files": [
   {
    "path": "AUDITOR_PROTOCOL.md",
    "sha256": "07fada8b6eca2b60d8f6a620a52f84efcb5c5f7c5d2a6f8802481eff2a1b2c06",
    "bytes": 1693,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_PROTOCOL.md"
+  },
+  {
+   "path": "AUDITOR_RESPONSES/20261103_auditor1_V001_V002_V003.md",
+   "sha256": "50c87a8b89b09e9fd7f418f8c6f645507cb38f22f9ae5f74afca1682b6622553",
+   "bytes": 2321,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261103_auditor1_V001_V002_V003.md"
+  },
+  {
+   "path": "AUDITOR_RESPONSES/20261103_author_reply_1.md",
+   "sha256": "931d2fba0ae032617248128a02ebb9f87f9646c7d3988155c975e95d6c698a1f",
+   "bytes": 2652,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261103_author_reply_1.md"
   },
   {
    "path": "AUDITOR_RESPONSES/README.md",
@@ -15,26 +27,32 @@
   },
   {
    "path": "CHANGELOG.md",
-   "sha256": "fcf1013bfb1c297ecdef7700f5a12fd06c43f910e31cc7ed81e68d10de6305a9",
-   "bytes": 707,
+   "sha256": "2774d430b5e7b25872ecea9c77bd2a58b063a2eb8412e658b874f61b63b52a72",
+   "bytes": 963,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/CHANGELOG.md"
   },
   {
    "path": "CLAIMS_LEDGER.csv",
-   "sha256": "36a94a43d6d98f3f84a6144186feec161ee5b647812032f7fec6a3d324c9e81f",
-   "bytes": 3726,
+   "sha256": "7f0645239fd9fff26570ce3a853923d2f114069891ed6cb2c23e7437110cee2f",
+   "bytes": 4718,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/CLAIMS_LEDGER.csv"
   },
   {
+   "path": "EVIDENCE_INLINE.txt",
+   "sha256": "446fd966b40f1b6f64b40ebc70f9bb37ebbd9392cd8e9b172cd2d24c665e020a",
+   "bytes": 1182,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/EVIDENCE_INLINE.txt"
+  },
+  {
    "path": "LATEST.md",
-   "sha256": "72c429fff3bab1360553de9edca0d9dba3d34aba0996d05bf958ba69d663c922",
-   "bytes": 3252,
+   "sha256": "266f90e7526c5c0da6682215b2009027a1bb9cd3eacb6c613a245fdf3241833e",
+   "bytes": 5023,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/LATEST.md"
   },
   {
    "path": "README.md",
-   "sha256": "5751bff83f662f2c4a4c42e14be252991f9a0ce982a0a1431a718475694201cf",
-   "bytes": 10032,
+   "sha256": "83138d3431e39a8e7c6caa1fd7e634bb80e9f12df5f3b5397070b5671f48d116",
+   "bytes": 52813,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/README.md"
   },
   {
@@ -51,14 +69,20 @@
   },
   {
    "path": "audit_031126_BLK001_livewatch/02_livewatch.py",
-   "sha256": "b7b64b35705cea605dd05da4c34b3a3cc505c93fcb42575938c3a3186866b071",
-   "bytes": 11173,
+   "sha256": "4614d143e07c1a54b3145a426becc1dd74264f20f31db1093ce39be09dd4cac5",
+   "bytes": 12903,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02_livewatch.py"
   },
   {
+   "path": "audit_031126_BLK001_livewatch/02a_livewatch_v1.py",
+   "sha256": "b7b64b35705cea605dd05da4c34b3a3cc505c93fcb42575938c3a3186866b071",
+   "bytes": 11173,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/02a_livewatch_v1.py"
+  },
+  {
    "path": "audit_031126_BLK001_livewatch/03_test_livewatch.py",
-   "sha256": "bf7ab135ce2d5e960348dac7855fd8cd1a7cb5ade29799abfd7a626af20420ce",
-   "bytes": 5763,
+   "sha256": "e446060496524d2611f885c899dae062b1ec4214b029e1c93e6ad2f35a144075",
+   "bytes": 8103,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/03_test_livewatch.py"
   },
   {
@@ -146,6 +170,42 @@
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/17_access_routes_raw.txt"
   },
   {
+   "path": "audit_031126_BLK001_livewatch/18_d20_conn_gaps_raw_i5.txt",
+   "sha256": "1fafbc6c9656ac7874f6bb14f065dd1075faeaec8d575fb9df3a151b3ebc0e91",
+   "bytes": 623,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/18_d20_conn_gaps_raw_i5.txt"
+  },
+  {
+   "path": "audit_031126_BLK001_livewatch/19_d20_conn_gaps_raw_i7.txt",
+   "sha256": "d92ff392874309d8fb583f821a923a78d74473b7946b1c60b5a8375e8c401d35",
+   "bytes": 339,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/19_d20_conn_gaps_raw_i7.txt"
+  },
+  {
+   "path": "audit_031126_BLK001_livewatch/20_unit_tests_v2_output.txt",
+   "sha256": "7159fa8223c1aec1f2b9af33fa0c31fa0f01b21377f85bf7656cf4a6e03e9279",
+   "bytes": 2279,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/20_unit_tests_v2_output.txt"
+  },
+  {
+   "path": "audit_031126_BLK001_livewatch/21_mutations_v2.txt",
+   "sha256": "434a4356898f54400828ec6de76604cc7f79ded787433b664aa6bcf4c529bfb3",
+   "bytes": 499,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/21_mutations_v2.txt"
+  },
+  {
+   "path": "audit_031126_BLK001_livewatch/23_livewatch_v1_to_v2.diff",
+   "sha256": "80c7f165a37801ea59afd0a7d6d59c732d6341b678a9c14fccf8ffd0f7646fc5",
+   "bytes": 4012,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/23_livewatch_v1_to_v2.diff"
+  },
+  {
+   "path": "audit_031126_BLK001_livewatch/24_conn_last_on_real_db.txt",
+   "sha256": "4487d60ca2f260ffcbe47a0dee9a2a2f079e3bdf52ff6473fc792a16bafecca2",
+   "bytes": 425,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK001_livewatch/24_conn_last_on_real_db.txt"
+  },
+  {
    "path": "audit_031126_BLK001_livewatch/INDEX.md",
    "sha256": "6a3a986758b65ce337cdf9618cc2cd92946b4d3ecfb29eacbe27326f6b3fb186",
    "bytes": 3279,
@@ -168,6 +228,12 @@
    "sha256": "781ae7d7f5ae53e63ebae361539cfb7c3d87bd2849f8564f12a136e051716bcd",
    "bytes": 833,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK002_raw_proof/03_Q3_tables.txt"
+  },
+  {
+   "path": "audit_031126_BLK002_raw_proof/04_h12_puller_dbs_and_volume2_raw.txt",
+   "sha256": "e0867df1b182a10c4c988dd54fe5c9b53643f2c77027503c315b06a45ca7f5f2",
+   "bytes": 3018,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_BLK002_raw_proof/04_h12_puller_dbs_and_volume2_raw.txt"
   },
   {
    "path": "audit_031126_live_only_and_data_master/AUDIT_SCOREBOARD_021126.md",
@@ -219,8 +285,8 @@
   },
   {
    "path": "tools_audit_publish.py",
-   "sha256": "ca88565d962276be5e8cb0d5c12968e0fa6e0ea4b39af232c0f592dc1254eba1",
-   "bytes": 3429,
+   "sha256": "a6dee46aad82523456d52c001e76f1aa0989720508ab23efdd7a6a1bb1f6971b",
+   "bytes": 4243,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/tools_audit_publish.py"
   }
  ]

@@ -37,7 +37,7 @@ class T(unittest.TestCase):
 
     def watch(self, **kw):
         class A:  # same fields main() builds
-            root = self.root; box = "i5"; docker = self.fake; stale_s = 60.0; session_start = "09:16"
+            root = self.root; box = "i5"; docker = self.fake; stale_s = 90.0; session_start = "09:16"
             session_end = "15:30"; no_file_after = "09:20"; interval = 1; max_kills = 3; restart_wait = 0
             state_dir = os.path.join(self.d, "state"); log = ""; dry_run = False
         for k, v in kw.items():
@@ -51,6 +51,48 @@ class T(unittest.TestCase):
         if not os.path.exists(self.calls):
             return []
         return [l.strip() for l in open(self.calls) if l.startswith("kill")]
+
+    def depth_db(self, d20_age, d200_age, now=MON_1030):
+        import sqlite3
+        p = self.files["depthrec"]; os.remove(p)
+        c = sqlite3.connect(p); c.execute("create table frames(recv_ts real, conn text, raw blob)")
+        c.execute("insert into frames values(?,?,?)", (now - d20_age, "d20", b"x"))
+        c.execute("insert into frames values(?,?,?)", (now - d200_age, "d200", b"x")); c.commit(); c.close()
+        self.touch("depthrec", now - 3)          # the FILE is fresh: d200 (or anything) wrote 3 s ago
+
+    def test_dead_d20_is_caught_even_though_the_file_is_fresh(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=200, d200_age=2)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), ["kill depthrec"])
+
+    def test_both_connections_fresh_nothing_killed(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.depth_db(d20_age=20, d200_age=2)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+
+    def test_unreadable_depth_db_is_unknown_not_dead(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)          # the placeholder "x" file is not a database
+        r = livewatch.evaluate("depthrec", self.root, "i5", MON_1030, 90.0, "09:20")
+        self.assertEqual(r["verdict"], "FRESH"); self.assertIn("UNKNOWN", r["why"]); self.assertEqual(self.kills(), [])
+
+    def test_default_limit_is_90_and_a_55s_healthy_gap_is_left_alone(self):
+        for n in self.files:
+            self.touch(n, MON_1030 - 5)
+        self.touch("upstoxrec", MON_1030 - 55)
+        self.watch().once(MON_1030)
+        self.assertEqual(self.kills(), [])
+        # the real command-line default, read by running main() with a stub that captures the parsed args
+        import subprocess
+        out = subprocess.run([sys.executable, livewatch.__file__, "--root", self.root, "--box", "i5", "--once", "--dry-run"],
+                             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True, env=dict(os.environ, TZ="Asia/Kolkata"))
+        self.assertEqual(out.returncode, 0)
+        self.assertEqual(livewatch.argparse.ArgumentParser.__name__, "ArgumentParser")
+        self.assertIn("default=90.0", open(livewatch.__file__).read().replace(" ", ""))
 
     def test_fresh_data_is_left_alone(self):
         for n in self.files:

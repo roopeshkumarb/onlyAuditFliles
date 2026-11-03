@@ -1,0 +1,16 @@
+livewatch v2 unit tests, run 03-11-2026 21:03 IST on the sandbox (python3 -W ignore -m unittest -v tests.test_livewatch), log lines of the code under test removed
+test_a_stale_file_triggers_exactly_docker_kill_of_that_container ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] WARN depthrec: last data 120 s ago (limit 90 s); file_write=10:28:00 last_tick=n/a -> docker kill depthrec
+test_both_connections_fresh_nothing_killed ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 3.0 s ago)
+test_dead_d20_is_caught_even_though_the_file_is_fresh ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] WARN depthrec: file is fresh but connection(s) dead: d20 silent 200 s (limit 90 s) -> docker kill depthrec
+test_default_limit_is_90_and_a_55s_healthy_gap_is_left_alone ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago; connection check UNKNOWN for d20,d200 (not judged))
+test_dry_run_prints_but_runs_nothing ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] WARN depthrec: last data 500 s ago (limit 90 s); file_write=10:21:40 last_tick=n/a -> docker kill depthrec
+test_fresh_data_is_left_alone ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago; connection check UNKNOWN for d20,d200 (not judged))
+test_it_refuses_strangers ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] REFUSE cloudflared is not a managed recorder
+test_kills_are_bounded_per_hour_then_escalate ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago; connection check UNKNOWN for d20,d200 (not judged))
+test_no_day_file_after_0920_with_no_instruments_is_dead ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago; connection check UNKNOWN for d20,d200 (not judged))
+test_outside_the_session_and_on_weekends_nothing_is_killed ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] INFO outside session window 09:16-15:30: nothing to judge
+test_proof_mode_judges_only_the_disposable_recorder ... ok
+test_status_last_tick_counts_when_the_file_is_old ... 03-11-2026 21:03:21 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago; connection check UNKNOWN for d20,d200 (not judged))
+test_unreadable_depth_db_is_unknown_not_dead ... ok
+Ran 13 tests in 0.179s
+OK
