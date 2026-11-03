@@ -1,0 +1,34 @@
+MUTATION TESTING of pullers/shared/livewatch.py, 03-11-2026 06:42:49 box-clock; each mutation is applied to the real file, the 9 tests are run, then the file is restored from a copy.
+== BASELINE
+Ran 9 tests in 0.125s
+OK
+== MUTATION 1: threshold comparison reversed (age > stale_s -> age < stale_s)
+FAIL: test_a_stale_file_triggers_exactly_docker_kill_of_that_container (__main__.T.test_a_stale_file_triggers_exactly_docker_kill_of_that_container)
+FAIL: test_fresh_data_is_left_alone (__main__.T.test_fresh_data_is_left_alone)
+FAIL: test_kills_are_bounded_per_hour_then_escalate (__main__.T.test_kills_are_bounded_per_hour_then_escalate)
+FAIL: test_no_day_file_after_0920_with_no_instruments_is_dead (__main__.T.test_no_day_file_after_0920_with_no_instruments_is_dead)
+FAIL: test_status_last_tick_counts_when_the_file_is_old (__main__.T.test_status_last_tick_counts_when_the_file_is_old)
+Ran 9 tests in 0.192s
+FAILED (failures=5)
+== MUTATION 2: kill action replaced (docker kill -> docker version)
+FAIL: test_a_stale_file_triggers_exactly_docker_kill_of_that_container (__main__.T.test_a_stale_file_triggers_exactly_docker_kill_of_that_container)
+FAIL: test_kills_are_bounded_per_hour_then_escalate (__main__.T.test_kills_are_bounded_per_hour_then_escalate)
+FAIL: test_no_day_file_after_0920_with_no_instruments_is_dead (__main__.T.test_no_day_file_after_0920_with_no_instruments_is_dead)
+Ran 9 tests in 0.131s
+FAILED (failures=3)
+== MUTATION 3: guard against non-recorder names removed
+FAIL: test_it_refuses_strangers (__main__.T.test_it_refuses_strangers)
+Ran 9 tests in 0.116s
+FAILED (failures=1)
+== MUTATION 4: per-hour kill bound removed
+FAIL: test_kills_are_bounded_per_hour_then_escalate (__main__.T.test_kills_are_bounded_per_hour_then_escalate)
+Ran 9 tests in 0.108s
+FAILED (failures=1)
+== MUTATION 5: out-of-session guard removed
+FAIL: test_outside_the_session_and_on_weekends_nothing_is_killed (__main__.T.test_outside_the_session_and_on_weekends_nothing_is_killed)
+Ran 9 tests in 0.135s
+FAILED (failures=1)
+== RESTORED
+797db99be487259491a35dd5afd2751c
+Ran 9 tests in 0.113s
+OK

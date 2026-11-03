@@ -1,0 +1,21 @@
+REAL-BOX PROOF RUN on the i5 (i5-4590-dsm72). Box clock at start: 03-11-2026 12:14:36 GMT+5:30. Disposable container lwtest_rec; the four production recorders are not named in this run.
+
+== A. test container before:
+running=true started=2026-11-03T06:54:07.690346435Z policy=unless-stopped
+== B. the stale file (touch -d '5 minutes ago'):
+-rw-r--r-- 1 roopeshkumarb users 2 2026-11-03 12:19:11.965641568 +0530 /tmp/lw_proof/probe/i5/probe_
+now: 2026-11-03 12:24:11
+== C. DRY RUN (must name ONLY lwtest_rec):
+03-11-2026 12:24:12 GMT+5:30 [livewatch i5] WARN lwtest_rec: last data 300 s ago (limit 60 s); file_write=12:19:11 last_tick=n/a -> docker kill lwtest_rec
+03-11-2026 12:24:12 GMT+5:30 [livewatch i5] DRYRUN would run: /var/packages/ContainerManager/target/usr/bin/docker kill lwtest_rec
+03-11-2026 12:24:12 GMT+5:30 [livewatch i5] INFO docker kill lwtest_rec rc=0 
+== D. LIVE RUN:
+03-11-2026 12:24:12 GMT+5:30 [livewatch i5] WARN lwtest_rec: last data 300 s ago (limit 60 s); file_write=12:19:11 last_tick=n/a -> docker kill lwtest_rec
+03-11-2026 12:24:25 GMT+5:30 [livewatch i5] INFO docker kill lwtest_rec rc=0 lwtest_rec
+03-11-2026 12:25:06 GMT+5:30 [livewatch i5] INFO lwtest_rec was not restarted by policy; docker start rc=0
+== E. test container after:
+running=true started=2026-11-03T06:55:05.510352059Z restarts=0 lastexit=0
+== F. fresh file: nothing may be killed
+03-11-2026 12:25:06 GMT+5:30 [livewatch i5] OK lwtest_rec FRESH (last data 0.0 s ago)
+== G. production recorders untouched:
+== cleanup done (test container and /tmp/lw_proof removed)

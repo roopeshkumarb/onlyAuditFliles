@@ -1,0 +1,12 @@
+test_a_stale_file_triggers_exactly_docker_kill_of_that_container ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] WARN depthrec: last data 120 s ago (limit 60 s); file_write=10:28:00 last_tick=n/a -> docker kill depthrec
+test_dry_run_prints_but_runs_nothing ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] WARN depthrec: last data 500 s ago (limit 60 s); file_write=10:21:40 last_tick=n/a -> docker kill depthrec
+test_fresh_data_is_left_alone ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago)
+test_it_refuses_strangers ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] REFUSE cloudflared is not a managed recorder
+test_kills_are_bounded_per_hour_then_escalate ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago)
+test_no_day_file_after_0920_with_no_instruments_is_dead ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago)
+test_outside_the_session_and_on_weekends_nothing_is_killed ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] INFO outside session window 09:16-15:30: nothing to judge
+test_proof_mode_judges_only_the_disposable_recorder ... ok
+test_status_last_tick_counts_when_the_file_is_old ... 03-11-2026 13:41:32 GMT+5:30 [livewatch i5] OK depthrec FRESH (last data 5.0 s ago)
+Ran 9 tests in 0.101s
+OK
+(run 03-11-2026 13:41 IST on the sandbox, TZ=Asia/Kolkata)
