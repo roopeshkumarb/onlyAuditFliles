@@ -138,11 +138,13 @@ C-041,04-11-2026,tick volume growth from the extras is small (+20-60%),RETRACTED
 C-042,04-11-2026,the i7 has a direct Cloudflare SSH route (sshi7),PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,C-015 (i7 Bad Gateway) concerned the old hostname sshj1800 only; sshi5, sshi7 and sshha all answered at 23:59 IST; independence of sshi7 from the i5 tunnel UNKNOWN
 C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 at 23:59 vs 2 d 22 h at 13:40),audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,cause UNKNOWN; relevant to C-008 (the Pi was the proof that the NAS outage was not network-wide)
 C-044,04-11-2026,the old hostnames sshj1800 and sshpi no longer exist (no HTTP response); sshha, sshi5, sshi7 answer with the Cloudflare Access login redirect,PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,so the earlier 'Bad Gateway' (C-015) was a stale hostname, not a broken connector; offshore login from a laptop NOT TESTED
+C-045,04-11-2026,containers restart after a power cut without a DSM task,CONFIGURED NOT PROVEN,audit_031126_BLK001_livewatch/35_restart_policy_always.txt,'unless-stopped' did not bring recorders back after the 03-11 power losses (they exited with code 0/137/143 and stayed down: consistent with Synology stopping containers at shutdown = a manual stop); 'always' restarts regardless per Docker documentation; applied with docker update on 10 containers per box and in the compose; behaviour on these boxes only provable by a reboot
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.
 - 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
 - 04-11-2026 00:05 IST: direct Cloudflare routes tested: sshi5, sshi7 (NEW, fixes the i7 gap), sshha all work. CORRECTION to C-015/V-003: only the old hostname sshj1800 was dead. The Pi restarted ~18:50 IST (C-043). C-042, C-043.
 - 04-11-2026 00:50 IST: 2nd Fable review: A/B/C/D verdicts stored; NEW DEFECT found and fixed (tickrec container did not receive nifty50_syms.txt: 0 constituents would have been recorded), proven inside both containers; df-unreadable hole in the move script fixed; corrections: November monthly is 23-11; C-041 volume estimate RETRACTED. C-039..C-041.
@@ -155,7 +157,6 @@ C-044,04-11-2026,the old hostnames sshj1800 and sshpi no longer exist (no HTTP r
 - 03-11-2026 16:10 IST: CORRECTION to 13_ADDENDUM: Dhan d20 gaps were hidden because the gap script merged d20 and d200 frames. Claim C-006 RETRACTED. livewatch consequence added.
 - 03-11-2026 15:55 IST: added BLK-002 step 1 raw proof (no code written).
 - 03-11-2026 15:50 IST: added end-of-session numbers (13-15); found 55 s healthy gap vs 60 s limit.
-- 03-11-2026 13:50 IST: BLK-001 report and 12 files.
 
 
 ---
@@ -1597,4 +1598,14 @@ sshha.<domain> as root -> a0d7b954-ssh (Pi) | up 5:07 (it had been up 2 d 22 h a
 Not tested: the jump aliases sshi5via7 / sshhavia7 named in the message (not in this sandbox's ssh config; the setup script path /home/user/Node-Hardware-Home does not exist here). Which connector/tunnel serves sshi7 and whether it survives the i5 tunnel being down: UNKNOWN.
 
 HTTPS check 04-11 00:10 IST: sshha / sshi5 / sshi7 -> HTTP 302 to the Cloudflare Access login; sshj1800 and sshpi -> no HTTP response (hostnames gone). box_reach.sh no longer tries them.
+```
+
+### FILE audit_031126_BLK001_livewatch/35_restart_policy_always.txt  sha256=84655d2b9db76895  bytes=1258
+```
+RESTART POLICY CHANGE, 04-11-2026 00:30 IST, i5 and i7 (read-only inspection before, docker update after)
+Before: every recorder/puller container had RestartPolicy 'unless-stopped' (inspect). After the 03-11 12:08 and 12:42 power losses they stayed down until started by hand.
+Hypothesis (UNPROVEN): the NAS shutdown stops containers like a manual 'docker stop', and 'unless-stopped' does not restart those after the daemon comes back; 'always' does.
+Applied: docker update --restart=always on broker_login, pull_lease_ctl, tickrec, depthrec, upstoxrec, fyerstbt, dp_guard, fullpuller, puller930, dp_voter (all present on both boxes; inspect shows 'always' after; i7 dp_voter was already exited and stays so). NOT touched: cloudflared, portainer, blpro_09, watchtower and every unrelated container.
+Compose: restart: always added to broker_login, dp_voter, fullpuller, puller930, tickrec, depthrec, upstoxrec, fyerstbt (pull_lease_ctl and dp_guard are not in this compose: their setting lives only in the container until whatever created them recreates them). Compose deployed to both boxes (md5 checked), no container recreated.
+Proof still missing: a real reboot or Docker restart at a quiet time. Not done tonight because the market opens in a few hours.
 ```

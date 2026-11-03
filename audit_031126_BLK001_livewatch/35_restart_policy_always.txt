@@ -1,0 +1,6 @@
+RESTART POLICY CHANGE, 04-11-2026 00:30 IST, i5 and i7 (read-only inspection before, docker update after)
+Before: every recorder/puller container had RestartPolicy 'unless-stopped' (inspect). After the 03-11 12:08 and 12:42 power losses they stayed down until started by hand.
+Hypothesis (UNPROVEN): the NAS shutdown stops containers like a manual 'docker stop', and 'unless-stopped' does not restart those after the daemon comes back; 'always' does.
+Applied: docker update --restart=always on broker_login, pull_lease_ctl, tickrec, depthrec, upstoxrec, fyerstbt, dp_guard, fullpuller, puller930, dp_voter (all present on both boxes; inspect shows 'always' after; i7 dp_voter was already exited and stays so). NOT touched: cloudflared, portainer, blpro_09, watchtower and every unrelated container.
+Compose: restart: always added to broker_login, dp_voter, fullpuller, puller930, tickrec, depthrec, upstoxrec, fyerstbt (pull_lease_ctl and dp_guard are not in this compose: their setting lives only in the container until whatever created them recreates them). Compose deployed to both boxes (md5 checked), no container recreated.
+Proof still missing: a real reboot or Docker restart at a quiet time. Not done tonight because the market opens in a few hours.
