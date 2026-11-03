@@ -140,11 +140,16 @@ C-043,04-11-2026,the Pi restarted about 18:50 IST on 03-11,PROVEN (uptime 5:07 a
 C-044,04-11-2026,the old hostnames sshj1800 and sshpi no longer exist (no HTTP response); sshha, sshi5, sshi7 answer with the Cloudflare Access login redirect,PROVEN,audit_031126_BLK001_livewatch/34_direct_cf_routes_tested.txt,so the earlier 'Bad Gateway' (C-015) was a stale hostname, not a broken connector; offshore login from a laptop NOT TESTED
 C-045,04-11-2026,containers restart after a power cut without a DSM task,CONFIGURED NOT PROVEN,audit_031126_BLK001_livewatch/35_restart_policy_always.txt,'unless-stopped' did not bring recorders back after the 03-11 power losses (they exited with code 0/137/143 and stayed down: consistent with Synology stopping containers at shutdown = a manual stop); 'always' restarts regardless per Docker documentation; applied with docker update on 10 containers per box and in the compose; behaviour on these boxes only provable by a reboot
 C-046,04-11-2026,the whole home LAN can be reached through Cloudflare Access with ssh -D / -L from a device with cloudflared,PROVEN from the cloud sandbox (outside the LAN) via the Pi only,audit_031126_BLK001_livewatch/36_home_connect_tested.txt,SOCKS via the Pi reached i5/i7/Pi ssh banners and Home Assistant (HTTP 200); local forwards to DSM i5 and i7 returned HTTP 200; via the i5 and i7 forwarding is REFUSED (Synology sshd: administratively prohibited); from the owner's own laptop on the hotspot NOT TESTED; not usable on a company-managed laptop (policy/XDR)
+C-047,04-11-2026,dp_depthrec and dp_upstoxrec now skip known NSE holidays (auditor A3 fixed),PROVEN (tests+mutation+live import check),audit_031126_NIGHT_weekly_extras_move/12-16 + 16_a3_holiday_fix_raw.txt,dp_calendar baked into the image, md5-verified identical to /src inside the running containers both boxes; NOT independently re-audited by Fable/outside auditor
+C-048,04-11-2026,deploying the A3 fix caused a live depthrec/upstoxrec outage (both boxes) when a cleanup command removed the running containers instead of only the stuck duplicates,TRUE (author's own error),audit_031126_NIGHT_weekly_extras_move/16_a3_holiday_fix_raw.txt,T-1314; outage window unmeasured (estimate 3-5 min); occurred outside the 09:00-15:40 session window so no live market data was lost; fixed by immediate docker compose up
+C-049,04-11-2026,/volume2 on i5 off-market growth rate measured between two byte-level df readings (21:39 and 00:50),PROVEN,audit_031126_BLK002_raw_proof/04 + 05 + this entry,used 216063025152->216078082048 bytes (+15056896 B = ~14.4 MB) over ~3h11m = ~4.5 MB/h off-market; the earlier df -h '~3 days' estimate (C-021) stays RETRACTED; a session-hours reading is still needed for the real rate
+C-050,04-11-2026,the i5 gap histogram (tool 31) is complete for all 4 recorders,FALSE - PARTIAL,audit_031126_BLK001_livewatch/32_gap_histogram_i5.csv,ticks and depth present (10 days each, two depth-20261029 rows read 0 rows - read anomaly, unexplained); upstox_live, fyers_tbt and ALL of 03-11 depth are MISSING; the i7 histogram (33) is complete and stands as the stronger evidence for the 90 s threshold
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 01:50 IST: A3 fix deployed (depth/upstox recorders now holiday-aware); deploy caused a disclosed brief outage of both recorders on both boxes (T-1314, C-048); i5 gap histogram finalized as PARTIAL (C-050), not retried further; SSD off-market growth rate measured (C-049).
 - 04-11-2026 01:15 IST: tools/home_connect.sh (SOCKS + forwards to the whole LAN, Pi as jump host) tested from outside the LAN; i5/i7 forbid forwarding. C-046.
 - 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.
 - 04-11-2026 00:12 IST: owner gave the three URLs; HTTPS check: sshha, sshi5, sshi7 live behind Access; sshj1800 and sshpi do not exist (C-015's Bad Gateway was a stale hostname). C-044.
@@ -157,7 +162,6 @@ C-046,04-11-2026,the whole home LAN can be reached through Cloudflare Access wit
 - 03-11-2026 21:20 IST: auditor 1 response stored; README now inlines all evidence; livewatch v2 (90 s + per-connection) written, NOT deployed; new files 18-24 and BLK002/04; C-005, C-009 updated, C-019..C-022 added; /volume2 99% full registered (T-1312).
 - 03-11-2026 16:20 IST: added README (fixed entry point), AUDITOR_PROTOCOL, LATEST, CLAIMS_LEDGER, MANIFEST/SHA256SUMS, AUDITOR_RESPONSES template, 17_access_routes_raw.txt.
 - 03-11-2026 16:10 IST: CORRECTION to 13_ADDENDUM: Dhan d20 gaps were hidden because the gap script merged d20 and d200 frames. Claim C-006 RETRACTED. livewatch consequence added.
-- 03-11-2026 15:55 IST: added BLK-002 step 1 raw proof (no code written).
 
 
 ---
@@ -1553,7 +1557,7 @@ fyers_tbt,frames,20261028,41761,3,0,0,0,0,12:21:38,15:29:59
 fyers_tbt,frames,20261103,71027,1381,2,2,2,2,09:15:00,15:29:59
 ```
 
-### FILE audit_031126_BLK001_livewatch/32_gap_histogram_i5_PARTIAL.csv  sha256=40dc8a93d4092bcb  bytes=1167
+### FILE audit_031126_BLK001_livewatch/32_gap_histogram_i5.csv  sha256=6f285ae7463a02c3  bytes=3027
 ```
 recorder,conn,day,rows,max_gap_s,>60,>90,>120,>180,first,last
 ticks,NIFTY,20261015,88985,11,0,0,0,0,09:18:06,15:29:59
@@ -1576,6 +1580,39 @@ depth,d20,20261019,95504,8,0,0,0,0,09:15:00,15:29:59
 depth,d200,20261019,93305,6,0,0,0,0,09:15:00,15:29:59
 depth,d20,20261021,94009,3,0,0,0,0,09:15:00,15:29:59
 depth,d200,20261021,94592,4,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261022,95428,2,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261022,93757,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261023,93807,2,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261023,93081,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261027,52485,3,0,0,0,0,11:29:54,15:29:59
+depth,d200,20261027,48708,3,0,0,0,0,11:29:53,15:29:59
+depth,d20,20261028,82136,4,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261028,76934,6,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261029,0,0,0,0,0,0,,
+depth,d200,20261029,0,0,0,0,0,0,,
+depth,d20,20261030,75080,1798,1,1,1,1,09:15:00,15:29:59
+depth,d200,20261030,69187,1820,1,1,1,1,09:15:00,15:29:59
+depth,d20,20261016,94477,4,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261016,96770,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261019,95504,8,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261019,93305,6,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261021,94009,3,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261021,94592,4,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261022,95428,2,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261022,93757,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261023,93807,2,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261023,93081,2,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261027,52485,3,0,0,0,0,11:29:54,15:29:59
+depth,d200,20261027,48708,3,0,0,0,0,11:29:53,15:29:59
+depth,d20,20261028,82136,4,0,0,0,0,09:15:00,15:29:59
+depth,d200,20261028,76934,6,0,0,0,0,09:15:00,15:29:59
+depth,d20,20261029,0,0,0,0,0,0,,
+depth,d200,20261029,0,0,0,0,0,0,,
+depth,d20,20261030,75080,1798,1,1,1,1,09:15:00,15:29:59
+depth,d200,20261030,69187,1820,1,1,1,1,09:15:00,15:29:59
+depth,d20,20261102,79518,24,0,0,0,0,09:15:19,15:29:59
+depth,d200,20261102,74250,24,0,0,0,0,09:15:00,15:29:58
+# PARTIAL: upstox_live, fyers_tbt and depth-20261103 are MISSING (process did not complete this far); depth-20261029 shows 0 rows (read anomaly, unexplained). See CLAIMS_LEDGER C-050. The i7 file (33) is complete.
 ```
 
 ### FILE AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md  sha256=8ab7e0a58809593b  bytes=2191
@@ -1619,4 +1656,15 @@ Jump via Pi (root, sshha): SOCKS5 CONNECT to 192.168.2.130:8123 -> HTTP/1.0 200 
 Script 'up' via the Pi: status shows the three ssh banners through the proxy; local forward 127.0.0.1:8123 -> HA HTTP 200; 127.0.0.1:5101 (DSM i5) and :5102 (DSM i7) over TLS -> HTTP/1.1 200 OK; 'down' closes it.
 Artifact: an earlier curl test of http://192.168.2.1 returned 403: that came from the sandbox's own egress proxy, NOT from the home router; ignore it.
 Defects found and fixed while testing: ssh -f held the terminal's output open (now -E logfile); status used a fragile nc call (now a python SOCKS probe).
+```
+
+### FILE audit_031126_NIGHT_weekly_extras_move/16_a3_holiday_fix_raw.txt  sha256=5e1e93cb1c8f31d8  bytes=3027
+```
+A3 FIX (holiday-aware in_session for depthrec/upstoxrec), 04-11-2026 ~01:15-01:50 IST
+Fable (night review) flagged A3: dp_depthrec.in_session and dp_upstoxrec.in_session were weekday-only, with no holiday awareness, while dp_tickrec.in_session already checks dp_calendar.classify(date) != TRADING_DAY (silent except-pass fallback). Fixed by mirroring that exact pattern in both recorders.
+Tests: 4 new tests added (2 per file: known holiday -> False, TRADING_DAY -> unaffected, missing dp_calendar import -> falls back to weekday-only, never crashes). Full suite: tests.test_dp_depthrec (10) + tests.test_dp_upstoxrec (11) + tests.test_weekly_recorders (18) + tests.test_tickrec_extra (10) + tests.test_livewatch (25) = 70+ tests, ALL PASS (TZ=Asia/Kolkata).
+Mutation: holiday check line replaced with `if False:` in each file -> test_known_holiday_is_out_of_session_auditor_a3 FAILED in each -> caught. Restored, re-ran, OK.
+PRE-DEPLOY VERIFICATION (important): checked whether dp_calendar.py is actually reachable from /app (the entrypoint only `cp`s dp_depthrec.py/dp_upstoxrec.py/dp_recguard.py into /app, NOT dp_calendar.py - this is the SAME shape of bug Fable found in the tickrec/nifty50_syms.txt case earlier tonight). Result: dp_calendar.py is baked into the fullpuller:latest IMAGE itself (not copied by this entrypoint at all) and its md5 inside the container (14a5be82662cd5f7f134e86b89585dec) matches /src/dp_calendar.py byte for byte. So, unlike the tickrec case, this import succeeds in production. Verified post-deploy: `grep -c dp_calendar /app/dp_depthrec.py` = 3, `/app/dp_upstoxrec.py` = 2, on BOTH i5 and i7, after the container recreate.
+DEPLOY INCIDENT (disclosed, not hidden): deploying hit the same container-recreate hang seen earlier tonight under box IO load (box load 25-40). While cleaning up stuck 'Created' (not started) duplicate containers, I ran `docker rm -f depthrec upstoxrec` and this ACTUALLY REMOVED the live, running depthrec+upstoxrec on BOTH i5 and i7 (not just the stuck duplicates), leaving BOTH boxes with NO depthrec/upstoxrec container at all for an unmeasured window (estimated 3-5 minutes from the command timeline, not independently timestamped against the day files). Caught within the same session by a routine `docker ps` check; fixed immediately with `docker compose up -d --no-deps depthrec upstoxrec` on each box; both came back healthy within ~15-30 s of that command. NOT measured: the exact data gap this caused in the depth/upstox day files on either box (the live session was between the 03-11 close and the 04-11 open, so NO live market data was lost - the gap is a recorder-uptime gap only, during a period dp_calendar/in_session would have kept these recorders IDLE anyway outside 09:00-15:40). Registered as T-1314.
+NOT RE-AUDITED: this specific fix (A3) has not yet been sent through a second Fable/outside-auditor pass, unlike every earlier change tonight. Flagging this explicitly so the ledger does not imply independent verification that did not happen.
 ```
