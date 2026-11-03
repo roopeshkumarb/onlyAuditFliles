@@ -1,0 +1,124 @@
+PART 1 of 3 - BL Pro live-only audit. Read this part first: it holds the README, the questions M1-M7 and the live-only list. Parts 2 and 3 are the instrument lists. Do not answer until you have all 3 parts and each ends with 'END OF FILE'.
+
+LIVE-ONLY AUDIT V2 WITH FULL INSTRUMENT LISTS (021126-2323 IST). 4 files after this README; each whole and each ends with an 'END OF FILE n' line: if you do not see it the file was truncated, STOP and say so. Start with 001 (questions M1-M7).
+  001 001_BRIEF.txt 10 lines md5 77fc04ceefaffb17fc748ad52eb7668f
+  002 002_LIVE_ONLY_LIST.txt 99 lines md5 3c94a7930d6312a7a5a2c3730beb02a7
+  003 003_INSTRUMENTS_I5.txt 321 lines md5 a8484c160ed68e816ab6c721d3373d5e
+  004 004_INSTRUMENTS_I7.txt 307 lines md5 80c2967d5de3cee7c71baaf0eead484e
+
+FILE 1 of 4 | 10 lines | md5 77fc04ceefaffb17fc748ad52eb7668f
+AUDIT BRIEF V2: LIVE-ONLY DATA PER BROKER WITH EVERY INSTRUMENT NAME, 02-11-2026. Independent auditor. Owner: retail trader, advisory only.
+Files: 002 = the live-only list (per broker, with limits, plus the reconciliation of the first audit), 003 = EVERY instrument each live recorder subscribes to on the i5 (read from today's recorder files), 004 = the same on the i7. Both boxes record in parallel.
+Quote the line you rely on. UNKNOWN if you cannot tell. No invented numbers.
+M1 For each broker recorder (Kite ticks, Dhan depth, Upstox live feed, Fyers TBT, snapshots): read the instrument names in 003 and 004. Are they the right ones for a NIFTY intraday retail edge (which strikes, which expiries, which index and futures)? Name any missing contract class (e.g. next weekly expiry, BANKNIFTY, futures) and any wasted subscription.
+M2 Do the i5 and i7 lists agree? Where they differ, say what differs and whether it matters.
+M3 Is the number of subscribed instruments inside each broker's limit in 002 (per connection and per user), counting BOTH boxes at once? Show the sum.
+M4 Dhan depth: the recorder has 20-level depth on about 50 contracts. Is that a good use of the 5-connection limit? What would you change?
+M5 Fyers TBT: the i7 folder shows only three day files (2026-10-20, -27, -28). What does that imply about TBT coverage, and what should we do?
+M6 Re-check section 'AUDIT 1 RECONCILIATION' in 002: do you agree with each decision? Mark any you disagree with and say why.
+M7 VERDICT: APPROVE / APPROVE WITH CONDITIONS (list) / REJECT (list), for 'is this list of live-only instruments and recorders correct enough to build one dedicated recorder per broker on both boxes?'
+END OF FILE 1 - if you do not see this line, the file was truncated: STOP and say so.
+
+FILE 2 of 4 | 99 lines | md5 3c94a7930d6312a7a5a2c3730beb02a7
+# LIVE-ONLY DATA PER BROKER (no history endpoint) - research 02-11-2026, read-only
+Paths: BO = docs/framework/broker_offer/ ; OVH = docs/framework/data_need/OFFER_VS_HELD_291026.md ; NSL = docs/framework/data_need/NEW_SYSTEM_NEED_LIST_301026.md ; F7 = docs/audit/F7_BROKER_LIMITS_301026.md ; BDM = docs/audit/BROKER_DEPTH_MEASURED_261026.md ; REC = config/recoverability.json.
+Line numbers are the file lines in the V2 files. "Recorder?" column = code found by grep, NOT proof it ran (OVH holds the held-data counts, quoted as OVH says).
+Status words: MEASURED = we called the API (F7/BDM); DOCUMENTED-ONLY = vendor page read, no call; UNKNOWN = sources silent.
+
+## 1. UPSTOX PLUS (file BO/UPSTOX_OFFERED_V2_291026.md)
+| item | endpoint / socket | why live-only (quote, file:line) | limits that matter | status | recorded by us? |
+|---|---|---|---|---|---|
+| Market Data Feed V3: ltpc / full ticks (LTP, ltq, 5-level bidAskQuote, atp, tbq/tsq, oi, iv, IEP/IEQ/imbalance) | GET /v3/feed/market-data-feed/authorize then wss, protobuf (row 16) | "no raw tick or option-chain history is offered" (line 118: "none found anywhere in the sitemap (about 270 pages) or the spec. Historical depth is only candles (with OI) and expired-contract candles.") | Normal 2 conn; Plus 5 conn (line 83-84). Tick rate UNKNOWN (line 117) | DOCUMENTED-ONLY | YES-CODE pullers/shared/dp_upstoxrec.py (raw zlib frames to upstox_live/<box>/upstox_YYYYMMDD.db). OVH row 26: "upstox_*.db frames on i5: 9 days ... ~157k frames/day, 45 instruments; 20261020 only 297 frames". i7: UNKNOWN |
+| 30-level depth (mode full_d30) | same feed (row 17), Plus only | row 17 "Live"; line 118 as above | "50 keys per connection, combined 1,500" (line 84) | DOCUMENTED-ONLY | Same file dp_upstoxrec.py (OVH row 42 says "full_d30"). Whether the recorder really requests full_d30 vs full: not verified by me -> UNKNOWN |
+| Live option chain snapshot (bid/ask/qty, OI, prev_oi, IV/delta/gamma/theta/vega/pop per strike) | GET /v2/option/chain (row 8) | line 119: "Historical IV / Greeks / bid-ask history: not offered; Greeks exist live only (rows 8, 10, 16)." | "Other standard": 50/s, 500/min, 2000/30min (line 78) | DOCUMENTED-ONLY | YES-CODE tools/upstox_chain_live.py, pullers/shared/dp_snap.py (line 118 calls /option/chain). OVH row 22: "upstoxpuller opt_chain=1651354" |
+| Option Greeks quote V3 | GET /v3/market-quote/option-greek (row 10) | row 10 "Live"; line 119 | key cap CONFLICT 50 vs 500 (row 10) | DOCUMENTED-ONLY | OVH row 24: "ABSENT"; no collector found -> NOT recorded |
+| Full market quote V3 (depth 5, bid/ask, CAS fields from 4-Sep-2026) | GET /v3/market-quote/quotes (row 11) | row 11 snapshot, "Live" | 500 keys; Other standard limits | DOCUMENTED-ONLY | PARTIAL tools/depth_capture.py (uses /market-quote/quotes, 5 levels), dp_snap.py line 151. Held proof UNKNOWN |
+| LTP / OHLC quote V2/V3 | /v3/market-quote/ltp etc. (rows 13,15) | "Live" snapshot | 500 keys (V2 spec says 1000: conflict, row 15) | DOCUMENTED-ONLY | UNKNOWN (OVH row 25 "none by name") |
+| Closing-auction CAS fields (IEP, IEQ, imbalance, reference price, casMarketStatus, preOpenSessionStatus) | inside quote V3 full and feed full/full_d30 (line 93) | line 93 "4-Sep-2026 CAS Market Data ..."; no history anywhere (line 118) | as feed | DOCUMENTED-ONLY | Only if full frames are decoded later; no CAS-specific recorder found -> UNKNOWN |
+| Upstox news | GET /v2/news | OVH row 36: "'news published in the past 7 days'. ... Cannot back-fill." (7-day window, not zero history) | 30 keys, page 1-100 | DOCUMENTED-ONLY | pullers/shared/dp_news.py; OVH: "news_items=11 (NEAR ZERO)" |
+| Market status / segment status | GET /v2/market/status/{exchange} + first feed msg | OVH row 35 live | UNKNOWN | DOCUMENTED-ONLY | "NO-CODE FOUND" (OVH row 35) |
+
+## 2. DHANHQ (file BO/DHAN_OFFERED_V2_291026.md)  - plan: Data APIs Rs 499/month (line 23). OVH says pullers/shared/dp_snap.py docstring contradicts "free" -> plan status UNKNOWN
+| item | endpoint / socket | why live-only | limits | status | recorded? |
+|---|---|---|---|---|---|
+| 200-level depth (bid 41 / ask 51, up to 200 rows) | wss://full-depth-api.dhan.co/twohundreddepth (row 13) | row 13 "Live only"; line 119: "Historical Greeks, historical option-chain snapshots, historical depth, historical ticks: NONE found on any page read." | 1 instrument per connection (line 90); NSE Equity + Derivatives only | DOCUMENTED-ONLY | YES-CODE pullers/shared/dp_depthrec.py. OVH row 57: "conn='d200' NOT queried" -> held proof UNKNOWN |
+| 20-level depth | wss://depth-api-feed.dhan.co/twentydepth (row 12) | row 12 "Live only" | 50 instruments per connection (line 89) | DOCUMENTED-ONLY | YES-CODE dp_depthrec.py. OVH row 56: "depth_*.db on i5: 7 days (16,19,21,22,23,27,28 Oct), ~190k frames/day, 51 instruments; gaps 15,20,24-26 Oct". i7 NOT measured |
+| Live feed Ticker / Quote / Full (5-level depth, OI) / OI / PrevClose / MarketStatus / Index packets | wss://api-feed.dhan.co (rows 4-10) | rows 5-10 "Live only"; row 65 note: "there is no separate per-trade or trade-by-trade stream and no historical tick endpoint" | 5 conn/user, 5,000 instr/conn, 100 per subscribe (line 88) | DOCUMENTED-ONLY | OVH row 58: "Dhan live-feed recorder NOT isolated: UNKNOWN" |
+| CAS live feed (IEP, imbalance, 5-level depth, indicative index close) | same host, subscribe 23 (row 14) | row 14 "Live only" | rate UNKNOWN; "Pro Traders Plan" badge | DOCUMENTED-ONLY | NOT recorded (no code found) |
+| Option chain snapshot (bid/ask top, greeks, iv, oi, prev oi) | POST /optionchain (row 15) | OVH row 59 "No history"; line 119 | "1 request per 3 seconds per unique underlying+expiry; ALSO 10 unique scrips per 8 seconds" (line 83) | DOCUMENTED-ONLY | YES-CODE pullers/shared/dp_snap.py line 195 |
+| Market quote LTP / OHLC / Full (5 levels) | POST /marketfeed/{ltp,ohlc,quote} (rows 17-19) | "Live snapshot" | 1,000 instruments, 1 req/s across quote endpoints (rows 17-19) | DOCUMENTED-ONLY | PARTIAL dp_snap.py line 303 (/marketfeed/quote) |
+| News headlines | POST /data/newsheadline (row 22) | OVH row 62 "NO history, publishDate to the day only" | limit 1-50 | DOCUMENTED-ONLY | dp_news.py says Dhan BLOCKED DH-902 since 24-10 13:35 -> UNKNOWN shape |
+| Market movers, technical indicators | rows 20-21 | OVH row 60: "point-in-time, no history" | Data APIs 5/s | DOCUMENTED-ONLY | UNKNOWN (no collector found) |
+
+## 3. KITE CONNECT (file BO/KITE_OFFERED_V2_291026.md)
+| item | endpoint / socket | why live-only | limits | status | recorded? |
+|---|---|---|---|---|---|
+| WebSocket ticks ltp / quote / full (184-byte packet: 5 bid + 5 offer, OI, OI hi/lo, exchange ts) | wss://ws.kite.trade (rows 8-10) | rows 8-10 "live-only"; line 88: "Historical tick data, historical depth, historical order flow, historical option chain, Greeks/IV ... none appear on any page read." | "3000 instruments per connection, 3 connections per API key" (line 69); push rate UNKNOWN (line 92) | DOCUMENTED-ONLY | YES-CODE pullers/shared/dp_tickrec.py (KiteTicker MODE_FULL). OVH row 49: "ticks_*.db on i5: 10 days 15-28 Oct, ~2.2-3.5M ticks/day; 20261020 only 2,924 ticks". i7 NOT measured |
+| Quote snapshot (GET /quote, 5-level depth, OI, circuits) | /quote, /quote/ohlc, /quote/ltp (rows 5-7) | "live-only" (rows 6,7) | quote group 1 req/s; /quote 500 instruments (OVH row 46), ohlc/ltp 1000 (rows 6-7) | DOCUMENTED-ONLY | OVH rows 46-48: "Kite quote collector NOT isolated: UNKNOWN" |
+| Websocket order/message text frames | same socket (row 11) | "live-only" | n/a | DOCUMENTED-ONLY | own-account data, not market data |
+| Instrument master (today only) | GET /instruments (row 12) | OVH row 51 "Live contracts only; tokens reused after expiry" | daily dump ~08:30 | DOCUMENTED-ONLY | dp_instruments.py: OVH "YES-CO..." (row truncated) |
+| Depth beyond 5 levels | NOT OFFERED (line 87: "no 20/30/200-level depth documented ... absence inference") | n/a | n/a | n/a | n/a |
+| Expired options | NOT SERVED (OVH row 45, staff Dec 2021) -> data that exists nowhere from Kite | n/a | | | |
+Candle caveat (row 13): "latest minute candle is NOT guaranteed at the minute end ... not recommended to use for live market strategies".
+
+## 4. FYERS PRIME (file BO/FYERS_OFFERED_V2_291026.md)
+| item | endpoint / socket | why live-only | limits | status | recorded? |
+|---|---|---|---|---|---|
+| TBT 50-level depth, tick-by-tick (snapshot then deltas) | wss://rtsocket-api.fyers.in/versova (row 20) | row 20 "live only"; line 89: "Depth history: none offered (depth is live only: REST snapshot, 5-level socket, 50-level TBT)." Also "tick history, trade-by-trade data, order-flow history: none offered." | "TBT socket: 1 / 15 symbols per user across connections; connections 1 / 3; symbols per connection 1 / 5; 50 channels per connection" (line 61, Standard / Prime). MEASURED 16-10: dp_fyerstbt.py docstring "Fyers refused 15 with 'symbol count exceeds limit: 5'" | MEASURED (per-connection 5) + DOCUMENTED (15 total) | YES-CODE pullers/shared/dp_fyerstbt.py. OVH row 12: "tbt_*.db on i5, 7 days (16,20,22,23,26,27,28 Oct); 5 instruments/day; 20261020 broken (53 frames)". i7 NOT measured |
+| Data socket SymbolUpdate (ltp, bid/ask price+size, tot_buy/sell qty, atp) / Lite / Indices | FyersDataSocket (rows 16-19); URL not on pages read | rows 16-19 "live only" | "Data socket: 100 / 5,000 symbols per user across all connections" (line 60) | DOCUMENTED-ONLY | UNKNOWN (no Fyers data-socket recorder found in pullers/shared) |
+| Depth update 5-level (type dp) | same socket (row 18) | "live only" | same cap | DOCUMENTED-ONLY | UNKNOWN |
+| REST depth snapshot 5-level | GET /data/depth (row 12) | live snapshot, line 89 | exactly 1 symbol per request | DOCUMENTED-ONLY | YES-CODE dp_snap.py (line 695). OVH row 11: "FyersAPI.db depth_snap=5554" |
+| Live option chain (bid, ask, oi, oich, greeks=1, India VIX, callOi/putOi) | GET /data/options-chain-v3 (row 8) | F7 line 138: "A past time is rejected. The chain endpoint gives no history; option-chain snapshots must be recorded by us live." | Prime Data APIs 10/s, 500/min, 5,00,000/day; Standard 5/s, 50/min, 5,000/day; >3 per-minute breaches in a day = blocked rest of day (lines 54,57) | MEASURED (F7 test 5) | YES-CODE dp_snap.py (line 648). OVH row 8: "FyersAPI.db option_chain_snap=397677 (daily files 10-10 to 28-10)" |
+| Futures chain | GET /data/futures-chain (row 9) | row 9 "live ... currently available contracts" | Data API group | DOCUMENTED-ONLY | OVH row 9: "futures_snap=1262" but "NO-CODE FOUND" for collector |
+| Quotes with spread/bid/ask + call-auction fields (imbalance, mkt_imbalance, reference_price, indicative_price, from 01-Oct-2026) | GET/POST /data/quotes (rows 10-11) | "snapshot ... live"; no history | Prime 1,000 / Standard 50 symbols per request | DOCUMENTED-ONLY | OVH row 10: "none by name" -> UNKNOWN |
+| Market status (CAS_START ... CAS_END) | GET /data/marketStatus (row 13) | live | UNKNOWN | DOCUMENTED-ONLY | "Fyers collector NOT FOUND" (OVH row 13) |
+| Seconds candles 5S-45S | /data/history (row 3) | NOT live-only: "history is available for 30 Trading Days only" (Prime). BDM: "so it must be recorded daily or lost". Rolling-window item, listed for completeness | | DOCUMENTED-ONLY | UNKNOWN |
+
+## 5. NSE (file BO/NSE_OFFERED_V2_291026.md)
+| item | endpoint | why live-only | limits | status | recorded? |
+|---|---|---|---|---|---|
+| Option chain live v3 (best bid/ask only, OI, IV, volume; no Greeks, no depth beyond level 1) | nseindia.com/api/option-chain-v3 (row 33) | row 33 "Live snapshot (no history) | None offered"; line 119: "Historical (past-date) option chain snapshots from NSE: no free source seen. The option chain is live only" | policy: line 131 NSE bars scripted collection | MEASURED (probe, 29-10) | grep found NO collector for nseindia option-chain in pullers/tools -> UNKNOWN / likely NOT recorded |
+| Live indices incl. India VIX | /api/allIndices (row 34) | "Live snapshot | None" | same | MEASURED | PARTIAL pullers/shared/dp_nse_reports.py line 241 (allIndices, daily market_activity) - cadence UNKNOWN |
+| Option chain contract info (expiries, strikes) | /api/option-chain-contract-info (row 32) | "Live only" | | MEASURED | UNKNOWN |
+| Pre-open market | /api/market-data-pre-open (row 35) | morning session only; answered empty outside window | | MEASURED (empty) | UNKNOWN |
+| Tick-by-tick trades/orders | NSE Data Sharing list (line 24) | CHARGEABLE: "historical data means data pertaining to 6 months before the date of request or before" - so it IS re-servable for a fee (not live-only, but the 6-month rule means the latest 6 months are not offered) | no-purchase rule (CLAUDE.md) | DOCUMENTED-ONLY | n/a |
+
+## DISAGREEMENTS AND UNKNOWNS
+1. Upstox option-greek key cap: page 50 vs OpenAPI 500 (BO/UPSTOX row 10). LTP/OHLC V2: spec 1000 vs page 500 (row 15).
+2. Upstox expired-candle depth: text "1minute last 1 month" vs F7 MEASURED 1-minute candles for 2024-09-02..2024-10-03 (8597 candles) - not limited to one month. (not live-only; shown because it feeds recoverability.)
+3. Fyers TBT: docs/PL say 15 symbols (Prime), 5 per connection; dp_fyerstbt.py measured 16-10 "refused 15 with 'symbol count exceeds limit: 5'" - consistent only if 15 means 3 connections x 5 (BO line 61). Never tested with 3 connections: UNKNOWN.
+4. Fyers option chain `timestamp`: page says "chain at timestamp" / MCP page "historical option chain" (BO Fyers lines 81, OVH row 8 UNKNOWN) vs F7 MEASURED: past time rejected, chain live only. F7 wins (measured).
+5. Dhan: whether 5-socket cap is shared between live feed and depth feeds: UNKNOWN (Dhan lines 75, 116). Whether depth covers index IDX_I: UNKNOWN (line 117).
+6. Dhan plan: BO says paid Rs 499; BDM says "plan reads FREE since 24-10 13:35"/"blocked"; dp_snap.py docstring says plan lists chain/depth; dp_news.py says DH-902 blocked since 24-10. Four sources disagree -> UNKNOWN.
+7. REC classification: config/recoverability.json patterns "tick","tbt","depth","quote","news","chain_snap" etc. = NON_RECOVERABLE. Names like "feed_v3", "websocket", "option_chain", "market_status" match no pattern -> UNKNOWN (treated NON_REC) (OVH rows 26,49,22).
+8. Tick update rate: Upstox, Kite, Dhan, Fyers all UNKNOWN (BO Upstox line 117; Kite line 92; Dhan line 118).
+9. i7 recording: OVH says "i7 NOT measured" for fyers TBT, kite ticks, dhan depth. All recorder claims above are i5 only.
+10. Recorder day gaps (OVH): 20261020 near-empty for ticks (2,924), TBT (53 frames), Upstox (297 frames); Dhan depth missing 15,20,24-26 Oct.
+11. Upstox Plus effect on REST limits and on ltpc/greeks/full subscription counts: not stated (BO Upstox lines 81, 85, 114).
+12. Kite Personal(Free) access to websocket/quote: UNKNOWN (BO Kite line 90).
+13. NSE: scripted collection forbidden by its own terms (BO NSE line 131); a live NSE chain recorder would need written permission.
+
+## WEBSOCKET CONNECTION LIMITS PER BROKER (quoted)
+* Upstox: "Normal: 2 connections per user. Subscriptions: LTPC 5000 individual / 2000 combined; Option Greeks 3000 / 2000; Full 2000 / 1500. Plus: 5 connections per user. Full D30: 50 keys individual / 1500 combined." (BO Upstox lines 83-84). Plus numbers for ltpc/greeks/full: "not stated" (line 85).
+* Dhan: "5 connections per user; 5,000 instruments per connection (25,000 total); 100 instruments per subscribe message; ping every 10 s, server closes after 40 s without pong" (BO Dhan line 88). "20-depth WS: 50 instruments per connection"; "200-depth WS: 1 instrument per connection"; "more than 5 sockets: oldest is dropped with code 805" (lines 89-91). Shared-or-separate: UNKNOWN.
+* Kite: "3000 instruments per connection, 3 connections per API key (so 9000)" (BO Kite line 69). Subscribe/message rate: UNKNOWN (line 70).
+* Fyers: "Data socket: 100 / 5,000 symbols per user across all connections; over the cap the connection is not established. Reconnect retry up to 50" (line 60). "TBT socket: 1 / 15 symbols per user across connections; connections 1 / 3; symbols per connection 1 / 5; 50 channels per connection" (line 61) (Standard / Prime).
+* NSE: no websocket offered (web JSON only).
+
+
+## AUDIT 1 RECONCILIATION (one external auditor, 02-11-2026 night; each point checked by me)
+Verdict: APPROVE WITH CONDITIONS. Connection limits the auditor quoted match section "WEBSOCKET CONNECTION LIMITS" above (checked line by line).
+| # | Auditor said | My check | Decision |
+|---|---|---|---|
+| 1 | Fyers seconds candles 5S-45S are not live-only (30 trading days of history) | RIGHT (the list itself says so) | Moved to ROLLING-WINDOW: must be pulled daily or lost; NOT on the strict live-only list |
+| 2 | Upstox news has a 7-day window | RIGHT | caveated: 7-day window, not zero history |
+| 3 | Dhan 200-depth = 1 instrument per connection; Fyers TBT = 5 symbols per connection (15 per user) | quoted limits match; design point: two boxes recording the SAME contracts waste connections, two boxes recording DIFFERENT contracts double coverage | decision for Kumar: duplicate (redundancy) or split (coverage) per feed; default: duplicate the tick/5-level feeds, split the 200-depth and TBT |
+| 4 | exit 137 means the OOM killer | WRONG as stated. 137 is SIGKILL. The i7 recorders were killed at 13:58, two minutes after the Docker service restart at 13:56. Whether memory played any part is UNKNOWN (their state was reset when I restarted them) | memory limits not added on this evidence |
+| 5 | Watchdog must check data freshness (last_tick), not only container state | RIGHT. A container can be Up with a closed socket (i7 status.json shows error 1006). | TO BUILD: during market hours, if last_tick is older than a set age, restart that one recorder; outside market hours never |
+| 6 | Move recorders to systemd | NOT POSSIBLE: needs DSM admin rights this session does not have | rejected for now; Docker restart policy + watchdog stays |
+| 7 | recoverability.json lacks upstox_live / fyers_tbt / ticks_ | PARTLY: 'tick' and 'tbt' already match ticks_ and fyers_tbt (substring test on the file NAME). upstox_live was not matched. | added upstox_live, live_feed, feed_frames, upstox_20; tests 25/25 |
+| 8 | pattern 'news' might not match news_events/news.db | WRONG: it is a substring test; I ran classify() on both: NON_RECOVERABLE | no change |
+| FOUND BY ME | rows_raw (classed RECOVERABLE) holds datasets option_chain and quote_depth in the puller DBs (non-recoverable snapshots) | from the coverage ledger: i5 Upstox option_chain 12.4M rows, quote_depth 243k; Dhan option_chain 3.26M | UNRESOLVED: placement must be per dataset inside rows_raw |
+END OF FILE 2 - if you do not see this line, the file was truncated: STOP and say so.
+
+END OF PART 1 of 3
