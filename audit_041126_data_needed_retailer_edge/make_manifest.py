@@ -23,6 +23,8 @@ docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md
 docs/framework/REGIME_DATA_NEEDED_041126.md
 docs/framework/FABLE_REVIEW_041126.md
 docs/framework/FABLE_REVIEW_ROUND2_041126.md
+docs/framework/FABLE_REVIEW_ROUND3_041126.md
+docs/approvals_evidence/README.md
 docs/framework/REQUIREMENTS_REGISTER.json
 docs/framework/APPROVALS_LEDGER.json
 docs/framework/APPROVALS_STATE.json
@@ -42,7 +44,7 @@ SECRET = [("RFC1918 address", re.compile(r"\b(?:192\.168|10\.\d{1,3}|172\.(?:1[6
           ("bearer/jwt", re.compile(r"(?i)bearer\s+[A-Za-z0-9._\-]{20,}|eyJ[A-Za-z0-9_\-]{10,}\.[A-Za-z0-9_\-]{10,}"))]
 # The hash chain file is a list of sha256 digests BY DESIGN; the opaque-string rule is skipped for that one file only
 # (every other rule still applies to it, and the opaque-string rule still applies to every other file).
-OPAQUE_ALLOWED_IN = ("APPROVALS_STATE.json",)
+OPAQUE_ALLOWED_IN = ("APPROVALS_STATE.json", "guard_report.json")  # both hold sha256 chain heads by design (anchor_history)
 def sha(p):
     h = hashlib.sha256()
     with open(p, "rb") as f:

@@ -499,6 +499,47 @@ class FableRound2(Base):
         self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), ["retailer_db_edge.db"])
 
 
+class FableRound3(Base):
+    """Round 3 mutants BN1 (the output may be its own source) and BN3 (duplicate source labels) survived."""
+
+    def test_bn1_output_file_may_not_be_a_source(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        before = sha(self.out)
+        with self.assertRaises(B.SourceRefused) as cm:
+            B.build(self.out, [(self.out, "self")])
+        self.assertIn("the output may not be a source", str(cm.exception))
+        self.assertEqual(sha(self.out), before)
+
+    def test_bn1b_scratch_file_may_not_be_a_source(self):
+        mk_source(self.a)
+        open(self.out + ".building", "wb").write(open(self.a, "rb").read())
+        with self.assertRaises(B.SourceRefused) as cm:
+            B.build(self.out, [(self.out + ".building", "scratch")])
+        self.assertIn("the output may not be a source", str(cm.exception))
+
+    def test_bn1c_relative_spelling_of_the_output_is_still_refused(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        rel = os.path.join(os.path.dirname(self.out), "..", "edge", os.path.basename(self.out))
+        with self.assertRaises(B.SourceRefused) as cm:
+            B.build(self.out, [(rel, "self")])
+        self.assertIn("the output may not be a source", str(cm.exception))
+
+    def test_bn3_duplicate_source_labels_are_refused(self):
+        mk_source(self.a)
+        mk_source(self.b)
+        with self.assertRaises(B.SourceRefused) as cm:
+            B.build(self.out, [(self.a, "x"), (self.b, "x")])
+        self.assertIn("every label must be unique", str(cm.exception))
+        self.assertFalse(os.path.exists(self.out))
+        self.assertFalse(os.path.exists(self.out + ".building"))
+
+    def test_bn3b_no_sources_is_refused(self):
+        with self.assertRaises(B.SourceRefused):
+            B.build(self.out, [])
+
+
 class Inventory(Base):
     def test_inventory_reports_and_writes_nothing(self):
         src = os.path.join(self.d, "src")

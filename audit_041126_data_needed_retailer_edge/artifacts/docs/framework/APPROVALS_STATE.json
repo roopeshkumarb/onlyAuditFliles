@@ -1,5 +1,9 @@
 {
  "title": "Accepted approvals hash chain - append only, written by tools/requirements_guard.py --accept-state",
+ "anchor": {
+  "length": 3,
+  "head": "ede85b820c962b5fc9a54251dc76df08ae72e1e4cb87284c463a2112d66b79cd"
+ },
  "entries": [
   {
    "seq": 1,
@@ -256,6 +260,134 @@
    },
    "prev": "c9117266ad3deb634d4e1807818acf32d878fbc58d4befb8f4804eca89c2289c",
    "hash": "68c9c2d90173c497e2fecd422018f5b1e94b9c6f754094863e11e4905b5a1d95"
+  },
+  {
+   "seq": 3,
+   "accepted_ist": "04-11-2026 12:50:51",
+   "builds": {
+    "tools/retailer_db_build.py": {
+     "claimed_status": "DRAFT",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    },
+    "tools/retailer_db_inventory.py": {
+     "claimed_status": "DRAFT",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    },
+    "tools/gen_data_needed_instruments_041126.py": {
+     "claimed_status": "DRAFT",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    },
+    "tools/requirements_guard.py": {
+     "claimed_status": "DRAFT",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    },
+    "config/recoverability.json": {
+     "claimed_status": "PROPOSED",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    },
+    "pullers/shared/dp_recoverability.py": {
+     "claimed_status": "PROPOSED",
+     "flags": {
+      "fable": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "external_auditor": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      },
+      "kumar": {
+       "value": false,
+       "evidence": "",
+       "sha256": ""
+      }
+     }
+    }
+   },
+   "prev": "68c9c2d90173c497e2fecd422018f5b1e94b9c6f754094863e11e4905b5a1d95",
+   "hash": "ede85b820c962b5fc9a54251dc76df08ae72e1e4cb87284c463a2112d66b79cd"
   }
  ]
 }

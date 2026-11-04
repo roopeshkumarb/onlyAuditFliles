@@ -1,5 +1,6 @@
 1. Files whose pack copy differs from the repo file by these text replacements [('192.168.2.x', '<LAN-subnet>'), ('192.168.', '<LAN>.')]:
 docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md
+docs/framework/FABLE_REVIEW_ROUND3_041126.md
 
 2. LINE ENDINGS: the copier reads in text mode, so CRLF in the repo file becomes LF in the pack copy. These files contained CR bytes, so their pack sha256 differs from the repo file's sha256 for that reason only:
 docs/framework/data_needed_instruments_041126.csv

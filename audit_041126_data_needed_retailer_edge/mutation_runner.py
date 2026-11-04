@@ -7,13 +7,13 @@ G, Bd = "tools/requirements_guard.py", "tools/retailer_db_build.py"
 TESTS = ["tests/test_requirements_guard.py", "tests/test_retailer_db_build.py"]
 M = [
  # id, file, old, new, count, description
- ("G1", G, 'if not os.path.isfile(full) or not os.path.realpath(full).startswith(root_real + os.sep):', 'if False:', 1, "delete the evidence-file-exists branch (Fable G1)"),
+ ("G1", G, 'if not os.path.isfile(full):', 'if False:', 1, "delete the evidence-file-exists branch (Fable G1)"),
  ("G2", G, 'PROBLEM_STATUS = ("DONE", "COMPLETE", "COMPLETED", "GREEN", "PROVEN", "APPROVED")', 'PROBLEM_STATUS = ("DONE", "COMPLETE")', 1, "shrink PROBLEM_STATUS to DONE/COMPLETE (Fable G2)"),
  ("G3", G, 'return 1 if rep["counts"][ALERT] else 0', 'return 0', 1, "main() always exits 0 (Fable G3)"),
  ("G4", G, 'if rec != _sha_bytes(data):', 'if False:', 1, "evidence sha256 never recomputed"),
- ("G5", G, 'if b["path"].encode("utf-8") not in data:', 'if False:', 1, "evidence need not name the build"),
+ ("G5", G, 'if not any(m.group(1).lower() == k and _norm_build(m.group(2)) == want for m in lines):', 'if False:', 1, "evidence need not carry 'APPROVAL <flag> APPROVES <this build>'"),
  ("G6", G, 'if not any(rel.startswith(d) for d in EVIDENCE_DIRS):', 'if False:', 1, "evidence may live anywhere (e.g. CLAUDE.md)"),
- ("G7", G, 'if any(rel.startswith(d) for d in EVIDENCE_EXCLUDED_DIRS):', 'if False:', 1, "artifacts/ copies accepted as evidence"),
+ ("G7", G, 'EVIDENCE_DIRS = ("docs/approvals_evidence/",)', 'EVIDENCE_DIRS = ("docs/",)', 1, "evidence folder widened to docs/ (Fable round-3 GN3)"),
  ("G8", G, 'if base in EVIDENCE_FORBIDDEN_NAMES or base.endswith(EVIDENCE_CODE_SUFFIXES):', 'if False:', 1, "code / control files accepted as evidence"),
  ("G9", G, 'if sp not in paths:', 'if False:', 1, "removed ledger row not alerted"),
  ("G10", G, 'if e.get("seq") != i or e.get("prev") != prev or e.get("hash") != _chain_hash(prev, i, e.get("builds", {})):', 'if False:', 1, "hash chain never verified"),
@@ -40,6 +40,26 @@ M = [
  ("B14", Bd, 'for suffix in ("-journal", "-wal", "-shm", ""):', 'for suffix in ("",):', 1, "scratch sidecars no longer removed"),
  ("B15", Bd, 'if kept is not None and kept[0] != row[sidx]:', 'if False:', 1, "supplier conflicts no longer recorded"),
  ("B16", Bd, 'fcntl.flock(dfd, fcntl.LOCK_EX | fcntl.LOCK_NB)', 'pass', 1, "build lock removed (Fable defect 5)"),
+ ("G17", G, 'link = _path_symlink(ctx["root"], rel)', 'link = None', 1, "symlinks inside the evidence path accepted (Fable round-3 trick B)"),
+ ("G18", G, 'if os.path.realpath(full) != os.path.join(os.path.realpath(ctx["root"]), *rel.split("/")):', 'if False:', 1, "realpath-equals-stated-path check removed (Fable round-3 GN1; expected EQUIVALENT, the symlink walk fires first)"),
+ ("G19", G, '        if len(ps) > 1:\n', '        if False:\n', 1, "duplicate ledger rows not refused (Fable round-3 trick F4)"),
+ ("G20", G, 'return os.path.normpath(str(path).strip().replace("\\\\", "/")).replace(os.sep, "/").casefold()', 'return str(path)', 1, "ledger build paths not normalised (aliases and case differ)"),
+ ("G21", G, 'elif state_anchor.get("length") != cur["length"] or state_anchor.get("head") != cur["head"]:', 'elif False:', 1, "state-file anchor not checked (tail deletion)"),
+ ("G22", G, 'if len(entries) < n or (n and entries[n - 1]["hash"] != last["head"]):', 'if False:', 1, "guard_report anchor_history not checked"),
+ ("G23", G, 'if len(head_entries) > len(entries) or any(h.get("hash") != e.get("hash") for h, e in zip(head_entries, entries)):', 'if False:', 1, "git HEAD copy of the chain not compared"),
+ ("G24", G, 'if REJECT_LINE.search(text):', 'if False:', 1, "'not approved' / 'rejected' / FAIL verdict lines accepted (Fable round-3 trick G)"),
+ ("G25", G, 'if len(new_true) > 1:', 'if False:', 1, "several flags may flip in one --accept-state (Fable round-3 trick A)"),
+ ("G26", G, 'if _git_show(ctx, ev) is None:', 'if False:', 1, "evidence need not be committed in git HEAD before the flip"),
+ ("G27", G, 'if probe is None:', 'if False:', 1, "true flags accepted when git history is unreadable"),
+ ("G28", G, '"guard_report.json", "readme.md", "readme.txt", "readme")', '"guard_report.json")', 1, "a README may be evidence (Fable round-3 trick A)"),
+ ("G29", G, 'if len(prose) < MIN_EVIDENCE_WORDS:', 'if False:', 1, "evidence with the APPROVAL line and no prose accepted"),
+ ("G30", G, 'if rel != raw:', 'if False:', 1, "non-canonical evidence path spellings accepted"),
+ ("G31", G, 'hist.append({"length": cur["length"], "head": cur["head"], "ist": now.strftime("%d-%m-%Y %H:%M:%S")})', 'pass', 1, "anchor_history never written to guard_report.json"),
+ ("G32", G, '"anchor": _anchor_of(entries), "entries": entries}', '"entries": entries}', 1, "anchor never written to the state file"),
+ ("BN1", Bd, 'if os.path.abspath(path) == out_path or os.path.abspath(path) == out_path + ".building":', 'if False:', 1, "output file may be its own source (Fable round-3 BN1)"),
+ ("BN1b", Bd, ' or os.path.abspath(path) == out_path + ".building":', ':', 1, "scratch .building file may be a source"),
+ ("BN3", Bd, 'if not sources or len(set(labels)) != len(labels):', 'if not sources:', 1, "duplicate source labels accepted (Fable round-3 BN3)"),
+ ("BN3b", Bd, 'if not sources or len(set(labels)) != len(labels):', 'if len(set(labels)) != len(labels):', 1, "empty source list accepted"),
 ]
 only = sys.argv[1:]
 res = []

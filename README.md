@@ -25,10 +25,10 @@ The author and any AI agent it spawns share one model family; you are the indepe
 
 ---
 
-# LATEST: open for verification (updated 04-11-2026 ~12:30 IST; newest first)
-## ROUND 5 (04-11 day) - UPDATED after Fable round 2 (report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND2.md): 12 of 14 round-1 findings FIXED, 2 partly; the guard FAILED as an approvals gate and was hardened; C-054 and C-055 RETRACTED and replaced by C-054b / C-055b. Fable round 3 PENDING.
+# LATEST: open for verification (updated 04-11-2026 ~12:55 IST after Fable round 3; newest first)
+## ROUND 5 (04-11 day) - UPDATED after Fable round 2 (report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND2.md): 12 of 14 round-1 findings FIXED, 2 partly; the guard FAILED as an approvals gate and was hardened; C-054 and C-055 RETRACTED and replaced by C-054b / C-055b. Fable round 3 PENDING. Fable round 3 done (AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND3.md): PASS for instrument list, census, puller design, recoverability config; builder and guard PASS-WITH-FIXES - fixed since, need a round 4 re-check.
 ## ROUND 5 (04-11 day): data-needed list per instrument, live census, retailer DB builder, guard
-Start with audit_041126_data_needed_retailer_edge/README.md (what is claimed, what is NOT proven, 10 questions) and DISAGREEMENTS.md (all 14 Fable round-1 findings and their fixes). Fable round-1 report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md. Claims C-051..C-055. Approvals: Fable round 2 PENDING, external auditor PENDING, owner PENDING - nothing is called done.
+Start with audit_041126_data_needed_retailer_edge/README.md (what is claimed, what is NOT proven, 10 questions) and DISAGREEMENTS.md (all 14 Fable round-1 findings and their fixes). Fable round-1 report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md. Claims C-051..C-055. Approvals: Fable has reviewed three times (r1 PASS-WITH-FIXES 14 findings; r2 guard FAIL as a gate; r3 PASS for list/census/design/config, PASS-WITH-FIXES for builder and guard) - NONE of that is an approval in the ledger. External auditor PENDING. Owner PENDING. Nothing is called done.
 ### R5-1 | which instruments are live-only vs pullable, per broker | NOT PROVEN
 Evidence: artifacts/docs/framework/data_needed_instruments_041126.csv + LIVE_CENSUS_041126.csv. Open: broker symbol cells UNKNOWN; GIFT NIFTY live is recorded nowhere; USDINR daily, BANKNIFTY options, Sensex F&O unrecorded. Auditor: is the live-only/pullable split right for an intraday regime+direction edge? Which table is misclassified?
 ### R5-2 | N-1 first live proof | census shows weekly expiry recording ON on both boxes (Dhan 49, Upstox 47)
@@ -163,6 +163,7 @@ C-055b,04-11-2026,"requirements_guard.py hardened after Fable round 2: approval 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 12:55 IST: Fable round 3 published; approvals gate tightened (evidence only from docs/approvals_evidence/, one flag per accept, chain anchored in 3 places); 141 tests; 53 mutations tried, 50 caught, 3 survive (2 fsync, 1 equivalent). Residual limit: one person with write access can still approve in three visible commits.
 - 04-11-2026 13:00 IST: CORRECTION - C-054 ('11 of 12 mutations caught', no log) and C-055 ('guard refuses to call a build DONE', flipped with evidence 'ok' in Fable round 2) RETRACTED; replaced by C-054b / C-055b with a real MUTATION_LOG (33 tried, 31 caught, 2 need a power cut). Guard hardened. Round-2 report published.
 - 04-11-2026 12:30 IST: ROUND 5 published - per-instrument data-needed list, live census (both boxes), retailer DB builder, requirements guard, Fable round-1 findings (14) with fixes. CORRECTION: C-053 (global_1m/opt_ohlc_1m misclassified as recoverable) and the 259/269 distinct-name figure (true: 236/246). C-051..C-055.
 - 04-11-2026 01:50 IST: A3 fix deployed (depth/upstox recorders now holiday-aware); deploy caused a disclosed brief outage of both recorders on both boxes (T-1314, C-048); i5 gap histogram finalized as PARTIAL (C-050), not retried further; SSD off-market growth rate measured (C-049).
@@ -175,7 +176,6 @@ C-055b,04-11-2026,"requirements_guard.py hardened after Fable round 2: approval 
 - 04-11-2026 00:10 IST: owner order 'add weekly expiry and the missing live-only recorders': weekly deployed (Dhan 6/5, Upstox 5/5), Kite extras (indices, ETF, BANKNIFTY fut, 50 constituents; macro off), DATA_NEEDED_FOR_EDGE list; Fable audit found 14 defects, fixed A1,A2,B1,B2,C (script copy-only),D; INCIDENT: SSD move script v1 moved two epoch-pointer files (restored). C-034..C-038. Corrections: weekly was on record on 15-10; four recorders not three.
 - 03-11-2026 22:30 IST: outside auditor round 2 stored; Fable verification of it stored (9 of 29 statements incorrect/unsupported); livewatch v3.1 (dry-run keeps every verdict, CSV log, bounded conn scan, never-connected conn = CONN_DEAD); dry-run daemons started on both boxes 22:16; gap-histogram tool added; C-028..C-033.
 - 03-11-2026 21:55 IST: independent Fable review + comparison with outside auditor stored (AUDITOR_RESPONSES/). livewatch v3 (22 tests, fail-closed, IST-explicit, per-day bound, frames-based freshness, alarm-only for multi-socket death, state dir off /tmp). CORRECTIONS: C-021 '~3 days' RETRACTED; C-027 'i5 has 3 routes' RETRACTED; C-022 now PROVEN; INDEX md5s were stale (regenerated). New files 02b, 20(v3), 25, 26, BLK002/05.
-- 03-11-2026 21:20 IST: auditor 1 response stored; README now inlines all evidence; livewatch v2 (90 s + per-connection) written, NOT deployed; new files 18-24 and BLK002/04; C-005, C-009 updated, C-019..C-022 added; /volume2 99% full registered (T-1312).
 
 
 ---

@@ -1,24 +1,25 @@
-MUTATION LOG - docs/audit_pack_041126 - 04-11-2026 (IST) - sandbox only, nothing run on a box or a real database
-Runner: docs/audit_pack_041126/mutation_runner.py (patches one exact string in a COPY, runs tests/test_requirements_guard.py + tests/test_retailer_db_build.py, stops at first failure).
-Result: 33 mutations tried, 31 CAUGHT, 2 SURVIVED.
+MUTATION LOG - requirements_guard.py and retailer_db_build.py (regenerated 04-11-2026 after Fable round 3)
+Runner: docs/audit_pack_041126/mutation_runner.py (each mutation patches ONE exact string in a throwaway copy, then runs tests/test_requirements_guard.py + tests/test_retailer_db_build.py; the repo is never modified).
 
-History, stated honestly: the first run caught 27 of 33 and 6 survived (G11, G12, G14, B1, B11, B12). Fable round 2 had already found G1-G3, B1, B2 surviving the earlier suite. For the four survivors that tests CAN kill, a test was added and the mutant re-run (G11, G12, G14, B1 -> CAUGHT). B1's first test was too weak: its assertion matched the hash message as well as the row-count message, so it survived until the assertion was tightened. The two fsync mutants stay SURVIVED.
+Result: 53 mutations tried, 50 CAUGHT, 3 SURVIVED. Guard mutants G1-G32: 32 tried, 31 caught, 1 survived. Builder mutants B1-B16 (+B1b) and BN1-BN3b: 21 tried, 19 caught, 2 survived.
+
+History, stated honestly: round 2 (33 tried): 31 caught, 2 fsync survivors. Fable round 3 then invented 8 new mutants; 4 survived the 117-test suite: GN1 (realpath containment, old requirements_guard.py:379), GN3 (EVIDENCE_DIRS widened to docs/, :64), BN1 (output may be its own source, retailer_db_build.py:483), BN3 (duplicate source labels, :477). Round 3 also showed the gate could be flipped with six tricks (README/pack doc as evidence plus two commands, a symlink in the pack dir, a 40-byte file of path and spaces, a duplicate ledger row spelled ./tools/..., deleting the chain tail, a note saying NOT approved). The guard was changed (evidence only from docs/approvals_evidence/, APPROVAL line required, symlinks/aliases/duplicates refused, one flag per --accept-state, evidence must be in git HEAD, chain anchored in three places) and tests were added for every trick; G1, G5 and G7 were re-pointed at the new code, G17-G32 and BN1/BN1b/BN3/BN3b were added. GN3 = G7 and BN1/BN3 = BN1/BN3 here, all CAUGHT now. GN1 = G18, see below.
 
 ID   RESULT    MUTATION                                                       KILLED BY (first failing test) / REASON
 G1   CAUGHT    delete the evidence-file-exists branch (Fable G1)              tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_file_missing
 G2   CAUGHT    shrink PROBLEM_STATUS to DONE/COMPLETE (Fable G2)              tests/test_requirements_guard.py::ApprovalsGate::test_every_problem_status_is_alerted_when_unapproved
 G3   CAUGHT    main() always exits 0 (Fable G3)                               tests/test_requirements_guard.py::ExitCode::test_alert_gives_exit_1
-G4   CAUGHT    evidence sha256 never recomputed                               tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_edited_after_acceptance
-G5   CAUGHT    evidence need not name the build                               tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_does_not_name_the_build
+G4   CAUGHT    evidence sha256 never recomputed                               tests/test_requirements_guard.py::ApprovalsGate::test_attack_hash_not_recorded_or_wrong
+G5   CAUGHT    evidence need not carry 'APPROVAL <flag> APPROVES <this build> tests/test_requirements_guard.py::ApprovalsGate::test_approval_line_must_match_this_flag_and_this_build
 G6   CAUGHT    evidence may live anywhere (e.g. CLAUDE.md)                    tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_is_claude_md
-G7   CAUGHT    artifacts/ copies accepted as evidence                         tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_under_artifacts_copy_dir
+G7   CAUGHT    evidence folder widened to docs/ (Fable round-3 GN3)           tests/test_requirements_guard.py::ApprovalsGate::test_evidence_folder_is_exactly_approvals_evidence
 G8   CAUGHT    code / control files accepted as evidence                      tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_is_code_inside_the_allowed_folder
 G9   CAUGHT    removed ledger row not alerted                                 tests/test_requirements_guard.py::ApprovalsGate::test_attack_delete_the_build_row
 G10  CAUGHT    hash chain never verified                                      tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_chain_tampered_or_entry_dropped
 G11  CAUGHT    evidence edited after acceptance not alerted                   tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_and_recorded_hash_both_edited_after_acceptance
 G12  CAUGHT    done_allowed ignores approvals ALERTs                          tests/test_requirements_guard.py::ApprovalsGate::test_one_removed_row_blocks_every_done_even_a_fully_approved_build
-G13  CAUGHT    accept_state accepts while an ALERT stands                     tests/test_requirements_guard.py::ApprovalsGate::test_accept_state_is_refused_while_an_alert_stands
-G14  CAUGHT    path traversal not rejected by name                            tests/test_requirements_guard.py::ApprovalsGate::test_dotdot_inside_the_allowed_folder_is_still_refused_by_name
+G13  CAUGHT    accept_state accepts while an ALERT stands                     tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_unrevoking_an_approval_state_anchor
+G14  CAUGHT    path traversal not rejected by name                            tests/test_requirements_guard.py::ApprovalsGate::test_attack_path_traversal_and_absolute
 G15  CAUGHT    empty / tiny evidence files accepted                           tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_too_small
 G16  CAUGHT    true flags with no state chain not alerted                     tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_file_deleted_while_flags_true
 B1   CAUGHT    _verify row-count check deleted (Fable B1)                     tests/test_retailer_db_build.py::FableRound2::test_b1_verify_names_a_missing_row_by_count
@@ -38,8 +39,30 @@ B13  CAUGHT    resume probe opened read-only again (round-1 bug)              te
 B14  CAUGHT    scratch sidecars no longer removed                             tests/test_retailer_db_build.py::MidTransactionKill::test_rm_tmp_removes_every_sidecar
 B15  CAUGHT    supplier conflicts no longer recorded                          tests/test_retailer_db_build.py::SrcOrderAndStamps::test_cross_source_conflict_is_recorded_first_source_wins
 B16  CAUGHT    build lock removed (Fable defect 5)                            tests/test_retailer_db_build.py::FableRound2::test_second_concurrent_build_is_refused_not_a_sqlite_crash
+G17  CAUGHT    symlinks inside the evidence path accepted (Fable round-3 tric tests/test_requirements_guard.py::ApprovalsGate::test_trick_symlink_in_the_allowed_folder
+G18  SURVIVED  realpath-equals-stated-path check removed (Fable round-3 GN1;  EQUIVALENT MUTANT: with this check removed the symlink walk (G17, which IS caught) has already refused every path that could resolve elsewhere, so no input distinguishes the two programs. Kept as defence in depth; this is Fable's round-3 GN1 and is NOT a test gap.
+G19  CAUGHT    duplicate ledger rows not refused (Fable round-3 trick F4)     tests/test_requirements_guard.py::ApprovalsGate::test_trick_duplicate_ledger_row_via_aliases
+G20  CAUGHT    ledger build paths not normalised (aliases and case differ)    tests/test_requirements_guard.py::ApprovalsGate::test_approval_line_must_match_this_flag_and_this_build
+G21  CAUGHT    state-file anchor not checked (tail deletion)                  tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_unrevoking_an_approval_state_anchor
+G22  CAUGHT    guard_report anchor_history not checked                        tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_with_the_state_anchor_also_edited
+G23  CAUGHT    git HEAD copy of the chain not compared                        tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_against_the_committed_copy
+G24  CAUGHT    'not approved' / 'rejected' / FAIL verdict lines accepted (Fab tests/test_requirements_guard.py::ApprovalsGate::test_trick_not_approved_note_cannot_be_evidence
+G25  CAUGHT    several flags may flip in one --accept-state (Fable round-3 tr tests/test_requirements_guard.py::ApprovalsGate::test_committing_the_three_flags_first_does_not_bypass_the_one_flag_rule
+G26  CAUGHT    evidence need not be committed in git HEAD before the flip     tests/test_requirements_guard.py::ApprovalsGate::test_accept_refuses_a_flag_whose_evidence_is_not_committed
+G27  CAUGHT    true flags accepted when git history is unreadable             tests/test_requirements_guard.py::ApprovalsGate::test_accept_refuses_any_true_flag_when_git_history_is_unreadable
+G28  CAUGHT    a README may be evidence (Fable round-3 trick A)               tests/test_requirements_guard.py::ApprovalsGate::test_trick_readme_as_evidence
+G29  CAUGHT    evidence with the APPROVAL line and no prose accepted          tests/test_requirements_guard.py::ApprovalsGate::test_evidence_with_the_line_but_no_prose_is_refused
+G30  CAUGHT    non-canonical evidence path spellings accepted                 tests/test_requirements_guard.py::ApprovalsGate::test_noncanonical_evidence_path_is_refused
+G31  CAUGHT    anchor_history never written to guard_report.json              tests/test_requirements_guard.py::ApprovalsGate::test_anchor_history_is_carried_in_the_report_and_grows_with_the_chain
+G32  CAUGHT    anchor never written to the state file                         tests/test_requirements_guard.py::ApprovalsGate::test_a_response_that_merely_says_failure_in_prose_is_not_rejected
+BN1  CAUGHT    output file may be its own source (Fable round-3 BN1)          tests/test_retailer_db_build.py::FableRound3::test_bn1_output_file_may_not_be_a_source
+BN1b CAUGHT    scratch .building file may be a source                         tests/test_retailer_db_build.py::FableRound3::test_bn1b_scratch_file_may_not_be_a_source
+BN3  CAUGHT    duplicate source labels accepted (Fable round-3 BN3)           tests/test_retailer_db_build.py::FableRound3::test_bn3_duplicate_source_labels_are_refused
+BN3b CAUGHT    empty source list accepted                                     tests/test_retailer_db_build.py::FableRound3::test_bn3b_no_sources_is_refused
 
-Equivalence notes (mutants that look redundant, kept so the reader can judge):
-- G14 (path traversal by name): '..' is also removed by os.path.normpath and the result must sit under an allowed folder, so for most inputs the folder check alone refuses. The by-name rule additionally refuses 'docs/audit_pack_041126/sub/../x.md', which would normalise to an allowed path. Deliberate strictness, now tested.
-- B1 (row-count check in _verify): the content hash also fails when a row is missing, so this check is redundant for correctness; it exists to give a precise message. The test asserts the message text.
-- Guard limits NOT tested by any mutation: someone who edits the ledger, the evidence file, its recorded hash and the whole state chain together, or deletes the tail of the chain, passes the guard. The real gate is Kumar and the external auditor.
+Equivalence and limits:
+- B11/B12 (scratch-file fsync and directory fsync): NOT covered. A process kill leaves the OS page cache intact, so only a real power cut or a filesystem fault-injection tool can show the difference. Do not read SURVIVED as covered.
+- G18: equivalent mutant, see its row.
+- G14 (path traversal by name): '..' is also removed by normpath, and the result must sit in the one allowed folder, so the folder rule usually refuses first; the by-name rule additionally refuses evidence/sub/../x.md, which would normalise to an allowed path. Tested.
+- B1 (row-count check in _verify): the content hash also fails when a row is missing, so the check is redundant for correctness; it gives a precise message, and the test asserts the message.
+- Guard limits NOT tested by any mutation, and cannot be: someone with write access who rewrites the ledger, the evidence, the hash, the chain, guard_report.json and git history together passes a local guard; one person can also approve all three flags in three visible commits. The guard is an accident-and-sloppiness check. The real gate is Kumar and the external auditor.

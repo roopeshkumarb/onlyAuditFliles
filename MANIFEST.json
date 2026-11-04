@@ -1,5 +1,5 @@
 {
- "generated": "04-11-2026 12:31 IST",
+ "generated": "04-11-2026 12:52 IST",
  "files": [
   {
    "path": ".gitignore",
@@ -74,6 +74,12 @@
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND2.md"
   },
   {
+   "path": "AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND3.md",
+   "sha256": "4e432a709fda9e168cdb0c50b807ab9586304ae7f25df5f7de1d6beb37bc0088",
+   "bytes": 5411,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND3.md"
+  },
+  {
    "path": "AUDITOR_RESPONSES/README.md",
    "sha256": "f24cbf380c2937f1a91354ea394cf6a482a93d4dc8b2172bb5612faedf661247",
    "bytes": 258,
@@ -81,8 +87,8 @@
   },
   {
    "path": "CHANGELOG.md",
-   "sha256": "2c8c7dfedf6d3ea97f1cfd39f50f73dbd5f2de087b970dda5c97738892578213",
-   "bytes": 4481,
+   "sha256": "5d0c3e4d662f8e81356612d6df2de351f42219636d38249354236c931b6077c9",
+   "bytes": 4817,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/CHANGELOG.md"
   },
   {
@@ -99,14 +105,14 @@
   },
   {
    "path": "LATEST.md",
-   "sha256": "ca046d534579e0d03730a9a3be5f36c09c8d2d3d3ed3d4e74d6d83016a7b7318",
-   "bytes": 11350,
+   "sha256": "0877cfa891bc53a49869253278e46ee331010941d0bba1823c8a2f484d4b343f",
+   "bytes": 11788,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/LATEST.md"
   },
   {
    "path": "README.md",
-   "sha256": "6afda7bb6d494ecfee33c6776fbf94980cf640b5a3ca329923e513e0a0d0306e",
-   "bytes": 151193,
+   "sha256": "ec169b7ca7ac4129701d3f76f7b4a7f91fb15f8a8077306b41420c9587471689",
+   "bytes": 151711,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/README.md"
   },
   {
@@ -531,38 +537,38 @@
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/DISAGREEMENTS.md",
-   "sha256": "504b858ea2d371fce6002c405a046ebbce67e8082b15cf06e280bbb7d7565cae",
-   "bytes": 4927,
+   "sha256": "b99c99f055fbf1412d075ff5c59b0105a87b690bf8e33b857bbc07555c6fa6a6",
+   "bytes": 8103,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/DISAGREEMENTS.md"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/LEDGER_CORRECTIONS.md",
-   "sha256": "87b405a7c576303cb77cd80c3d93aaaaff97418fe9ff7d3f6866f04dbfb1d60d",
-   "bytes": 3654,
+   "sha256": "e364626bbfa40282643287abdcdc450f7e7be7774f7f19ab896127569b9c6f66",
+   "bytes": 5543,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/LEDGER_CORRECTIONS.md"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/MANIFEST.sha256",
-   "sha256": "f3c2006c98d24d2ac167b84b7f2ce5fdcbb28f3bd3ba29cd9600d56bd58957e5",
-   "bytes": 2790,
+   "sha256": "2a2ba3dfffda6232c1ba976ee3294ddcfd949358ad8c91a08f9a3deaa8dc998c",
+   "bytes": 3001,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/MANIFEST.sha256"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/MUTATION_LOG.txt",
-   "sha256": "58803fae0dc4d9428ab5013ff18ff57066ae52ff1877b87ab95a30f767091a4e",
-   "bytes": 7832,
+   "sha256": "c259c0664d5f970b215948023cdbb3f2929d2bfe1c7a601fe5ddd2a565aa57ec",
+   "bytes": 12573,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/MUTATION_LOG.txt"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/README.md",
-   "sha256": "812960389133391b3ce76e0a017252b5566f0ec97a5202cc72d0288fe6e971f0",
-   "bytes": 11220,
+   "sha256": "a5c6ddc8c968a67d3e9bb4fe64e9041d87ba953a48ce0036b509cba13745fae3",
+   "bytes": 12549,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/README.md"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/REDACTIONS.txt",
-   "sha256": "b882c571dacbc6b206824c170ad1cb18f2a38a376a21f2a87753501eb2f4aa46",
-   "bytes": 491,
+   "sha256": "bbf73c7c39b89b5c6d5231d506463804a9d0b0c27607b6409c2a0cf5595490c3",
+   "bytes": 536,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/REDACTIONS.txt"
   },
   {
@@ -578,15 +584,21 @@
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/config/recoverability.json"
   },
   {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/approvals_evidence/README.md",
+   "sha256": "8e89a1a3bade24d93a51b3049d5fb16dc28631d6756c7ca0be8561e4ead2f00a",
+   "bytes": 1460,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/approvals_evidence/README.md"
+  },
+  {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_LEDGER.json",
-   "sha256": "0e9ded6c375d291f012dc3da8d5e402123074b7290f16161151b70ada736d850",
-   "bytes": 2867,
+   "sha256": "39514ba8225e6e5bd4ae101fa3e656a0d46c039917d72e2e0d653d8ad62465fc",
+   "bytes": 3408,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_LEDGER.json"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_STATE.json",
-   "sha256": "772cc11d554891eb438b8cc605ec370facb5fd5d2732674e347bb194ca463f3d",
-   "bytes": 5238,
+   "sha256": "038a5e27b10fcc9839d4f2b266bd37328b5e33fca38a44e55530f434a263110d",
+   "bytes": 7929,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_STATE.json"
   },
   {
@@ -606,6 +618,12 @@
    "sha256": "2e55094866ba66493eb2eddd58bbd2b0fa64fba48fbf1982a3ffb5aecb1daf75",
    "bytes": 5259,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FABLE_REVIEW_ROUND2_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FABLE_REVIEW_ROUND3_041126.md",
+   "sha256": "4e432a709fda9e168cdb0c50b807ab9586304ae7f25df5f7de1d6beb37bc0088",
+   "bytes": 5411,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FABLE_REVIEW_ROUND3_041126.md"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md",
@@ -657,8 +675,8 @@
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/guard_report.json",
-   "sha256": "ca694a6f69c90cd553fb60f5497395a8e16b8c3910cac554fc0fa44de64570d1",
-   "bytes": 13514,
+   "sha256": "c3d9711d671a573080468ed852d13b3ebd2c356eea6f80300c4768ad29fcd766",
+   "bytes": 13689,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/guard_report.json"
   },
   {
@@ -693,14 +711,14 @@
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_requirements_guard.py",
-   "sha256": "399ac5cfefd5e9491a39eb7a98cc6126fd710b6ca327f08d8af1e17a38c859e8",
-   "bytes": 24370,
+   "sha256": "e78a4f58cf303aaed6b9ffc80b2fd928630fb80bfcf3131c24e902ebfd059c6f",
+   "bytes": 37459,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_requirements_guard.py"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_retailer_db_build.py",
-   "sha256": "919d2205875891c96d72c0440475f60f09e50f887705ab6cec1b5cfc9244b04c",
-   "bytes": 27296,
+   "sha256": "a936e5bf4ff8917a823a8c209a92a105fed20424a75b80c5920c9f948226feae",
+   "bytes": 29144,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_retailer_db_build.py"
   },
   {
@@ -711,8 +729,8 @@
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/artifacts/tools/requirements_guard.py",
-   "sha256": "cbb2931255602795df1014edb2e8ef56b6f98af5de9ebd233315714db55ed5e7",
-   "bytes": 35039,
+   "sha256": "58dec270a593490fa05a950d8c5594668d46ca74332940789bcfd366c3e94638",
+   "bytes": 42432,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tools/requirements_guard.py"
   },
   {
@@ -729,14 +747,14 @@
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/make_manifest.py",
-   "sha256": "0efdff17d515384e06db88574f38f9ff2170857857fde1a94f6ecfc650bfdebd",
-   "bytes": 5549,
+   "sha256": "afcfd793a44b937843751019a40c278aa6ddbb4cd79bf85a0857ebcfaa50e587",
+   "bytes": 5707,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/make_manifest.py"
   },
   {
    "path": "audit_041126_data_needed_retailer_edge/mutation_runner.py",
-   "sha256": "062d4cdc0d7dc8653edf1fadb5ae166cfaf5056a67368d0edf9cb4a6c609a0bf",
-   "bytes": 6637,
+   "sha256": "ce5558b2eecab08e2efb12dfe71864d7e145a34998d3ffb50e5ac66594e8289e",
+   "bytes": 9673,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/mutation_runner.py"
   },
   {

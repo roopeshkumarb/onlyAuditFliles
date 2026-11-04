@@ -15,17 +15,26 @@ Reuses: guard_core._atomic_write / notify / NEVER_TOUCH / DOCKER_DANGEROUS (pull
 dp_recoverability.classify (the placement classifier) and the dp_families join, and the scan idea
 of tools/check_recoverability_placement.py.
 
-APPROVALS GATE (hardened 04-11-2026 after Fable round 2 showed the first version could be flipped
-with evidence "ok"). A flag may be true only if its <flag>_evidence is a FILE under
-docs/audit_pack_041126/ (not artifacts/) or an AUDITOR_RESPONSES-style folder, is not code / CLAUDE.md /
-the ledger / the state file, is at least MIN_EVIDENCE_BYTES, names the build's path in its text, and its
-sha256 is recorded in <flag>_evidence_sha256 and recomputes. Accepted approvals are kept in an
-append-only hash chain (docs/framework/APPROVALS_STATE.json, appended only by --accept-state); a removed
-build row, a chain break, an evidence file that changed after approval, or a true flag that is not in
-the accepted chain all ALERT, and such a build is never "allowed to be called DONE".
-HONEST LIMIT: a determined person who edits the ledger, the evidence file, its recorded hash and the
-state chain together (or deletes the tail of the chain) can still fool a LOCAL guard. This guard stops
-accidents and sloppy flips. The real gate is Kumar plus the external auditor.
+APPROVALS GATE (hardened 04-11-2026 after Fable rounds 2 and 3). A flag may be true only if its
+<flag>_evidence is a regular file (no symlink anywhere in its path, no ./ or // aliases) under
+docs/approvals_evidence/ (the ONLY allowed folder; never the pack, never framework docs, never a README),
+whose text contains the line "APPROVAL <flag> APPROVES <build path>" for exactly that flag and build,
+contains no "not approved" / "rejected" / FAIL verdict line, has enough prose to be a response, and whose
+sha256 is recorded in <flag>_evidence_sha256 and recomputes. Ledger build paths are normalised (strip,
+normpath, casefold) and a duplicate row for the same build is an ALERT. Accepted approvals are kept in an
+append-only hash chain (docs/framework/APPROVALS_STATE.json, appended only by --accept-state). The chain
+head is anchored in three places (the state file's own "anchor", the anchor_history carried in
+guard_report.json, and git HEAD's copy of the state file when git works), so deleting the tail of the chain
+ALERTs. --accept-state accepts at most ONE newly-true flag per call relative to the last accepted entry, only
+when that flag's evidence file is already committed in git HEAD, and refuses to accept any true flag when git
+history cannot be read. A removed build row, a chain break, edited evidence, or a true flag outside the
+accepted chain all ALERT, and such a build is never "allowed to be called DONE".
+HONEST LIMIT: this is an accident-and-sloppiness check, not a security control. One person with write
+access to this repo can still write an evidence file containing the APPROVAL line, commit it, flip one flag,
+run --accept-state, commit, and repeat for the other two flags: the guard cannot tell who wrote the file or
+whether Fable / the auditor / Kumar really said it. What it does force is that this is done in separate,
+visible commits, one flag at a time, with the response document committed first. The real gate is Kumar plus
+the external auditor reading the evidence themselves.
 
 Exit: 0 no ALERT, 1 at least one ALERT, 2 the guard itself could not run.
 Status per requirement: GREEN only if every mapped machine rule is OK; RED on any ALERT; AMBER when
@@ -61,12 +70,17 @@ EXEMPT = "guard-allow"
 PROBLEM_STATUS = ("DONE", "COMPLETE", "COMPLETED", "GREEN", "PROVEN", "APPROVED")
 STATE = "docs/framework/APPROVALS_STATE.json"
 FLAGS = ("fable", "external_auditor", "kumar")
-EVIDENCE_DIRS = ("docs/audit_pack_041126/", "docs/AUDITOR_RESPONSES/", "docs/audit_responses/")
+EVIDENCE_DIRS = ("docs/approvals_evidence/",)
 EVIDENCE_EXCLUDED_DIRS = ("docs/audit_pack_041126/artifacts/",)  # copies of code and CLAUDE.md, never evidence
 EVIDENCE_FORBIDDEN_NAMES = ("claude.md", "approvals_ledger.json", "approvals_state.json",
-                            "requirements_register.json", "guard_report.json")
+                            "requirements_register.json", "guard_report.json", "readme.md", "readme.txt", "readme")
 EVIDENCE_CODE_SUFFIXES = (".py", ".sh", ".js", ".bat", ".cmd", ".ps1", ".yml", ".yaml")
 MIN_EVIDENCE_BYTES = 40
+MIN_EVIDENCE_WORDS = 20   # prose words besides the APPROVAL line
+APPROVAL_LINE = re.compile(r"^[ \t]*APPROVAL[ \t]+(fable|external_auditor|kumar)[ \t]+APPROVES[ \t]+(\S+)[ \t]*$",
+                           re.I | re.M)
+REJECT_LINE = re.compile(r"^.*\b(?:not[ \t_-]+approved|rejected)\b.*$|^\W*(?:verdict|status|decision|result)\W*fail\w*\b.*$|^\W*fail(?:ed)?\W*$",
+                         re.I | re.M)
 
 
 def F(rule, level, msg, req=None, fix=None, evidence=None):
@@ -349,12 +363,48 @@ def _load_state(ctx):
         return None, "state file unreadable: %s" % e
 
 
+def _state_anchor(ctx):
+    try:
+        with open(os.path.join(ctx["root"], STATE), encoding="utf-8") as fh:
+            a = json.load(fh).get("anchor")
+        return a if isinstance(a, dict) else None
+    except (OSError, ValueError):
+        return None
+
+
 def _verify_chain(entries):
     prev = "GENESIS"
     for i, e in enumerate(entries, 1):
         if e.get("seq") != i or e.get("prev") != prev or e.get("hash") != _chain_hash(prev, i, e.get("builds", {})):
             return "chain broken at entry %d" % i
         prev = e["hash"]
+    return None
+
+
+def _norm_build(path):
+    """Canonical key for a ledger build path: strip, forward slashes, normpath, casefold."""
+    return os.path.normpath(str(path).strip().replace("\\", "/")).replace(os.sep, "/").casefold()
+
+
+def _git_show(ctx, rel):
+    """Bytes of <rel> at git HEAD, or None when git / HEAD / the file is unavailable. ctx['git_show'] lets
+    tests inject a fake history; it must return bytes or None."""
+    fn = ctx.get("git_show")
+    if fn is not None:
+        return fn(rel)
+    try:
+        r = subprocess.run(["git", "-C", ctx["root"], "show", "HEAD:" + rel], capture_output=True, timeout=20)
+    except (OSError, subprocess.SubprocessError):
+        return None
+    return r.stdout if r.returncode == 0 else None
+
+
+def _path_symlink(root, rel):
+    cur = root
+    for part in rel.split("/"):
+        cur = os.path.join(cur, part)
+        if os.path.islink(cur):
+            return cur
     return None
 
 
@@ -367,17 +417,21 @@ def evidence_problem(ctx, b, k):
     if os.path.isabs(raw) or ".." in raw.replace("\\", "/").split("/"):
         return "%s_evidence must be a relative path inside the repo: %s" % (k, raw)
     rel = os.path.normpath(raw).replace(os.sep, "/")
-    if any(rel.startswith(d) for d in EVIDENCE_EXCLUDED_DIRS):
-        return "%s_evidence is under artifacts/ (a copy of code, not evidence): %s" % (k, rel)
+    if rel != raw:
+        return "%s_evidence path is not in canonical form (%r vs %r)" % (k, raw, rel)
     if not any(rel.startswith(d) for d in EVIDENCE_DIRS):
         return "%s_evidence is not under %s: %s" % (k, " or ".join(EVIDENCE_DIRS), rel)
     base = os.path.basename(rel).lower()
     if base in EVIDENCE_FORBIDDEN_NAMES or base.endswith(EVIDENCE_CODE_SUFFIXES):
-        return "%s_evidence is code or a project control file: %s" % (k, rel)
-    full = os.path.join(ctx["root"], rel)
-    root_real = os.path.realpath(ctx["root"])
-    if not os.path.isfile(full) or not os.path.realpath(full).startswith(root_real + os.sep):
+        return "%s_evidence is code, a README or a project control file: %s" % (k, rel)
+    full = os.path.join(ctx["root"], *rel.split("/"))
+    link = _path_symlink(ctx["root"], rel)
+    if link:
+        return "%s_evidence path passes through a symlink: %s" % (k, rel)
+    if not os.path.isfile(full):
         return "%s evidence file missing: %s" % (k, rel)
+    if os.path.realpath(full) != os.path.join(os.path.realpath(ctx["root"]), *rel.split("/")):
+        return "%s_evidence resolves outside its stated path: %s" % (k, rel)
     data = open(full, "rb").read()
     if len(data) < MIN_EVIDENCE_BYTES:
         return "%s_evidence file is too small to be evidence (%d bytes): %s" % (k, len(data), rel)
@@ -386,9 +440,61 @@ def evidence_problem(ctx, b, k):
         return "%s_evidence_sha256 not recorded in the ledger" % k
     if rec != _sha_bytes(data):
         return "%s_evidence sha256 does not recompute (file changed or hash wrong): %s" % (k, rel)
-    if b["path"].encode("utf-8") not in data:
-        return "%s_evidence never names the build %s" % (k, b["path"])
+    text = data.decode("utf-8", "replace")
+    if REJECT_LINE.search(text):
+        return "%s_evidence contains a 'not approved' / 'rejected' / FAIL verdict line: %s" % (k, rel)
+    want = _norm_build(b["path"])
+    lines = [m for m in APPROVAL_LINE.finditer(text)]
+    if not any(m.group(1).lower() == k and _norm_build(m.group(2)) == want for m in lines):
+        return "%s_evidence has no line 'APPROVAL %s APPROVES %s'" % (k, k, b["path"])
+    prose = APPROVAL_LINE.sub(" ", text).split()
+    if len(prose) < MIN_EVIDENCE_WORDS:
+        return "%s_evidence has only %d prose words besides the APPROVAL line (need %d)" % (k, len(prose), MIN_EVIDENCE_WORDS)
     return None
+
+
+# ---------------------------------------------------------------- chain anchors (tail-deletion defence)
+
+def _anchor_of(entries):
+    return {"length": len(entries), "head": entries[-1]["hash"] if entries else "GENESIS"}
+
+
+def _read_anchors(ctx):
+    """anchor_history carried in the previous guard_report.json (second, independent place)."""
+    try:
+        with open(os.path.join(ctx["root"], REPORT), encoding="utf-8") as fh:
+            h = json.load(fh).get("anchor_history", [])
+        return [x for x in h if isinstance(x, dict) and "length" in x and "head" in x]
+    except (OSError, ValueError):
+        return []
+
+
+def _anchor_problems(ctx, entries, state_anchor):
+    """List of problem strings; empty when the chain is exactly what was anchored."""
+    out, cur = [], _anchor_of(entries)
+    if state_anchor is None:
+        if entries and not ctx.get("accepting"):
+            out.append("state file has no anchor (length/head) - run --accept-state once to anchor it")
+    elif state_anchor.get("length") != cur["length"] or state_anchor.get("head") != cur["head"]:
+        out.append("chain tail removed or state anchor edited (anchor says %s entries, file has %d)"
+                   % (state_anchor.get("length"), cur["length"]))
+    hist = _read_anchors(ctx)
+    if hist:
+        last = hist[-1]
+        n = int(last["length"])
+        if len(entries) < n or (n and entries[n - 1]["hash"] != last["head"]):
+            out.append("chain no longer contains the head recorded in guard_report anchor_history "
+                       "(length %d recorded, %d now)" % (n, len(entries)))
+    raw = _git_show(ctx, STATE)
+    if raw is not None:
+        try:
+            head_entries = json.loads(raw.decode("utf-8")).get("entries", [])
+        except (ValueError, UnicodeDecodeError):
+            head_entries = []
+        if len(head_entries) > len(entries) or any(h.get("hash") != e.get("hash") for h, e in zip(head_entries, entries)):
+            out.append("chain differs from git HEAD's copy (shortened or rewritten; HEAD has %d entries, file %d)"
+                       % (len(head_entries), len(entries)))
+    return out
 
 
 def r_approvals(ctx):
@@ -420,6 +526,19 @@ def r_approvals(ctx):
             chain_ok = False
         elif entries:
             state_snap = entries[-1].get("builds", {})
+    seen = {}
+    for b in ledger.get("builds", []):
+        seen.setdefault(_norm_build(b["path"]), []).append(b["path"])
+    for n, ps in seen.items():
+        if len(ps) > 1:
+            add(ALERT, "duplicate ledger rows for the same build %s: %s" % (n, ps), "*")
+    if entries is not None and chain_ok:
+        probs = _anchor_problems(ctx, entries, _state_anchor(ctx))
+        for pr in probs:
+            add(ALERT, pr, "*")
+            chain_ok = False
+        if not probs:
+            ctx["_anchor_current"] = _anchor_of(entries)
     paths = [b["path"] for b in ledger.get("builds", [])]
     if entries:
         for sp in state_snap:
@@ -483,10 +602,28 @@ def accept_state(ctx):
     prev = entries[-1]["hash"] if entries else "GENESIS"
     seq = len(entries) + 1
     snap = _snapshot(ctx["ledger"])
+    last = entries[-1].get("builds", {}) if entries else {}
+    new_true = []
+    for path, bs in snap.items():
+        for k in FLAGS:
+            if bs["flags"][k]["value"] and not (last.get(path, {}).get("flags", {}).get(k, {}).get("value")):
+                new_true.append((path, k, bs["flags"][k]["evidence"]))
+    if len(new_true) > 1:
+        return False, ("refused: %d approval flags became true since the last accepted entry (%s); accept ONE "
+                       "flag per call, each in its own commit" % (len(new_true), ", ".join("%s/%s" % (p, k) for p, k, _e in new_true)))
+    any_true = any(bs["flags"][k]["value"] for bs in snap.values() for k in FLAGS)
+    if any_true:
+        probe = _git_show(ctx, LEDGER)
+        if probe is None:
+            return False, "refused: git history cannot be read, so a single-flag flip cannot be verified"
+    for path, k, ev in new_true:
+        if _git_show(ctx, ev) is None:
+            return False, ("refused: evidence %s for %s/%s is not committed in git HEAD yet - commit the response "
+                           "document first, then flip the flag" % (ev, path, k))
     entries.append({"seq": seq, "accepted_ist": ctx.get("now", datetime.now(IST)).astimezone(IST).strftime("%d-%m-%Y %H:%M:%S"),
                     "builds": snap, "prev": prev, "hash": _chain_hash(prev, seq, snap)})
     data = json.dumps({"title": "Accepted approvals hash chain - append only, written by tools/requirements_guard.py --accept-state",
-                       "entries": entries}, indent=1, ensure_ascii=False)
+                       "anchor": _anchor_of(entries), "entries": entries}, indent=1, ensure_ascii=False)
     path = os.path.join(ctx["root"], STATE)
     tmp = path + ".tmp"
     with open(tmp, "w", encoding="utf-8") as fh:
@@ -683,7 +820,12 @@ def run(ctx):
             "builds allowed to be called DONE: %d of %d" % (
                 now.strftime("%d-%m-%Y %H:%M"), cnt[ALERT], cnt[INFO], cnt[OK], sc["GREEN"], sc["AMBER"], sc["RED"],
                 sum(done_allowed.values()), len(done_allowed)))
+    hist = _read_anchors(ctx)
+    cur = ctx.get("_anchor_current")
+    if cur and (not hist or (hist[-1]["length"], hist[-1]["head"]) != (cur["length"], cur["head"])):
+        hist.append({"length": cur["length"], "head": cur["head"], "ist": now.strftime("%d-%m-%Y %H:%M:%S")})
     return {"generated_ist": now.strftime("%d-%m-%Y %H:%M:%S") + " GMT+5:30", "summary_line": line,
+            "anchor_history": hist,
             "counts": cnt, "requirement_status": sc, "requirements": reqs, "done_allowed": done_allowed,
             "fixes": fixes, "findings": findings}
 

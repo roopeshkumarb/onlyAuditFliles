@@ -22,6 +22,23 @@ external auditor are the ones who must. Nothing here is an approval.
 | 13 | Builder: duplicate key with two different `src` resolved by scan order, not SRC_ORDER | Ranked by SRC_ORDER; losers go to `_build_conflicts` and `rows_conflict`; across sources first source wins (recorded) | a54e97f8 | **Open:** whether the real archive has such collisions is UNKNOWN. The cross-source rule is a choice (question Q8). |
 | 14 | Tests missed two mutants (stat-guard removed; NULL broker -> "kite") | Added `test_source_moving_during_the_build_publishes_nothing` and `test_null_or_blank_bars_broker_is_unknown_never_a_vendor` | a54e97f8, efec1757 | Closed per the fixer's mutation report (11 of 12 caught); not re-run independently. |
 
+## Round 3 (Fable, 04-11-2026) - what was found and what was changed (report: docs/framework/FABLE_REVIEW_ROUND3_041126.md)
+
+Round 2's 14 defects: 7 FIXED, 2 NOT FIXED at the time (TRACE gameability: still disclosed, not fixed; the `j1800` alias: now declared in REDACTIONS.txt item 3). Round 3 then attacked the hardened gate and found it still flipped. All below are fixed in the working tree and awaiting a round-4 re-check; none is an approval.
+
+| # | Round-3 finding | What was changed | Still open? |
+|---|---|---|---|
+| N1 | No path normalisation / duplicate-row refusal: an extra row `./tools/retailer_db_build.py` beside the real one gave "1 of 7 DONE" | Build paths normalised (strip, normpath, casefold); a duplicate row is an ALERT and blocks every DONE; test covers 5 spellings | Closed in tests; Fable re-check pending |
+| N2 | Symlinks inside the evidence folder were accepted (a link to a framework doc passed) | Any symlink in the evidence path is refused with its own message; test covers a file link, a directory link and a link outside the repo. The old realpath-containment check is now an equivalent mutant (MUTATION_LOG G18) | Closed |
+| N3 | `names the build` was a substring test and `MIN_EVIDENCE_BYTES=40` was satisfied by path+padding; the pack README plus its sha flipped all three flags in two commands | Evidence must live in `docs/approvals_evidence/` only (never a README), contain `APPROVAL <flag> APPROVES <build>` for that flag and build, 20+ prose words, no not-approved/rejected/FAIL line; `--accept-state` takes ONE newly-true flag per call and needs the evidence already in git HEAD, and refuses any true flag when git history is unreadable | Closed in tests. **Residual, stated in README 5: one person with write access can still write the file and approve all three flags in three visible commits.** |
+| N4 | Deleting the tail of the chain silently un-revoked an approval | Chain head anchored in the state file, in `guard_report.json` `anchor_history`, and compared with git HEAD's copy; each deletion variant is an ALERT with its own test | Closed in tests; rewriting all of it together passes a local guard (stated) |
+| N5 | Builder guards for "output may not be its own source" and "duplicate source labels" had no test (mutants BN1, BN3 survived) | Five tests (output file, scratch file, relative spelling, duplicate labels, empty sources); BN1/BN1b/BN3/BN3b all CAUGHT | Closed |
+| N6 | `EVIDENCE_DIRS` allow-listed two folders that do not exist, untested (mutant GN3) | Reduced to the one real folder; test asserts the tuple and refuses six other locations | Closed |
+| N7 | Public repo holds LAN addresses and Cloudflare hostname labels in older rounds | Not changed: pre-existing, private range, older rounds; the round-5 pack redacts that prefix and says so | OPEN - owner decision whether to rewrite older rounds |
+| N8 | Public LATEST.md lines 1 and 4 stale | Exact replacement lines in PUBLIC_LATEST_REPLACEMENT.md; public repo untouched | OPEN until published |
+
+Mutation totals after round 3: 53 tried, 50 caught, 3 survived (two fsync mutants that need a real power cut, one equivalent mutant). See MUTATION_LOG.txt.
+
 ## Where reviewers have not yet disagreed
 
 * No external auditor has reviewed anything yet, so there are **no external findings to show**. Their reply will be added here beside Fable's.

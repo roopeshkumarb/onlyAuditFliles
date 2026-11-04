@@ -1,6 +1,6 @@
 {
   "title": "Approvals ledger - three approvals per build (Fable, external auditor, Kumar). A build may be called DONE only when all three are true.",
-  "rule": "A flag may be true ONLY when <flag>_evidence is a relative FILE path under docs/audit_pack_041126/ (not artifacts/) or an AUDITOR_RESPONSES-style folder, not code / CLAUDE.md / this ledger, that names the build's path, and <flag>_evidence_sha256 holds its sha256. Then run `python3 tools/requirements_guard.py --accept-state` to append the approval to docs/framework/APPROVALS_STATE.json (append-only hash chain). The guard rejects anything else, a removed row, a changed evidence file, and any claimed_status DONE/COMPLETE/COMPLETED/GREEN/PROVEN/APPROVED without all three accepted. LIMIT: a local guard cannot stop someone who edits ledger, evidence, hash and chain together; the real gate is Kumar plus the external auditor.",
+  "rule": "A flag may be true ONLY when <flag>_evidence is a regular file (no symlink, canonical path) in docs/approvals_evidence/ (the only accepted folder; never a README, code, CLAUDE.md or this ledger) containing the line 'APPROVAL <flag> APPROVES <build path>' for that flag and build, at least 20 words of prose and no 'not approved' / 'rejected' / FAIL line, and <flag>_evidence_sha256 holds its sha256. Commit the evidence FIRST, flip ONE flag, run `python3 tools/requirements_guard.py --accept-state` (it takes one newly-true flag per call, needs the evidence in git HEAD) and commit. The guard rejects anything else, a duplicate or removed row, edited evidence, a shortened chain, and any claimed_status DONE/COMPLETE/COMPLETED/GREEN/PROVEN/APPROVED without all three accepted. LIMIT: a local guard cannot stop a person with write access who writes the evidence themselves, one flag per commit; the real gate is Kumar plus the external auditor.",
   "builds": [
     {
       "path": "tools/retailer_db_build.py",
@@ -10,7 +10,7 @@
       "fable": false,
       "external_auditor": false,
       "kumar": false,
-      "note": "04-11 Fable review: PASS-WITH-FIXES (docs/framework/FABLE_REVIEW_041126.md) - that is not an approval"
+      "note": "SCOPE OF ANY FUTURE EVIDENCE: sandbox only - tested on synthetic fixtures, NEVER run on a real database; power-loss durability (final fsync of the scratch file and directory) is UNPROVEN (MUTATION_LOG B11/B12 survive). 04-11 Fable round 3: PASS-WITH-FIXES, BN1/BN3 now tested. Not an approval."
     },
     {
       "path": "tools/retailer_db_inventory.py",
@@ -40,7 +40,7 @@
       "fable": false,
       "external_auditor": false,
       "kumar": false,
-      "note": "this guard is itself a new build"
+      "note": "Accident-and-sloppiness check, NOT a security control (see rule). 04-11 Fable round 3: FAIL if called a gate; hardened and re-tested, needs round 4. Not an approval."
     },
     {
       "path": "config/recoverability.json",

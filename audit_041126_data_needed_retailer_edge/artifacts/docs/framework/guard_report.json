@@ -1,6 +1,13 @@
 {
-  "generated_ist": "04-11-2026 12:30:18 GMT+5:30",
-  "summary_line": "REQUIREMENTS-GUARD 04-11-2026 12:30 IST: 0 ALERT, 10 INFO, 14 OK | requirements GREEN 9 / AMBER 27 / RED 0 | builds allowed to be called DONE: 0 of 6",
+  "generated_ist": "04-11-2026 12:51:39 GMT+5:30",
+  "summary_line": "REQUIREMENTS-GUARD 04-11-2026 12:51 IST: 0 ALERT, 10 INFO, 14 OK | requirements GREEN 9 / AMBER 27 / RED 0 | builds allowed to be called DONE: 0 of 6",
+  "anchor_history": [
+    {
+      "length": 3,
+      "head": "ede85b820c962b5fc9a54251dc76df08ae72e1e4cb87284c463a2112d66b79cd",
+      "ist": "04-11-2026 12:50:51"
+    }
+  ],
   "counts": {
     "ALERT": 0,
     "INFO": 10,
@@ -472,7 +479,7 @@
     {
       "rule": "FRIDAY_SSD",
       "level": "INFO",
-      "msg": "55.5 h until Fri 20:00 IST; no box has been checked for SSD-free yet",
+      "msg": "55.1 h until Fri 20:00 IST; no box has been checked for SSD-free yet",
       "req": [],
       "fix": null,
       "evidence": null
