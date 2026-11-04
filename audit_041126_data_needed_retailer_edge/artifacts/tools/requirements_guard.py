@@ -15,6 +15,18 @@ Reuses: guard_core._atomic_write / notify / NEVER_TOUCH / DOCKER_DANGEROUS (pull
 dp_recoverability.classify (the placement classifier) and the dp_families join, and the scan idea
 of tools/check_recoverability_placement.py.
 
+APPROVALS GATE (hardened 04-11-2026 after Fable round 2 showed the first version could be flipped
+with evidence "ok"). A flag may be true only if its <flag>_evidence is a FILE under
+docs/audit_pack_041126/ (not artifacts/) or an AUDITOR_RESPONSES-style folder, is not code / CLAUDE.md /
+the ledger / the state file, is at least MIN_EVIDENCE_BYTES, names the build's path in its text, and its
+sha256 is recorded in <flag>_evidence_sha256 and recomputes. Accepted approvals are kept in an
+append-only hash chain (docs/framework/APPROVALS_STATE.json, appended only by --accept-state); a removed
+build row, a chain break, an evidence file that changed after approval, or a true flag that is not in
+the accepted chain all ALERT, and such a build is never "allowed to be called DONE".
+HONEST LIMIT: a determined person who edits the ledger, the evidence file, its recorded hash and the
+state chain together (or deletes the tail of the chain) can still fool a LOCAL guard. This guard stops
+accidents and sloppy flips. The real gate is Kumar plus the external auditor.
+
 Exit: 0 no ALERT, 1 at least one ALERT, 2 the guard itself could not run.
 Status per requirement: GREEN only if every mapped machine rule is OK; RED on any ALERT; AMBER when
 it is only INFO / traceability / a rule that could not run here. A TRACE-only requirement is never GREEN.
@@ -47,6 +59,14 @@ STOP_VERBS = ("stop", "kill", "rm", "remove", "restart", "pause", "down")  # gua
 # lines carrying this marker are exempt from NO_OLD_STOP so the guard's own constant lists do not trip it
 EXEMPT = "guard-allow"
 PROBLEM_STATUS = ("DONE", "COMPLETE", "COMPLETED", "GREEN", "PROVEN", "APPROVED")
+STATE = "docs/framework/APPROVALS_STATE.json"
+FLAGS = ("fable", "external_auditor", "kumar")
+EVIDENCE_DIRS = ("docs/audit_pack_041126/", "docs/AUDITOR_RESPONSES/", "docs/audit_responses/")
+EVIDENCE_EXCLUDED_DIRS = ("docs/audit_pack_041126/artifacts/",)  # copies of code and CLAUDE.md, never evidence
+EVIDENCE_FORBIDDEN_NAMES = ("claude.md", "approvals_ledger.json", "approvals_state.json",
+                            "requirements_register.json", "guard_report.json")
+EVIDENCE_CODE_SUFFIXES = (".py", ".sh", ".js", ".bat", ".cmd", ".ps1", ".yml", ".yaml")
+MIN_EVIDENCE_BYTES = 40
 
 
 def F(rule, level, msg, req=None, fix=None, evidence=None):
@@ -295,30 +315,186 @@ def r_tool_tests(ctx):
     return out or [F("TOOL_TESTS", OK, "every ledger build exists and has a non-empty test file")]
 
 
+def _canon(o):
+    return json.dumps(o, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+
+
+def _sha_bytes(b):
+    import hashlib
+    return hashlib.sha256(b).hexdigest()
+
+
+def _snapshot(ledger):
+    snap = {}
+    for b in ledger.get("builds", []):
+        snap[b["path"]] = {"claimed_status": str(b.get("claimed_status", "")),
+                           "flags": {k: {"value": b.get(k) is True, "evidence": str(b.get(k + "_evidence") or ""),
+                                         "sha256": str(b.get(k + "_evidence_sha256") or "")} for k in FLAGS}}
+    return snap
+
+
+def _chain_hash(prev, seq, snap):
+    return _sha_bytes(("%s|%d|%s" % (prev, seq, _canon(snap))).encode("utf-8"))
+
+
+def _load_state(ctx):
+    """(entries, error). entries is None when the file does not exist."""
+    p = os.path.join(ctx["root"], STATE)
+    if not os.path.isfile(p):
+        return None, None
+    try:
+        with open(p, encoding="utf-8") as fh:
+            return json.load(fh).get("entries", []), None
+    except (OSError, ValueError) as e:
+        return None, "state file unreadable: %s" % e
+
+
+def _verify_chain(entries):
+    prev = "GENESIS"
+    for i, e in enumerate(entries, 1):
+        if e.get("seq") != i or e.get("prev") != prev or e.get("hash") != _chain_hash(prev, i, e.get("builds", {})):
+            return "chain broken at entry %d" % i
+        prev = e["hash"]
+    return None
+
+
+def evidence_problem(ctx, b, k):
+    """None when <k>_evidence is acceptable for build b, else why not. Mechanical only: it cannot tell
+    who wrote the file."""
+    raw = str(b.get(k + "_evidence") or "").strip()
+    if not raw:
+        return "no %s_evidence" % k
+    if os.path.isabs(raw) or ".." in raw.replace("\\", "/").split("/"):
+        return "%s_evidence must be a relative path inside the repo: %s" % (k, raw)
+    rel = os.path.normpath(raw).replace(os.sep, "/")
+    if any(rel.startswith(d) for d in EVIDENCE_EXCLUDED_DIRS):
+        return "%s_evidence is under artifacts/ (a copy of code, not evidence): %s" % (k, rel)
+    if not any(rel.startswith(d) for d in EVIDENCE_DIRS):
+        return "%s_evidence is not under %s: %s" % (k, " or ".join(EVIDENCE_DIRS), rel)
+    base = os.path.basename(rel).lower()
+    if base in EVIDENCE_FORBIDDEN_NAMES or base.endswith(EVIDENCE_CODE_SUFFIXES):
+        return "%s_evidence is code or a project control file: %s" % (k, rel)
+    full = os.path.join(ctx["root"], rel)
+    root_real = os.path.realpath(ctx["root"])
+    if not os.path.isfile(full) or not os.path.realpath(full).startswith(root_real + os.sep):
+        return "%s evidence file missing: %s" % (k, rel)
+    data = open(full, "rb").read()
+    if len(data) < MIN_EVIDENCE_BYTES:
+        return "%s_evidence file is too small to be evidence (%d bytes): %s" % (k, len(data), rel)
+    rec = str(b.get(k + "_evidence_sha256") or "").strip().lower()
+    if not rec:
+        return "%s_evidence_sha256 not recorded in the ledger" % k
+    if rec != _sha_bytes(data):
+        return "%s_evidence sha256 does not recompute (file changed or hash wrong): %s" % (k, rel)
+    if b["path"].encode("utf-8") not in data:
+        return "%s_evidence never names the build %s" % (k, b["path"])
+    return None
+
+
 def r_approvals(ctx):
-    out, ok_n = [], 0
-    for b in ctx["ledger"].get("builds", []):
-        flags = {"fable": b.get("fable"), "external_auditor": b.get("external_auditor"), "kumar": b.get("kumar")}
-        for k, v in flags.items():
-            if v is True and not str(b.get(k + "_evidence") or "").strip():
-                out.append(F("APPROVALS", ALERT, "%s: %s=true with no %s_evidence" % (b["path"], k, k)))
-            if v is True and k in ("fable", "external_auditor"):
-                ev = str(b.get(k + "_evidence") or "")
-                if ev and ("/" in ev) and not os.path.exists(os.path.join(ctx["root"], ev)):
-                    out.append(F("APPROVALS", ALERT, "%s: %s evidence file missing: %s" % (b["path"], k, ev)))
-        allok = all(v is True for v in flags.values())
-        claimed = str(b.get("claimed_status", "")).upper()
-        if claimed in PROBLEM_STATUS and not allok:
-            miss = [k for k, v in flags.items() if v is not True]
-            out.append(F("APPROVALS", ALERT, "%s claims %s but lacks approval: %s" % (b["path"], claimed, ", ".join(miss))))
-        elif not allok:
-            miss = [k for k, v in flags.items() if v is not True]
-            out.append(F("APPROVALS", INFO, "%s is %s - awaiting: %s (may NOT be called DONE)" % (b["path"], claimed or "unstated", ", ".join(miss))))
+    out = []
+
+    def add(level, msg, build):
+        f = F("APPROVALS", level, msg)
+        f["build"] = build
+        out.append(f)
+        return f
+
+    ledger = ctx["ledger"]
+    entries, err = _load_state(ctx)
+    state_snap, chain_ok = {}, True
+    if err:
+        add(ALERT, err, "*")
+        chain_ok = False
+    elif entries is None:
+        any_true = any(b.get(k) is True for b in ledger.get("builds", []) for k in FLAGS)
+        if any_true and not ctx.get("accepting"):
+            add(ALERT, "ledger has an approval flag true but there is no accepted state chain (%s)" % STATE, "*")
+            chain_ok = False
         else:
-            ok_n += 1
+            add(INFO, "no accepted state baseline yet - run --accept-state to start the chain", "*")
+    else:
+        bad = _verify_chain(entries)
+        if bad:
+            add(ALERT, "approvals state %s - treat every approval as unproven" % bad, "*")
+            chain_ok = False
+        elif entries:
+            state_snap = entries[-1].get("builds", {})
+    paths = [b["path"] for b in ledger.get("builds", [])]
+    if entries:
+        for sp in state_snap:
+            if sp not in paths:
+                add(ALERT, "build row removed from the ledger since the last accepted state: %s" % sp, "*")
+    for b in ledger.get("builds", []):
+        path = b["path"]
+        flags = {k: b.get(k) for k in FLAGS}
+        prev = state_snap.get(path)
+        if entries is not None and chain_ok and prev is None:
+            add(INFO, "%s is a new ledger row not yet in the accepted state" % path, path)
+        valid = {}
+        for k, v in flags.items():
+            if v is not True:
+                if prev and prev["flags"][k]["value"]:
+                    add(INFO, "%s: %s was approved in the accepted state and is now revoked (--accept-state to record)" % (path, k), path)
+                continue
+            why = evidence_problem(ctx, b, k)
+            if why:
+                add(ALERT, "%s: %s=true but %s" % (path, k, why), path)
+                continue
+            cur = (b.get(k + "_evidence"), str(b.get(k + "_evidence_sha256")).lower())
+            old = prev["flags"][k] if prev else None
+            if old and old["value"]:
+                if (old["evidence"], old["sha256"].lower()) != cur:
+                    add(ALERT, "%s: %s evidence changed after it was accepted - re-approval needed" % (path, k), path)
+                    continue
+                valid[k] = True
+            elif ctx.get("accepting"):
+                valid[k] = True
+            else:
+                add(INFO, "%s: %s approval has valid evidence but is not yet in the accepted state (--accept-state)" % (path, k), path)
+        allflags = all(v is True for v in flags.values())
+        claimed = str(b.get("claimed_status", "")).upper()
+        fully = allflags and chain_ok and all(valid.get(k) for k in FLAGS)
+        if claimed in PROBLEM_STATUS and not fully:
+            miss = [k for k in FLAGS if not valid.get(k)]
+            add(ALERT, "%s claims %s but lacks accepted approval: %s" % (path, claimed, ", ".join(miss)), path)
+        elif not fully:
+            miss = [k for k in FLAGS if not valid.get(k)]
+            add(INFO, "%s is %s - awaiting: %s (may NOT be called DONE)" % (path, claimed or "unstated", ", ".join(miss)), path)
+        else:
+            f = add(OK, "%s fully approved with accepted, recomputing evidence" % path, path)
+            f["approved"] = True
     if not out:
-        out.append(F("APPROVALS", OK, "all %d builds fully approved" % ok_n))
+        add(OK, "no builds in the ledger", "*")
     return out
+
+
+def accept_state(ctx):
+    """Append the current ledger to the hash chain. Refuses while any approvals ALERT stands."""
+    ctx = dict(ctx, accepting=True)
+    ctx["ledger"] = ctx.get("ledger") if ctx.get("ledger") is not None else _load(ctx, LEDGER)
+    bad = [f for f in r_approvals(ctx) if f["level"] == ALERT]
+    if bad:
+        return False, "refused, approvals ALERT stands: " + "; ".join(f["msg"] for f in bad)
+    entries, err = _load_state(ctx)
+    if err:
+        return False, err
+    entries = entries or []
+    prev = entries[-1]["hash"] if entries else "GENESIS"
+    seq = len(entries) + 1
+    snap = _snapshot(ctx["ledger"])
+    entries.append({"seq": seq, "accepted_ist": ctx.get("now", datetime.now(IST)).astimezone(IST).strftime("%d-%m-%Y %H:%M:%S"),
+                    "builds": snap, "prev": prev, "hash": _chain_hash(prev, seq, snap)})
+    data = json.dumps({"title": "Accepted approvals hash chain - append only, written by tools/requirements_guard.py --accept-state",
+                       "entries": entries}, indent=1, ensure_ascii=False)
+    path = os.path.join(ctx["root"], STATE)
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as fh:
+        fh.write(data)
+        fh.flush()
+        os.fsync(fh.fileno())
+    os.replace(tmp, path)
+    return True, "accepted entry %d (%s)" % (seq, entries[-1]["hash"][:12])
 
 
 def r_move_safety(ctx):
@@ -496,7 +672,9 @@ def run(ctx):
         else:
             st = "GREEN"
         reqs[rid] = {"status": st, "rules": r.get("rules", []), "text": r["text"][:90]}
-    done_allowed = {b["path"]: all(b.get(k) is True for k in ("fable", "external_auditor", "kumar"))
+    approved = {f.get("build") for f in findings if f["rule"] == "APPROVALS" and f.get("approved")}
+    blocked = {f.get("build") for f in findings if f["rule"] == "APPROVALS" and f["level"] == ALERT}
+    done_allowed = {b["path"]: (b["path"] in approved and b["path"] not in blocked and "*" not in blocked)
                     for b in ctx["ledger"].get("builds", [])}
     cnt = {lv: sum(1 for f in findings if f["level"] == lv) for lv in (ALERT, INFO, OK)}
     sc = {s: sum(1 for v in reqs.values() if v["status"] == s) for s in ("GREEN", "AMBER", "RED")}
@@ -533,10 +711,20 @@ def main(argv=None):
     ap.add_argument("--policy-path", action="append", default=[])
     ap.add_argument("--fix", action="store_true", help="regenerate derived docs via their generator, then re-check")
     ap.add_argument("--notify", action="store_true", help="send the summary through guard_core.notify (off by default)")
+    ap.add_argument("--accept-state", action="store_true",
+                    help="append the current approvals ledger to the hash chain (refused while an approvals ALERT stands)")
     ap.add_argument("--no-report", action="store_true")
     ap.add_argument("-v", "--verbose", action="store_true")
     a = ap.parse_args(argv)
     ctx = {"root": os.path.abspath(a.root), "ssd_roots": a.ssd_root, "policy_paths": a.policy_path, "fix": a.fix}
+    if a.accept_state:
+        try:
+            ok, msg = accept_state(ctx)
+        except Exception as e:  # noqa: BLE001
+            print("REQUIREMENTS-GUARD could not accept state: %s: %s" % (type(e).__name__, e))
+            return 2
+        print("REQUIREMENTS-GUARD accept-state: %s" % msg)
+        return 0 if ok else 1
     try:
         rep = run(ctx)
     except Exception as e:  # noqa: BLE001

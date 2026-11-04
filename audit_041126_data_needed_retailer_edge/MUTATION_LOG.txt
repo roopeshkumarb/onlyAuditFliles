@@ -1,0 +1,45 @@
+MUTATION LOG - docs/audit_pack_041126 - 04-11-2026 (IST) - sandbox only, nothing run on a box or a real database
+Runner: docs/audit_pack_041126/mutation_runner.py (patches one exact string in a COPY, runs tests/test_requirements_guard.py + tests/test_retailer_db_build.py, stops at first failure).
+Result: 33 mutations tried, 31 CAUGHT, 2 SURVIVED.
+
+History, stated honestly: the first run caught 27 of 33 and 6 survived (G11, G12, G14, B1, B11, B12). Fable round 2 had already found G1-G3, B1, B2 surviving the earlier suite. For the four survivors that tests CAN kill, a test was added and the mutant re-run (G11, G12, G14, B1 -> CAUGHT). B1's first test was too weak: its assertion matched the hash message as well as the row-count message, so it survived until the assertion was tightened. The two fsync mutants stay SURVIVED.
+
+ID   RESULT    MUTATION                                                       KILLED BY (first failing test) / REASON
+G1   CAUGHT    delete the evidence-file-exists branch (Fable G1)              tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_file_missing
+G2   CAUGHT    shrink PROBLEM_STATUS to DONE/COMPLETE (Fable G2)              tests/test_requirements_guard.py::ApprovalsGate::test_every_problem_status_is_alerted_when_unapproved
+G3   CAUGHT    main() always exits 0 (Fable G3)                               tests/test_requirements_guard.py::ExitCode::test_alert_gives_exit_1
+G4   CAUGHT    evidence sha256 never recomputed                               tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_edited_after_acceptance
+G5   CAUGHT    evidence need not name the build                               tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_does_not_name_the_build
+G6   CAUGHT    evidence may live anywhere (e.g. CLAUDE.md)                    tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_is_claude_md
+G7   CAUGHT    artifacts/ copies accepted as evidence                         tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_under_artifacts_copy_dir
+G8   CAUGHT    code / control files accepted as evidence                      tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_is_code_inside_the_allowed_folder
+G9   CAUGHT    removed ledger row not alerted                                 tests/test_requirements_guard.py::ApprovalsGate::test_attack_delete_the_build_row
+G10  CAUGHT    hash chain never verified                                      tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_chain_tampered_or_entry_dropped
+G11  CAUGHT    evidence edited after acceptance not alerted                   tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_and_recorded_hash_both_edited_after_acceptance
+G12  CAUGHT    done_allowed ignores approvals ALERTs                          tests/test_requirements_guard.py::ApprovalsGate::test_one_removed_row_blocks_every_done_even_a_fully_approved_build
+G13  CAUGHT    accept_state accepts while an ALERT stands                     tests/test_requirements_guard.py::ApprovalsGate::test_accept_state_is_refused_while_an_alert_stands
+G14  CAUGHT    path traversal not rejected by name                            tests/test_requirements_guard.py::ApprovalsGate::test_dotdot_inside_the_allowed_folder_is_still_refused_by_name
+G15  CAUGHT    empty / tiny evidence files accepted                           tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_too_small
+G16  CAUGHT    true flags with no state chain not alerted                     tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_file_deleted_while_flags_true
+B1   CAUGHT    _verify row-count check deleted (Fable B1)                     tests/test_retailer_db_build.py::FableRound2::test_b1_verify_names_a_missing_row_by_count
+B1b  CAUGHT    _verify read=inserted+dup+rejected check deleted               tests/test_retailer_db_build.py::FableRound2::test_b1b_verify_catches_read_not_equal_inserted_plus_dup_plus_rejected
+B2   CAUGHT    NOT NULL reject any->all (Fable B2)                            tests/test_retailer_db_build.py::FableRound2::test_b2_null_key_column_rejects_the_row_even_if_the_others_are_present
+B3   CAUGHT    quick_check result ignored (Fable B3)                          tests/test_retailer_db_build.py::Safety::test_corrupt_source_is_refused_and_nothing_is_written
+B4   CAUGHT    NULL bars broker -> 'kite' (Fable M4)                          tests/test_retailer_db_build.py::SrcOrderAndStamps::test_null_or_blank_bars_broker_is_unknown_never_a_vendor
+B5   CAUGHT    nifty_1m rows stamped with a broker that supplied nothing      tests/test_retailer_db_build.py::Stamping::test_unknown_historical_never_becomes_a_broker
+B6   CAUGHT    SRC_ORDER ranking removed (scan order decides)                 tests/test_retailer_db_build.py::SrcOrderAndStamps::test_src_order_decides_the_winner_not_scan_order
+B7   CAUGHT    post-read stat guard dropped (Fable M3)                        tests/test_retailer_db_build.py::SrcOrderAndStamps::test_source_moving_during_the_build_publishes_nothing
+B8   CAUGHT    unrecognised feed name guessed as a vendor                     tests/test_retailer_db_build.py::Stamping::test_unknown_historical_never_becomes_a_broker
+B9   CAUGHT    no-op rerun skipped                                            tests/test_retailer_db_build.py::Safety::test_rerun_is_idempotent_and_touches_nothing
+B10  CAUGHT    content sha256 read-back check skipped                         tests/test_retailer_db_build.py::Safety::test_verification_catches_a_tampered_row
+B11  SURVIVED  final fsync of the scratch file removed                        SURVIVED, cannot be killed here: fsync only matters when the machine loses power between write and flush; a process kill leaves the OS page cache intact so the file is always complete. Needs a real power-cut test on the box (power-pull or a filesystem fault-injection tool). NOT covered; do not read this as covered.
+B12  SURVIVED  every directory fsync removed (0 = all occurrences)            SURVIVED, same reason as B11 for the directory entry (the rename may not be durable after a power cut). NOT covered.
+B13  CAUGHT    resume probe opened read-only again (round-1 bug)              tests/test_retailer_db_build.py::MidTransactionKill::test_sigkill_inside_a_transaction_resumes_and_converges
+B14  CAUGHT    scratch sidecars no longer removed                             tests/test_retailer_db_build.py::MidTransactionKill::test_rm_tmp_removes_every_sidecar
+B15  CAUGHT    supplier conflicts no longer recorded                          tests/test_retailer_db_build.py::SrcOrderAndStamps::test_cross_source_conflict_is_recorded_first_source_wins
+B16  CAUGHT    build lock removed (Fable defect 5)                            tests/test_retailer_db_build.py::FableRound2::test_second_concurrent_build_is_refused_not_a_sqlite_crash
+
+Equivalence notes (mutants that look redundant, kept so the reader can judge):
+- G14 (path traversal by name): '..' is also removed by os.path.normpath and the result must sit under an allowed folder, so for most inputs the folder check alone refuses. The by-name rule additionally refuses 'docs/audit_pack_041126/sub/../x.md', which would normalise to an allowed path. Deliberate strictness, now tested.
+- B1 (row-count check in _verify): the content hash also fails when a row is missing, so this check is redundant for correctness; it exists to give a precise message. The test asserts the message text.
+- Guard limits NOT tested by any mutation: someone who edits the ledger, the evidence file, its recorded hash and the whole state chain together, or deletes the tail of the chain, passes the guard. The real gate is Kumar and the external auditor.

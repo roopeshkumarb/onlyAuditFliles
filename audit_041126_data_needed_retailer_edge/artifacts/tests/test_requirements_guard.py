@@ -107,19 +107,6 @@ class Clean(Base):
         self.run_guard()
         self.assertEqual(before, tree_hash(self.root))
 
-    def test_done_allowed_needs_all_three(self):
-        rep = self.run_guard()
-        self.assertEqual(list(rep["done_allowed"].values()), [False])
-        led = json.load(open(os.path.join(self.root, G.LEDGER)))
-        b = led["builds"][0]
-        b.update(fable=True, fable_evidence="docs/framework/AUDIT_PUBLISH_RULE.md", external_auditor=True,
-                 external_auditor_evidence="audit repo commit abc", kumar=True, kumar_evidence="04-11 'approved'",
-                 claimed_status="DONE")
-        w(self.root, G.LEDGER, json.dumps(led))
-        rep = self.run_guard()
-        self.assertEqual(self.alerts(rep, "APPROVALS"), [])
-        self.assertEqual(list(rep["done_allowed"].values()), [True])
-
 
 class Mutations(Base):
     def test_m1_unmapped_work_is_alerted(self):
@@ -258,6 +245,274 @@ class Mutations(Base):
     def test_trace_only_requirement_is_never_green(self):
         rep = self.run_guard()
         self.assertEqual(rep["requirements"]["R07"]["status"], "AMBER")
+
+
+PACK = "docs/audit_pack_041126/"
+NOW = datetime(2026, 11, 4, 12, 0, tzinfo=IST)
+
+
+class ApprovalsGate(Base):
+    """Fable round 2: the first gate accepted evidence "ok" and a deleted row. Each attack below must ALERT."""
+
+    def led(self):
+        return json.load(open(os.path.join(self.root, G.LEDGER)))
+
+    def save(self, led):
+        w(self.root, G.LEDGER, json.dumps(led))
+
+    def evidence(self, rel, text=None):
+        text = text if text is not None else "Independent review of tools/build.py: verdict PASS. Signed reviewer, 04-11-2026.\n"
+        w(self.root, rel, text)
+        return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+    def approve(self, led, flag="fable", rel=None, text=None):
+        rel = rel or (PACK + "%s_review.md" % flag)
+        sha = self.evidence(rel, text)
+        b = led["builds"][0]
+        b[flag] = True
+        b[flag + "_evidence"] = rel
+        b[flag + "_evidence_sha256"] = sha
+        return led
+
+    def approve_all(self):
+        led = self.led()
+        for f in G.FLAGS:
+            self.approve(led, f)
+        led["builds"][0]["claimed_status"] = "DONE"
+        self.save(led)
+
+    def accept(self):
+        return G.accept_state({"root": self.root, "now": NOW})
+
+    def msgs(self, rep):
+        return " | ".join(f["msg"] for f in self.alerts(rep, "APPROVALS"))
+
+    def test_full_path_is_allowed_only_after_accept_state(self):
+        self.approve_all()
+        rep = self.run_guard()
+        self.assertTrue(self.alerts(rep, "APPROVALS"), "DONE claimed but not accepted into the chain must ALERT")
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+        ok, msg = self.accept()
+        self.assertTrue(ok, msg)
+        rep = self.run_guard()
+        self.assertEqual(self.alerts(rep, "APPROVALS"), [], self.msgs(rep))
+        self.assertEqual(list(rep["done_allowed"].values()), [True])
+
+    def test_attack_flip_all_flags_with_ok_text(self):
+        led = self.led()
+        b = led["builds"][0]
+        b.update(fable=True, fable_evidence="approved in chat", external_auditor=True, external_auditor_evidence="ok",
+                 kumar=True, kumar_evidence="ok", claimed_status="DONE")
+        self.save(led)
+        rep = self.run_guard()
+        self.assertTrue(self.alerts(rep, "APPROVALS"))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+
+    def test_attack_evidence_is_claude_md(self):
+        led = self.led()
+        self.approve(led, "fable", rel="CLAUDE.md")
+        self.save(led)
+        self.assertIn("not under", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_is_the_ledger_or_state_itself(self):
+        for rel in (G.LEDGER, G.STATE):
+            led = self.led()
+            b = led["builds"][0]
+            b.update(fable=True, fable_evidence=rel, fable_evidence_sha256="0" * 64)
+            self.save(led)
+            self.assertTrue(self.alerts(self.run_guard(), "APPROVALS"), rel)
+
+    def test_attack_evidence_is_code_inside_the_allowed_folder(self):
+        led = self.led()
+        self.approve(led, "fable", rel=PACK + "notes.py", text="# tools/build.py approved " + "x" * 50)
+        self.save(led)
+        self.assertIn("code or a project control file", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_under_artifacts_copy_dir(self):
+        led = self.led()
+        self.approve(led, "fable", rel=PACK + "artifacts/docs/review.md")
+        self.save(led)
+        self.assertIn("artifacts/", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_file_missing(self):
+        led = self.led()
+        b = led["builds"][0]
+        b.update(fable=True, fable_evidence=PACK + "nope.md", fable_evidence_sha256="a" * 64)
+        self.save(led)
+        self.assertIn("evidence file missing", self.msgs(self.run_guard()))
+
+    def test_attack_hash_not_recorded_or_wrong(self):
+        led = self.led()
+        self.approve(led, "fable")
+        led["builds"][0]["fable_evidence_sha256"] = ""
+        self.save(led)
+        self.assertIn("not recorded", self.msgs(self.run_guard()))
+        led["builds"][0]["fable_evidence_sha256"] = "b" * 64
+        self.save(led)
+        self.assertIn("does not recompute", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_does_not_name_the_build(self):
+        led = self.led()
+        self.approve(led, "fable", text="This is a long enough review of something else entirely, all good.\n")
+        self.save(led)
+        self.assertIn("never names the build", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_too_small(self):
+        led = self.led()
+        self.approve(led, "fable", text="tools/build.py ok")
+        self.save(led)
+        self.assertIn("too small", self.msgs(self.run_guard()))
+
+    def test_attack_path_traversal_and_absolute(self):
+        for bad in ("../outside.md", "/etc/passwd", PACK + "../../CLAUDE.md"):
+            led = self.led()
+            led["builds"][0].update(fable=True, fable_evidence=bad, fable_evidence_sha256="c" * 64)
+            self.save(led)
+            self.assertTrue(self.alerts(self.run_guard(), "APPROVALS"), bad)
+
+    def test_attack_delete_the_build_row(self):
+        led = self.led()
+        led["builds"].append({"path": "tools/other.py", "kind": "tool", "test": "tests/test_build.py",
+                              "claimed_status": "DRAFT", "fable": False, "external_auditor": False, "kumar": False})
+        self.save(led)
+        w(self.root, "tools/other.py", "import os\n")
+        ok, msg = self.accept()
+        self.assertTrue(ok, msg)
+        led["builds"] = led["builds"][:1]
+        self.save(led)
+        rep = self.run_guard()
+        self.assertIn("removed from the ledger", self.msgs(rep))
+        self.assertTrue(all(v is False for v in rep["done_allowed"].values()))
+
+    def test_attack_flag_flipped_true_but_never_accepted(self):
+        ok, _ = self.accept()
+        led = self.led()
+        self.approve(led, "fable")
+        self.approve(led, "external_auditor")
+        self.approve(led, "kumar")
+        self.save(led)
+        rep = self.run_guard()
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+        self.assertEqual(self.alerts(rep, "APPROVALS"), [])
+        led["builds"][0]["claimed_status"] = "DONE"
+        self.save(led)
+        self.assertIn("lacks accepted approval", self.msgs(self.run_guard()))
+
+    def test_attack_evidence_edited_after_acceptance(self):
+        self.approve_all()
+        self.assertTrue(self.accept()[0])
+        w(self.root, PACK + "fable_review.md", "Rewritten after approval, still names tools/build.py in text. " * 2)
+        rep = self.run_guard()
+        self.assertTrue(self.alerts(rep, "APPROVALS"))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+
+    def test_attack_evidence_and_recorded_hash_both_edited_after_acceptance(self):
+        self.approve_all()
+        self.assertTrue(self.accept()[0])
+        led = self.led()
+        new = "Rewritten after approval and re-hashed, still names tools/build.py in its text body.\n"
+        led["builds"][0]["fable_evidence_sha256"] = self.evidence(PACK + "fable_review.md", new)
+        self.save(led)
+        rep = self.run_guard()
+        self.assertIn("changed after it was accepted", self.msgs(rep))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+
+    def test_one_removed_row_blocks_every_done_even_a_fully_approved_build(self):
+        self.approve_all()
+        led = self.led()
+        led["builds"].append({"path": "tools/other.py", "kind": "tool", "test": "tests/test_build.py",
+                              "claimed_status": "DRAFT", "fable": False, "external_auditor": False, "kumar": False})
+        self.save(led)
+        w(self.root, "tools/other.py", "import os\n")
+        self.assertTrue(self.accept()[0])
+        self.assertTrue(self.run_guard()["done_allowed"]["tools/build.py"])
+        led["builds"] = led["builds"][:1]
+        self.save(led)
+        rep = self.run_guard()
+        self.assertIn("removed from the ledger", self.msgs(rep))
+        self.assertFalse(rep["done_allowed"]["tools/build.py"])
+
+    def test_dotdot_inside_the_allowed_folder_is_still_refused_by_name(self):
+        led = self.led()
+        self.approve(led, "fable", rel=PACK + "sub/../fable_review.md")
+        self.save(led)
+        self.assertIn("relative path inside the repo", self.msgs(self.run_guard()))
+
+    def test_attack_state_chain_tampered_or_entry_dropped(self):
+        self.approve_all()
+        self.assertTrue(self.accept()[0])
+        self.assertTrue(self.accept()[0])
+        sp = os.path.join(self.root, G.STATE)
+        good = open(sp, encoding="utf-8").read()
+        st = json.loads(good)
+        st["entries"][0]["builds"]["tools/build.py"]["claimed_status"] = "EDITED"
+        open(sp, "w", encoding="utf-8").write(json.dumps(st))
+        rep = self.run_guard()
+        self.assertIn("chain broken", self.msgs(rep))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+        st = json.loads(good)
+        del st["entries"][0]
+        open(sp, "w", encoding="utf-8").write(json.dumps(st))
+        self.assertIn("chain broken", self.msgs(self.run_guard()))
+
+    def test_attack_state_file_deleted_while_flags_true(self):
+        self.approve_all()
+        self.assertTrue(self.accept()[0])
+        os.remove(os.path.join(self.root, G.STATE))
+        rep = self.run_guard()
+        self.assertIn("no accepted state chain", self.msgs(rep))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+
+    def test_accept_state_is_refused_while_an_alert_stands(self):
+        led = self.led()
+        led["builds"][0].update(fable=True, fable_evidence="ok")
+        self.save(led)
+        ok, msg = self.accept()
+        self.assertFalse(ok)
+        self.assertIn("refused", msg)
+        self.assertFalse(os.path.exists(os.path.join(self.root, G.STATE)))
+
+    def test_every_problem_status_is_alerted_when_unapproved(self):
+        self.assertEqual(set(G.PROBLEM_STATUS), {"DONE", "COMPLETE", "COMPLETED", "GREEN", "PROVEN", "APPROVED"})
+        for st in sorted(G.PROBLEM_STATUS):
+            led = self.led()
+            led["builds"][0]["claimed_status"] = st.lower()
+            self.save(led)
+            self.assertIn("claims %s" % st, self.msgs(self.run_guard()), st)
+
+    def test_draft_and_proposed_status_are_not_alerted(self):
+        for st in ("DRAFT", "PROPOSED", ""):
+            led = self.led()
+            led["builds"][0]["claimed_status"] = st
+            self.save(led)
+            self.assertEqual(self.alerts(self.run_guard(), "APPROVALS"), [], st)
+
+
+class ExitCode(unittest.TestCase):
+    """G3: main() must return 1 on any ALERT, 0 on none, 2 when the guard cannot run."""
+
+    def fake(self, alerts):
+        return {"summary_line": "x", "findings": [], "fixes": [],
+                "counts": {G.ALERT: alerts, G.INFO: 0, G.OK: 1}}
+
+    def call(self, fn):
+        old = G.run
+        G.run = fn
+        try:
+            return G.main(["--no-report", "--root", tempfile.gettempdir()])
+        finally:
+            G.run = old
+
+    def test_alert_gives_exit_1(self):
+        self.assertEqual(self.call(lambda ctx: self.fake(3)), 1)
+
+    def test_no_alert_gives_exit_0(self):
+        self.assertEqual(self.call(lambda ctx: self.fake(0)), 0)
+
+    def test_crash_gives_exit_2(self):
+        def boom(ctx):
+            raise RuntimeError("x")
+        self.assertEqual(self.call(boom), 2)
 
 
 class Register(unittest.TestCase):

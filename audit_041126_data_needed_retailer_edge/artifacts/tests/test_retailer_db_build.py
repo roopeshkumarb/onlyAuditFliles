@@ -430,6 +430,75 @@ class MidTransactionKill(Base):
         self.assertEqual(self.q("pragma integrity_check"), [("ok",)])
 
 
+class FableRound2(Base):
+    """Mutants B1/B2 survived round 1's suite; the lock was a reasoned-not-executed defect (round 2, no. 4 and 5)."""
+
+    def specs(self):
+        return dict((sp.src_table, sp) for sp in B.SPECS)
+
+    def built_copy(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        import shutil
+        shutil.copy(self.out, self.out + ".copy")
+        return sqlite3.connect(self.out + ".copy")
+
+    def test_b1_verify_names_a_missing_row_by_count(self):
+        con = self.built_copy()
+        con.execute("delete from nifty_1m_v2 where dt='2026-10-01 09:16:00'")
+        with self.assertRaises(B.VerifyFailed) as cm:
+            B._verify(con, self.specs())
+        self.assertIn("were inserted", str(cm.exception))       # the row-count message itself, which the hash message does not contain
+        con.close()
+
+    def test_b1b_verify_catches_read_not_equal_inserted_plus_dup_plus_rejected(self):
+        con = self.built_copy()
+        con.execute("update _build_units set rows_read=rows_read+1 where source_table='nifty_1m'")
+        with self.assertRaises(B.VerifyFailed) as cm:
+            B._verify(con, self.specs())
+        self.assertIn("!= inserted", str(cm.exception))
+        con.close()
+
+    def test_b1c_clean_file_verifies(self):
+        con = self.built_copy()
+        B._verify(con, self.specs())
+        con.close()
+
+    def test_b2_null_key_column_rejects_the_row_even_if_the_others_are_present(self):
+        mk_source(self.a, nifty=False)
+        con = sqlite3.connect(self.a)
+        con.execute("create table nifty_1m(ts int, dt text, open real, high real, low real, close real, vol real)")
+        con.execute("insert into nifty_1m values(NULL,'2026-10-01 09:15:00',1,2,0.5,1.5,7)")      # ts NULL, dt present
+        con.execute("insert into nifty_1m values(1700000060,NULL,1,2,0.5,1.5,7)")                 # dt NULL, ts present
+        con.execute("insert into nifty_1m values(1700000120,'2026-10-01 09:17:00',1,2,0.5,1.5,7)")  # good
+        con.commit()
+        con.close()
+        r = B.build(self.out, [(self.a, "a")])
+        u = [x for x in r["units"] if x["table"] == "nifty_1m"][0]
+        self.assertEqual((u["rows_read"], u["rows_inserted"], u["rows_rejected"]), (3, 1, 2))
+        self.assertEqual(self.q("select count(*) from nifty_1m_v2"), [(1,)])
+
+    def test_second_concurrent_build_is_refused_not_a_sqlite_crash(self):
+        import fcntl
+        mk_source(self.a)
+        dfd = os.open(os.path.dirname(self.out), os.O_RDONLY)
+        fcntl.flock(dfd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        try:
+            with self.assertRaises(B.OutExists) as cm:
+                B.build(self.out, [(self.a, "a")])
+            self.assertIn("another build holds the lock", str(cm.exception))
+            self.assertFalse(os.path.exists(self.out))
+            self.assertFalse(os.path.exists(self.out + ".building"))
+        finally:
+            os.close(dfd)
+        self.assertEqual(B.build(self.out, [(self.a, "a")])["status"], "BUILT")        # lock released
+
+    def test_lock_leaves_no_extra_file(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), ["retailer_db_edge.db"])
+
+
 class Inventory(Base):
     def test_inventory_reports_and_writes_nothing(self):
         src = os.path.join(self.d, "src")

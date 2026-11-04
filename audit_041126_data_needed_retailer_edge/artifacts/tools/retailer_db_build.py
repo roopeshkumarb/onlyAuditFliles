@@ -452,8 +452,27 @@ def _probe_tmp(tmp, plan):
 
 
 def build(out_path, sources, check="quick", replace=False, _inject=None):
-    """sources: list of (path, label). Returns a result dict. Raises SourceRefused / VerifyFailed / OutExists."""
+    """sources: list of (path, label). Returns a result dict. Raises SourceRefused / VerifyFailed / OutExists.
+
+    One build per output directory at a time: an exclusive non-blocking flock on the directory itself (no extra file is
+    left behind). A second concurrent build is REFUSED (OutExists) instead of dying inside SQLite on the first one's
+    scratch file (Fable round 2, defect 5)."""
     out_path = os.path.abspath(out_path)
+    dfd = os.open(os.path.dirname(out_path), os.O_RDONLY)
+    try:
+        try:
+            import fcntl
+            fcntl.flock(dfd, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except ImportError:
+            pass
+        except OSError:
+            raise OutExists("%s: another build holds the lock on this directory; nothing was touched" % out_path)
+        return _build_locked(out_path, sources, check, replace, _inject)
+    finally:
+        os.close(dfd)
+
+
+def _build_locked(out_path, sources, check, replace, _inject):
     labels = [l for _, l in sources]
     if not sources or len(set(labels)) != len(labels):
         raise SourceRefused("need at least one source and every label must be unique: %s" % labels)

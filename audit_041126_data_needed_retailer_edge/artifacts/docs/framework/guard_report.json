@@ -1,6 +1,6 @@
 {
-  "generated_ist": "04-11-2026 12:10:01 GMT+5:30",
-  "summary_line": "REQUIREMENTS-GUARD 04-11-2026 12:10 IST: 0 ALERT, 10 INFO, 14 OK | requirements GREEN 9 / AMBER 27 / RED 0 | builds allowed to be called DONE: 0 of 6",
+  "generated_ist": "04-11-2026 12:30:18 GMT+5:30",
+  "summary_line": "REQUIREMENTS-GUARD 04-11-2026 12:30 IST: 0 ALERT, 10 INFO, 14 OK | requirements GREEN 9 / AMBER 27 / RED 0 | builds allowed to be called DONE: 0 of 6",
   "counts": {
     "ALERT": 0,
     "INFO": 10,
@@ -405,7 +405,8 @@
       "msg": "tools/retailer_db_build.py is DRAFT - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "tools/retailer_db_build.py"
     },
     {
       "rule": "APPROVALS",
@@ -413,7 +414,8 @@
       "msg": "tools/retailer_db_inventory.py is DRAFT - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "tools/retailer_db_inventory.py"
     },
     {
       "rule": "APPROVALS",
@@ -421,7 +423,8 @@
       "msg": "tools/gen_data_needed_instruments_041126.py is DRAFT - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "tools/gen_data_needed_instruments_041126.py"
     },
     {
       "rule": "APPROVALS",
@@ -429,7 +432,8 @@
       "msg": "tools/requirements_guard.py is DRAFT - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "tools/requirements_guard.py"
     },
     {
       "rule": "APPROVALS",
@@ -437,7 +441,8 @@
       "msg": "config/recoverability.json is PROPOSED - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "config/recoverability.json"
     },
     {
       "rule": "APPROVALS",
@@ -445,7 +450,8 @@
       "msg": "pullers/shared/dp_recoverability.py is PROPOSED - awaiting: fable, external_auditor, kumar (may NOT be called DONE)",
       "req": [],
       "fix": null,
-      "evidence": null
+      "evidence": null,
+      "build": "pullers/shared/dp_recoverability.py"
     },
     {
       "rule": "MOVE_SAFETY",
@@ -466,7 +472,7 @@
     {
       "rule": "FRIDAY_SSD",
       "level": "INFO",
-      "msg": "55.8 h until Fri 20:00 IST; no box has been checked for SSD-free yet",
+      "msg": "55.5 h until Fri 20:00 IST; no box has been checked for SSD-free yet",
       "req": [],
       "fix": null,
       "evidence": null

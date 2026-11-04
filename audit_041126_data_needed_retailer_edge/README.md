@@ -16,7 +16,7 @@ No institutional data (dealer gamma, signed option flow, intraday FII positions)
 
 | # | Claim | Evidence |
 |---|---|---|
-| C1 | 183 rows, one per instrument per data product: 85 LIVE_ONLY_NON_RECOVERABLE, 94 PULLABLE_RECOVERABLE, 4 UNKNOWN. Every row has a file:line citation and a stated regime/direction purpose. | `artifacts/docs/framework/data_needed_instruments_041126.csv`, `DATA_NEEDED_INSTRUMENTS_041126.md` |
+| C1 | 183 rows, one per instrument per data product: 85 LIVE_ONLY_NON_RECOVERABLE, 94 PULLABLE_RECOVERABLE, 4 UNKNOWN. Every row's `evidence` column carries a `path:line` cite and its `why_needed_for_regime` is filled (both checked mechanically: 183/183 contain `:<digits>`, 0 blank; the two GAP rows cite `docs/framework/DATA_NEEDED_FOR_EDGE_031126.md:41`). That the cited line says what the row claims was re-opened by Fable only for a sample (round 2 re-opened 237 cites); the rest is for you (Q1). | `artifacts/docs/framework/data_needed_instruments_041126.csv`, `DATA_NEEDED_INSTRUMENTS_041126.md` |
 | C2 | All 36 store tables the pullers declare (`dp_families.py`) are classified; 0 left UNKNOWN. A partly re-pullable table (`global_1m`, `opt_ohlc_1m`) is treated as live-only until its window is probed. | `artifacts/config/recoverability.json`, `artifacts/pullers/shared/dp_recoverability.py` |
 | C3 | On 04-11-2026 both i5 and i7 were recording the same live-only instruments: Kite 202, Dhan 49, Upstox 47, Fyers 5; weekly-expiry recording is ON. 236 distinct names per box (259 broker+name pairs). 123 / 87 files over 20 MB on i5 / i7. | `artifacts/docs/framework/LIVE_CENSUS_041126.csv` / `.md` |
 | C4 | The retailer database can be filled from existing databases with a supplier stamp on every row; rows with no known supplier get `UNKNOWN_HISTORICAL`, never a guessed broker; sources are never modified; a power cut leaves no half-built file. (Tested on synthetic data only.) | `artifacts/tools/retailer_db_build.py`, `tests/test_retailer_db_build.py` |
@@ -32,7 +32,7 @@ No institutional data (dealer gamma, signed option flow, intraday FII positions)
 5. **The real `opt_chain_1m` primary key and any duplicate-supplier collisions in the real archive are unknown.** The builder infers the key.
 6. **The builder has never touched a real database.** The final-fsync step cannot be tested without a real power cut (one mutation survives for that reason).
 7. **i5's master archive `niftybkp.db` is corrupt** ("database disk image is malformed", task T-1317). i7's copy was read healthy (1,782,139 rows in `nifty_1m`). Not repaired.
-8. **i5's SSD is 100% full** (1.8 GB free) and its space gate fails open; i7's `.env` / `DP_SSD_ROOT` and the Pi5 were not checked.
+8. **i5's SSD is 100% full** (1.8G free of 205G, measured in the read-only census, `artifacts/docs/framework/LIVE_CENSUS_041126.md` line 27, one snapshot at market hours; there is no TASKS.jsonl entry for this exact figure, only the older C-021 reading of 3.47 GB at 21:39 on 03-11) and its space gate fails open; i7's `.env` / `DP_SSD_ROOT` and the Pi5 were not checked.
 9. **The same-day SSD-to-HDD mover is not built** (design gaps G2 daily seal, G3 `rows_raw` split).
 10. **Independence limits:** the "Fable" review was a Fable-model agent started by the same operator that wrote the artifacts; its findings are in `FABLE_REVIEW_041126.md`. It is not an external audit, and **no approval below is ticked**.
 11. **The requirements guard is itself a new, unapproved build**, and its traceability rule can be satisfied by merely citing an R-id (see question Q10).
@@ -43,9 +43,12 @@ No institutional data (dealer gamma, signed option flow, intraday FII positions)
 git clone -b report/pull-status-081026 https://github.com/roopeshkumarb/blpro && cd blpro   # tip of the branch contains this pack
 # 1. the copied files are what is described (run inside this pack)
 cd docs/audit_pack_041126/artifacts && sha256sum -c ../MANIFEST.sha256 && cd -
-# 2. the tests (expected: 84 passed)
+# 2. the tests (expected: 117 passed = 56 guard + 6 generator + 27 builder + 25 recoverability + 3 placement;
+#    the placement file used to contribute 0 under pytest)
 python3 -m pytest -q tests/test_dp_recoverability.py tests/test_recoverability_placement.py \
     tests/test_gen_data_needed_instruments.py tests/test_retailer_db_build.py tests/test_requirements_guard.py
+# 2b. the mutation runner (patches copies only; expected 31 CAUGHT, 2 SURVIVED = the two fsync mutants, see MUTATION_LOG.txt)
+python3 docs/audit_pack_041126/mutation_runner.py
 # 3. regenerate the list and confirm it equals the committed one (the test above does this in a sandbox)
 python3 tools/gen_data_needed_instruments_041126.py && git status --short docs/framework
 # 4. classify any name yourself
@@ -65,6 +68,8 @@ Pack copies of files containing a LAN address prefix were redacted; see `REDACTI
 | tools/requirements_guard.py | no | no | no | no |
 | config/recoverability.json | no (re-review pending) | no | no | no |
 | pullers/shared/dp_recoverability.py | no | no | no | no |
+
+**How an approval is recorded, and what the guard can and cannot stop (hardened after Fable round 2).** A flag in `APPROVALS_LEDGER.json` may be `true` only when its `<flag>_evidence` is a file under `docs/audit_pack_041126/` (not `artifacts/`) or an `AUDITOR_RESPONSES`-style folder, is not code / `CLAUDE.md` / the ledger, names the build, and its sha256 is recorded in `<flag>_evidence_sha256` and recomputes. The approval then has to be appended to `docs/framework/APPROVALS_STATE.json` (an append-only hash chain, written only by `tools/requirements_guard.py --accept-state`). A removed build row, a broken chain, evidence edited after approval, or a `DONE` claim without all three accepted approvals is an ALERT, and such a build is never "allowed to be called DONE". **Limit, stated plainly:** someone who edits the ledger, the evidence file, its recorded hash and the chain together, or deletes the tail of the chain, can still fool a local guard. The guard stops accidents and sloppy flips; the real gate is Kumar and the external auditor. Mutation results, including the ones that survive, are in `MUTATION_LOG.txt`; the corrected wording of ledger claims C-054 and C-055 is in `LEDGER_CORRECTIONS.md`.
 
 ## 6. Ten things the external auditor is asked to try to break
 

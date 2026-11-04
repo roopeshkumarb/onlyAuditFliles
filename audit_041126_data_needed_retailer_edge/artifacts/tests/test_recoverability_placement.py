@@ -2,12 +2,15 @@
 file physically on an SSD host path, and must NOT false-alarm on a RECOVERABLE one -
 on a real temp directory tree, not a mock.
 
-Run: python3 tests/test_recoverability_placement.py
+Run: python3 tests/test_recoverability_placement.py     or     python3 -m pytest tests/test_recoverability_placement.py
+(Fable round 2: it used to be a bare main() script, so pytest collected 0 tests from it. Each check is now a function
+returning its failures, collected by the unittest class below; main() still prints the same lines and exit code.)
 """
 import os
 import shutil
 import sys
 import tempfile
+import unittest
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 REPO = os.path.dirname(HERE)
@@ -16,7 +19,7 @@ sys.path.insert(0, os.path.join(REPO, "pullers", "shared"))
 import check_recoverability_placement as chk  # noqa: E402
 
 
-def main():
+def check_roots_from_mounts():
     failures = []
 
     # TEST 1 - roots_from_mounts splits by host Source, not container Destination.
@@ -31,6 +34,11 @@ def main():
     if roots != {"ssd": ["/data/fyers"], "hdd": ["/data/kite", "/lease"]}:
         failures.append("TEST1 FAIL: roots_from_mounts got %r" % roots)
     print("TEST1 roots_from_mounts:", roots)
+    return failures
+
+
+def check_ssd_violation_detected():
+    failures = []
 
     # TEST 2 - a tick file under an SSD-rooted directory is a real violation, scanned
     # from a REAL temp tree (own isolated root, never a shared parent - see T-1283's
@@ -62,6 +70,11 @@ def main():
         print("TEST2 violations found:", violations)
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
+    return failures
+
+
+def check_naive_walk_sanity():
+    failures = []
 
     # TEST 3 - deliberate break: if classify() is bypassed (as if nothing were ever
     # checked), the planted violation is invisible. Proves the test is not trivially
@@ -80,7 +93,22 @@ def main():
         print("TEST3 (sanity: a naive walk classifies nothing) ok")
     finally:
         shutil.rmtree(tmp2, ignore_errors=True)
+    return failures
 
+
+class PlacementChecks(unittest.TestCase):
+    def test_roots_from_mounts_splits_by_host_source(self):
+        self.assertEqual(check_roots_from_mounts(), [])
+
+    def test_planted_tick_file_on_ssd_is_flagged_and_history_is_not(self):
+        self.assertEqual(check_ssd_violation_detected(), [])
+
+    def test_naive_walk_classifies_nothing(self):
+        self.assertEqual(check_naive_walk_sanity(), [])
+
+
+def main():
+    failures = check_roots_from_mounts() + check_ssd_violation_detected() + check_naive_walk_sanity()
     if failures:
         print("\nFAILURES:\n" + "\n".join(failures))
         sys.exit(1)
