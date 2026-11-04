@@ -32,8 +32,10 @@ accepted chain all ALERT, and such a build is never "allowed to be called DONE".
 HONEST LIMIT: this is an accident-and-sloppiness check, not a security control. One person with write
 access to this repo can still write an evidence file containing the APPROVAL line, commit it, flip one flag,
 run --accept-state, commit, and repeat for the other two flags: the guard cannot tell who wrote the file or
-whether Fable / the auditor / Kumar really said it. What it does force is that this is done in separate,
-visible commits, one flag at a time, with the response document committed first. The real gate is Kumar plus
+whether Fable / the auditor / Kumar really said it. "Separate, visible commits" is enforced only while the git
+history is honest: whoever controls the working tree and the repository can rewrite history (force-push), edit
+ledger, state, report and anchors together, or commit three flips in three quick commits, and this local guard
+will pass. It raises the cost of a sloppy or hurried flip; it does not stop a deliberate one. The real gate is Kumar plus
 the external auditor reading the evidence themselves.
 
 Exit: 0 no ALERT, 1 at least one ALERT, 2 the guard itself could not run.
@@ -79,6 +81,9 @@ MIN_EVIDENCE_BYTES = 40
 MIN_EVIDENCE_WORDS = 20   # prose words besides the APPROVAL line
 APPROVAL_LINE = re.compile(r"^[ \t]*APPROVAL[ \t]+(fable|external_auditor|kumar)[ \t]+APPROVES[ \t]+(\S+)[ \t]*$",
                            re.I | re.M)
+NONFINAL_LINE = re.compile(r"^.*\b(?:withdr[ae]w\w*|revok\w+|draft|do[ \t]+not[ \t]+treat|not[ \t]+final|placeholder|template)\b.*$",
+                           re.I | re.M)
+FENCE = re.compile(r"^[ \t]*(?:```|~~~)")
 REJECT_LINE = re.compile(r"^.*\b(?:not[ \t_-]+approved|rejected)\b.*$|^\W*(?:verdict|status|decision|result)\W*fail\w*\b.*$|^\W*fail(?:ed)?\W*$",
                          re.I | re.M)
 
@@ -408,6 +413,67 @@ def _path_symlink(root, rel):
     return None
 
 
+def _norm_text(data):
+    """Evidence text as a reader sees it: BOM dropped, CRLF / CR folded to LF (Windows editors). The sha256 stays on the
+    raw bytes."""
+    return data.decode("utf-8-sig", "replace").replace("\r\n", "\n").replace("\r", "\n")
+
+
+def _strip_fences(text):
+    """Text outside ``` / ~~~ fences. An unclosed fence swallows the rest, so a quoted template can never count."""
+    out, inside = [], False
+    for ln in text.split("\n"):
+        if FENCE.match(ln):
+            inside = not inside
+            continue
+        if not inside:
+            out.append(ln)
+    return "\n".join(out)
+
+
+def _history_versions(ctx):
+    """Older committed copies of the state file (bytes, any order). ctx['git_history'] lets tests inject them; with an
+    injected git_show and no injected history there is none to read."""
+    fn = ctx.get("git_history")
+    if fn is not None:
+        return list(fn())
+    if ctx.get("git_show") is not None:
+        return []
+    try:
+        r = subprocess.run(["git", "-C", ctx["root"], "log", "--format=%H", "-n", "200", "--", STATE],
+                           capture_output=True, timeout=30)
+        if r.returncode != 0:
+            return []
+        out = []
+        for rev in r.stdout.decode().split():
+            g = subprocess.run(["git", "-C", ctx["root"], "show", "%s:%s" % (rev, STATE)], capture_output=True, timeout=30)
+            if g.returncode == 0:
+                out.append(g.stdout)
+        return out
+    except (OSError, subprocess.SubprocessError):
+        return []
+
+
+def _parse_entries(raw):
+    try:
+        e = json.loads(raw.decode("utf-8")).get("entries", [])
+        return e if isinstance(e, list) else []
+    except (ValueError, UnicodeDecodeError, AttributeError):
+        return []
+
+
+def _head_entries(ctx):
+    """Entries of the state file as committed at git HEAD; [] when HEAD has none; None when git cannot be read."""
+    if _git_show(ctx, LEDGER) is None:
+        return None
+    raw = _git_show(ctx, STATE)
+    return [] if raw is None else _parse_entries(raw)
+
+
+def _true_flags(entry_builds):
+    return set((p, k) for p, bs in (entry_builds or {}).items() for k in FLAGS if bs["flags"][k]["value"])
+
+
 def evidence_problem(ctx, b, k):
     """None when <k>_evidence is acceptable for build b, else why not. Mechanical only: it cannot tell
     who wrote the file."""
@@ -440,14 +506,19 @@ def evidence_problem(ctx, b, k):
         return "%s_evidence_sha256 not recorded in the ledger" % k
     if rec != _sha_bytes(data):
         return "%s_evidence sha256 does not recompute (file changed or hash wrong): %s" % (k, rel)
-    text = data.decode("utf-8", "replace")
+    text = _norm_text(data)
     if REJECT_LINE.search(text):
         return "%s_evidence contains a 'not approved' / 'rejected' / FAIL verdict line: %s" % (k, rel)
+    if NONFINAL_LINE.search(text):
+        return ("%s_evidence contains a withdrawn / draft / template / 'do not treat' / 'not final' line - evidence must be "
+                "the final response: %s" % (k, rel))
+    body = _strip_fences(text)
     want = _norm_build(b["path"])
-    lines = [m for m in APPROVAL_LINE.finditer(text)]
-    if not any(m.group(1).lower() == k and _norm_build(m.group(2)) == want for m in lines):
+    if not any(m.group(1).lower() == k and _norm_build(m.group(2)) == want for m in APPROVAL_LINE.finditer(body)):
+        if any(m.group(1).lower() == k and _norm_build(m.group(2)) == want for m in APPROVAL_LINE.finditer(text)):
+            return "%s_evidence has the APPROVAL line only inside a code fence (a quoted template, not an approval)" % k
         return "%s_evidence has no line 'APPROVAL %s APPROVES %s'" % (k, k, b["path"])
-    prose = APPROVAL_LINE.sub(" ", text).split()
+    prose = APPROVAL_LINE.sub(" ", body).split()
     if len(prose) < MIN_EVIDENCE_WORDS:
         return "%s_evidence has only %d prose words besides the APPROVAL line (need %d)" % (k, len(prose), MIN_EVIDENCE_WORDS)
     return None
@@ -487,13 +558,19 @@ def _anchor_problems(ctx, entries, state_anchor):
                        "(length %d recorded, %d now)" % (n, len(entries)))
     raw = _git_show(ctx, STATE)
     if raw is not None:
-        try:
-            head_entries = json.loads(raw.decode("utf-8")).get("entries", [])
-        except (ValueError, UnicodeDecodeError):
-            head_entries = []
+        head_entries = _parse_entries(raw)
         if len(head_entries) > len(entries) or any(h.get("hash") != e.get("hash") for h, e in zip(head_entries, entries)):
             out.append("chain differs from git HEAD's copy (shortened or rewritten; HEAD has %d entries, file %d)"
                        % (len(head_entries), len(entries)))
+    for old in _history_versions(ctx):
+        oe = _parse_entries(old)
+        if len(oe) > len(entries) or any(h.get("hash") != e.get("hash") for h, e in zip(oe, entries)):
+            out.append("chain is not an extension of an earlier COMMITTED version of the state file (a version with %d "
+                       "entries is no longer a prefix) - history was shortened or rewritten, e.g. a revocation erased"
+                       % len(oe))
+            break
+    if _git_show(ctx, REPORT) is not None and not os.path.isfile(os.path.join(ctx["root"], REPORT)):
+        out.append("guard_report.json is committed but missing from the working tree - its anchor_history was dropped")
     return out
 
 
@@ -539,6 +616,18 @@ def r_approvals(ctx):
             chain_ok = False
         if not probs:
             ctx["_anchor_current"] = _anchor_of(entries)
+    he = _head_entries(ctx) if (entries is not None and chain_ok) else None
+    if he is not None:
+        if len(entries) > len(he) + 1:
+            add(ALERT, "%d accepted entries are not committed yet (git HEAD has %d, the file %d): accept and commit ONE "
+                "approval at a time" % (len(entries) - len(he), len(he), len(entries)), "*")
+            chain_ok = False
+        cur_true = _true_flags(_snapshot(ledger))
+        new_vs_head = cur_true - _true_flags(he[-1].get("builds", {}) if he else {})
+        if len(new_vs_head) > 1:
+            add(ALERT, "%d approval flags are newly true against the last COMMITTED accepted entry (%s) - one at a time"
+                % (len(new_vs_head), ", ".join("%s/%s" % x for x in sorted(new_vs_head))), "*")
+            chain_ok = False
     paths = [b["path"] for b in ledger.get("builds", [])]
     if entries:
         for sp in state_snap:
@@ -616,10 +705,19 @@ def accept_state(ctx):
         probe = _git_show(ctx, LEDGER)
         if probe is None:
             return False, "refused: git history cannot be read, so a single-flag flip cannot be verified"
+        he = _head_entries(ctx)
+        if he is not None and len(entries) > len(he):
+            return False, ("refused: the previous accepted entry is not committed yet (git HEAD has %d entries, the file "
+                           "%d) - commit it before accepting the next flag" % (len(he), len(entries)))
     for path, k, ev in new_true:
-        if _git_show(ctx, ev) is None:
+        raw = _git_show(ctx, ev)
+        if raw is None:
             return False, ("refused: evidence %s for %s/%s is not committed in git HEAD yet - commit the response "
                            "document first, then flip the flag" % (ev, path, k))
+        rec_sha = [bs["flags"][k]["sha256"] for p2, bs in snap.items() if p2 == path][0].lower()
+        if _sha_bytes(raw) != rec_sha:
+            return False, ("refused: evidence %s for %s/%s differs between git HEAD and the recorded hash - the text that "
+                           "is committed is not the text being approved; commit the final text first" % (ev, path, k))
     entries.append({"seq": seq, "accepted_ist": ctx.get("now", datetime.now(IST)).astimezone(IST).strftime("%d-%m-%Y %H:%M:%S"),
                     "builds": snap, "prev": prev, "hash": _chain_hash(prev, seq, snap)})
     data = json.dumps({"title": "Accepted approvals hash chain - append only, written by tools/requirements_guard.py --accept-state",

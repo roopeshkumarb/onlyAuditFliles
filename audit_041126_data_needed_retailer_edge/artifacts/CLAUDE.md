@@ -85,3 +85,11 @@ When working on this project, Claude must:
 3. **Respect the "Tuesday Rule"** when dealing with expiry dating logic.
 4. **Enforce HDD vs SSD separation** based on recoverability.
 5. **Run read-only SQL queries** on `blpro_working.db` to verify table existence before claiming a dataset is "held".
+
+---
+
+## 7. NO-IDLE RULE (owner instruction 04-11-2026, enabled by Kumar)
+* **Never end a turn with a question to Kumar, and never wait for a clock, market close, or weekend.** Saturday, Sunday and market hours are all work time. Gate heavy jobs only on MEASURED IO load (`/proc/pressure/io`, IO Gate Rule above), not on the time of day. i5 and i7 are redundant recorders: work on one while the other records.
+* Keep `docs/framework/WORK_QUEUE.json` non-empty until the main goal is done; the Stop hook (`tools/no_idle_hook.py`) refuses idle while an item is `ready`.
+* Waiting on an agent or on Kumar's own approval is allowed only if the item is marked `running_agent` / `blocked_owner` in the queue with the reason.
+* Do not build guards or checkers that do not serve the main goal (provable intraday edge); every task must name the requirement it serves.

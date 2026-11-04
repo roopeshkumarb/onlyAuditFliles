@@ -540,6 +540,337 @@ class FableRound3(Base):
             B.build(self.out, [])
 
 
+def mk_wal_source(path, n=6, extra=4):
+    """A REAL live WAL source: journal_mode=WAL, auto-checkpoint off, writer kept open so the -wal stays uncheckpointed.
+    The last `extra` nifty rows exist ONLY in the -wal. Returns the open writer connection (caller closes it)."""
+    mk_source(path, n=n)
+    con = sqlite3.connect(path)
+    assert con.execute("PRAGMA journal_mode=WAL").fetchone()[0] == "wal"
+    con.execute("PRAGMA wal_autocheckpoint=0")
+    for i in range(extra):
+        con.execute("insert into nifty_1m values(?,?,?,?,?,?,?)",
+                    (1700001000 + 60 * i, "2026-10-05 09:%02d:00" % (15 + i), 200 + i, 201, 199, 200.5, 3))
+    con.commit()
+    assert os.path.getsize(path + "-wal") > 0, "precondition: the -wal must hold uncheckpointed data"
+    return con
+
+
+class FableRound4Wal(Base):
+    """Round 4, defect 5: a WAL source was read WITH its -wal but hashed and stat-checked WITHOUT it."""
+
+    def test_wal_only_rows_are_copied_and_the_hash_covers_them(self):
+        w = mk_wal_source(self.a)
+        try:
+            only_main = os.path.join(self.d, "main_only.db")
+            import shutil
+            shutil.copy(self.a, only_main)
+            self.assertEqual(sqlite3.connect(only_main).execute("select count(*) from nifty_1m").fetchone()[0], 6,
+                             "precondition: the main file alone lacks the WAL-only rows")
+            r = B.build(self.out, [(self.a, "wal")])
+            self.assertEqual(r["status"], "BUILT")
+            self.assertEqual(self.q("select count(*) from nifty_1m_v2"), [(10,)])
+            self.assertEqual(self.q("select count(*) from nifty_1m_v2 where dt like '2026-10-05%'"), [(4,)])
+            want = hashlib.sha256(("main:%s|wal:%s" % (sha(self.a), sha(self.a + "-wal"))).encode()).hexdigest()
+            self.assertEqual(self.q("select distinct source_sha256 from data_provenance_v2"), [(want,)])
+            self.assertNotEqual(want, sha(self.a), "the published hash must NOT be the main file's alone")
+        finally:
+            w.close()
+
+    def test_wal_only_change_is_never_up_to_date(self):
+        w = mk_wal_source(self.a)
+        try:
+            B.build(self.out, [(self.a, "wal")])
+            main_sig = (sha(self.a), os.stat(self.a).st_mtime_ns)
+            w.execute("insert into nifty_1m values(1700009000,'2026-10-06 09:15:00',1,2,0.5,1.5,1)")
+            w.commit()
+            self.assertEqual((sha(self.a), os.stat(self.a).st_mtime_ns), main_sig, "precondition: only the -wal moved")
+            with self.assertRaises(B.OutExists):                  # the old code answered UP_TO_DATE here
+                B.build(self.out, [(self.a, "wal")])
+            r = B.build(self.out, [(self.a, "wal")], replace=True)
+            self.assertEqual(r["status"], "BUILT")
+            self.assertEqual(self.q("select count(*) from nifty_1m_v2"), [(11,)])
+            self.assertEqual(B.build(self.out, [(self.a, "wal")])["status"], "UP_TO_DATE")
+        finally:
+            w.close()
+
+    def test_nothing_is_created_beside_a_wal_source_and_it_is_not_modified(self):
+        w = mk_wal_source(self.a)
+        dead = os.path.join(self.d, "crashed", "n.db")           # what a power cut leaves: main + -wal, NO -shm
+        os.makedirs(os.path.dirname(dead))
+        import shutil
+        shutil.copy(self.a, dead)
+        shutil.copy(self.a + "-wal", dead + "-wal")
+        w.close()
+        self.assertEqual(sorted(os.listdir(os.path.dirname(dead))), ["n.db", "n.db-wal"])
+        before = dict((f, (sha(os.path.join(os.path.dirname(dead), f)),
+                           os.stat(os.path.join(os.path.dirname(dead), f)).st_mtime_ns))
+                      for f in os.listdir(os.path.dirname(dead)))
+        r = B.build(self.out, [(dead, "crashed")])
+        self.assertEqual(r["status"], "BUILT")
+        self.assertEqual(self.q("select count(*) from nifty_1m_v2"), [(10,)])
+        self.assertEqual(sorted(os.listdir(os.path.dirname(dead))), ["n.db", "n.db-wal"], "no -shm, nothing else")
+        after = dict((f, (sha(os.path.join(os.path.dirname(dead), f)),
+                          os.stat(os.path.join(os.path.dirname(dead), f)).st_mtime_ns))
+                     for f in os.listdir(os.path.dirname(dead)))
+        self.assertEqual(before, after)
+        self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), ["retailer_db_edge.db"], "snapshot dir removed")
+
+    def test_wal_source_on_a_read_only_directory_still_builds(self):
+        if os.geteuid() == 0:
+            self.skipTest("root ignores directory permissions; the no-write-beside-source test above covers the intent")
+        w = mk_wal_source(self.a)
+        d = os.path.join(self.d, "ro")
+        os.makedirs(d)
+        import shutil
+        shutil.copy(self.a, os.path.join(d, "n.db"))
+        shutil.copy(self.a + "-wal", os.path.join(d, "n.db-wal"))
+        w.close()
+        os.chmod(d, 0o555)
+        try:
+            self.assertEqual(B.build(self.out, [(os.path.join(d, "n.db"), "ro")])["status"], "BUILT")
+        finally:
+            os.chmod(d, 0o755)
+
+    def test_source_that_keeps_moving_while_copied_is_refused_not_snapshotted(self):
+        w = mk_wal_source(self.a)
+        try:
+            real, calls = B._copy_hash, [0]
+
+            def moving(src, dst):
+                out = real(src, dst)
+                if src == self.a + "-wal":
+                    calls[0] += 1
+                    w.execute("insert into nifty_1m values(?,?,1,2,0.5,1.5,1)", (1700100000 + calls[0], "x%d" % calls[0]))
+                    w.commit()
+                return out
+            B._copy_hash = moving
+            try:
+                with self.assertRaises(B.VerifyFailed) as cm:
+                    B.build(self.out, [(self.a, "wal")])
+            finally:
+                B._copy_hash = real
+            self.assertIn("changed 3 times while it was being copied", str(cm.exception))
+            self.assertEqual(calls[0], 3)
+            self.assertFalse(os.path.exists(self.out))
+            self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), [])
+        finally:
+            w.close()
+
+    def test_a_source_that_moves_once_is_retried_and_then_snapshotted(self):
+        w = mk_wal_source(self.a)
+        try:
+            real, calls = B._copy_hash, [0]
+
+            def once(src, dst):
+                out = real(src, dst)
+                if src == self.a + "-wal":
+                    calls[0] += 1
+                    if calls[0] == 1:
+                        w.execute("insert into nifty_1m values(1700200000,'late',1,2,0.5,1.5,1)")
+                        w.commit()
+                return out
+            B._copy_hash = once
+            try:
+                self.assertEqual(B.build(self.out, [(self.a, "wal")])["status"], "BUILT")
+            finally:
+                B._copy_hash = real
+            self.assertEqual(calls[0], 2)
+            self.assertEqual(self.q("select count(*) from nifty_1m_v2 where dt='late'"), [(1,)])
+        finally:
+            w.close()
+
+    def test_stale_snapshot_dir_from_a_killed_run_is_removed(self):
+        mk_source(self.a)
+        stale = self.out + ".snap-dead"
+        os.makedirs(stale)
+        open(os.path.join(stale, "s0.db"), "wb").write(b"x" * 10)
+        B.build(self.out, [(self.a, "a")])
+        self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), ["retailer_db_edge.db"])
+
+    def test_header_detection(self):
+        mk_source(self.a)
+        self.assertFalse(B._is_wal(self.a))
+        w = mk_wal_source(self.b)
+        try:
+            self.assertTrue(B._is_wal(self.b))
+        finally:
+            w.close()
+
+    def test_wal_header_alone_is_enough_even_with_no_wal_file(self):
+        w = mk_wal_source(self.b)
+        w.close()                                               # last connection closes: checkpoint, -wal removed
+        self.assertFalse(os.path.exists(self.b + "-wal"))
+        self.assertTrue(B._is_wal(self.b), "the header still says WAL")
+        self.assertEqual(B.build(self.out, [(self.b, "wal")])["status"], "BUILT")
+        self.assertEqual(self.q("select count(*) from nifty_1m_v2"), [(10,)])
+        self.assertEqual(self.q("select distinct source_sha256 from data_provenance_v2"),
+                         [(hashlib.sha256(("main:%s|wal:-" % sha(self.b)).encode()).hexdigest(),)])
+
+    def test_a_nonempty_wal_beside_a_journal_header_is_still_treated_as_wal(self):
+        mk_source(self.a)
+        open(self.a + "-wal", "wb").write(b"\x00" * 32)
+        self.assertTrue(B._is_wal(self.a))
+
+    def test_not_enough_free_space_for_the_snapshot_is_refused_before_copying(self):
+        w = mk_wal_source(self.a)
+        try:
+            class Fake:
+                free = 1
+            real = B.shutil.disk_usage
+            B.shutil.disk_usage = lambda p: Fake()
+            try:
+                with self.assertRaises(B.SourceRefused) as cm:
+                    B.build(self.out, [(self.a, "wal")])
+            finally:
+                B.shutil.disk_usage = real
+            self.assertIn("not enough free space", str(cm.exception))
+            self.assertEqual(sorted(os.listdir(os.path.dirname(self.out))), [])
+        finally:
+            w.close()
+
+
+class FableRound4Hash(Base):
+    """BN7: the source hash covered only the first 8 MB. Mtime/size alone can be defeated by utime()."""
+
+    def test_file_sha256_covers_the_whole_file(self):
+        p = os.path.join(self.d, "big.bin")
+        blob = bytearray(os.urandom(20 << 20))
+        open(p, "wb").write(blob)
+        self.assertEqual(B.file_sha256(p), hashlib.sha256(bytes(blob)).hexdigest())
+        blob[15 << 20] ^= 0xFF                                     # a change far beyond the first 8 MB
+        open(p, "wb").write(blob)
+        self.assertEqual(B.file_sha256(p), hashlib.sha256(bytes(blob)).hexdigest())
+
+    def test_same_size_same_mtime_change_is_still_caught_at_the_end(self):
+        mk_source(self.a)
+        st = os.stat(self.a)
+
+        def tamper(k):
+            if k == ("a", "broker_bars_1m"):                       # every read is done; now change a byte, restore mtime
+                with open(self.a, "r+b") as f:
+                    f.seek(200)
+                    b = f.read(1)
+                    f.seek(200)
+                    f.write(bytes([b[0] ^ 0xFF]))
+                os.utime(self.a, ns=(st.st_atime_ns, st.st_mtime_ns))
+        with self.assertRaises(B.VerifyFailed) as cm:
+            B.build(self.out, [(self.a, "a")], _inject=tamper)
+        self.assertIn("changed while it was being read", str(cm.exception))
+        self.assertEqual(os.stat(self.a).st_size, st.st_size)
+        self.assertEqual(os.stat(self.a).st_mtime_ns, st.st_mtime_ns)
+        self.assertFalse(os.path.exists(self.out))
+
+
+class FableRound4Rank(Base):
+    """BN5: SRC_ORDER rank must ignore case and surrounding blanks, in SQL and in Python alike."""
+
+    def test_rank_is_case_and_blank_insensitive_and_python_agrees_with_sql(self):
+        mk_source(self.a, opt=False)
+        con = sqlite3.connect(self.a)
+        con.execute("create table opt_chain_1m(%s)" % OPT_COLS)
+        _opt_row(con, "dhan")
+        _opt_row(con, " UPSTOX_LIVE ")
+        con.commit()
+        con.close()
+        B.build(self.out, [(self.a, "a")])
+        self.assertEqual(self.q("select src from opt_chain_1m_v2"), [(" UPSTOX_LIVE ",)])   # stored text is kept as-is
+        c = sqlite3.connect(":memory:")
+        for v in ("dhan", " UPSTOX_LIVE ", "Fyers_Live", "nope", None, "  "):
+            sql = c.execute("select %s from (select ? as src)" % B._rank_sql("src").split(",")[0], (v,)).fetchone()[0]
+            self.assertEqual(sql, B.src_rank(v), v)
+
+
+class FableRound4Commit(Base):
+    """Defect 6: a failed COMMIT (disk full) ends the transaction; ROLLBACK then raised a second, masking error."""
+
+    def test_disk_full_on_commit_is_reported_as_disk_full(self):
+        class FailCommit(sqlite3.Connection):
+            def execute(self, sql, *a):
+                if sql.strip() == "COMMIT":
+                    sqlite3.Connection.execute(self, "ROLLBACK")
+                    raise sqlite3.OperationalError("database or disk is full")
+                return super().execute(sql, *a)
+        mk_source(self.a)
+        out = sqlite3.connect(os.path.join(self.d, "o.db"), isolation_level=None, factory=FailCommit)
+        out.executescript(B.DDL)
+        with self.assertRaises(sqlite3.OperationalError) as cm:
+            B._copy_unit(out, self.a, "a", B.SPECS[0], "t", "sha")
+        self.assertIn("disk is full", str(cm.exception))
+        self.assertNotIn("cannot rollback", str(cm.exception))
+        out.close()
+
+
+class FableRound4Publish(Base):
+    """Defect 8: a kill between the two os.replace calls left the final path empty and the rerun threw the COMPLETE scratch away."""
+
+    RUN = ("import os,signal,sys; sys.path.insert(0,%r); import retailer_db_build as B\n"
+           "B._USE_LINK=%s\n"
+           "def k(key):\n"
+           "    if key[0]=='PUBLISH': os.kill(os.getpid(), signal.SIGKILL)\n"
+           "B.build(%r,[(%r,'a')],replace=True,_inject=k)\n")
+
+    def _setup(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        self.old = sha(self.out)
+        con = sqlite3.connect(self.a)
+        con.execute("update nifty_1m set close=close+7")
+        con.commit()
+        con.close()
+
+    def _kill(self, use_link):
+        code = self.RUN % (os.path.join(ROOT, "tools"), use_link, self.out, self.a)
+        self.assertEqual(subprocess.run([sys.executable, "-c", code]).returncode, -9)
+
+    def test_no_link_filesystem_window_is_closed_by_reusing_the_complete_scratch(self):
+        self._setup()
+        self._kill(False)
+        self.assertFalse(os.path.exists(self.out), "precondition: the rename-aside window really is open here")
+        self.assertEqual(self.q_state(), "COMPLETE")
+        prev = [f for f in os.listdir(os.path.dirname(self.out)) if ".prev-" in f]
+        self.assertEqual(len(prev), 1)
+        r = B.build(self.out, [(self.a, "a")])
+        self.assertEqual(r["status"], "PUBLISHED_FROM_SCRATCH")
+        self.assertEqual(r["units"], [], "nothing was rebuilt")
+        self.assertEqual(self.q("pragma integrity_check"), [("ok",)])
+        self.assertEqual(self.q("select close from nifty_1m_v2 where dt='2026-10-01 09:15:00'"), [(107.5,)])
+        self.assertEqual(sha(os.path.join(os.path.dirname(self.out), prev[0])), self.old, "old output kept intact")
+        self.assertEqual([f for f in os.listdir(os.path.dirname(self.out)) if "building" in f], [])
+
+    def test_with_hard_links_the_final_path_is_never_empty(self):
+        self._setup()
+        self._kill(True)
+        self.assertTrue(os.path.exists(self.out), "the final path must exist at every instant")
+        self.assertEqual(sha(self.out), self.old, "and still hold the OLD, complete output")
+        with self.assertRaises(B.OutExists):
+            B.build(self.out, [(self.a, "a")])
+        r = B.build(self.out, [(self.a, "a")], replace=True)
+        self.assertEqual(r["status"], "PUBLISHED_FROM_SCRATCH")
+        self.assertNotEqual(sha(self.out), self.old)
+        self.assertEqual(self.q("pragma integrity_check"), [("ok",)])
+
+    def test_two_replaces_in_one_second_do_not_overwrite_the_kept_copy(self):
+        mk_source(self.a)
+        B.build(self.out, [(self.a, "a")])
+        kept = set()
+        for i in range(2):
+            con = sqlite3.connect(self.a)
+            con.execute("update nifty_1m set close=close+1")
+            con.commit()
+            con.close()
+            r = B.build(self.out, [(self.a, "a")], replace=True)
+            kept.add(r["moved_aside"])
+        self.assertEqual(len(kept), 2)
+        self.assertTrue(all(os.path.exists(k) for k in kept))
+
+    def q_state(self):
+        con = sqlite3.connect(self.out + ".building")
+        try:
+            return con.execute("select v from _build_meta where k='status'").fetchone()[0]
+        finally:
+            con.close()
+
+
 class Inventory(Base):
     def test_inventory_reports_and_writes_nothing(self):
         src = os.path.join(self.d, "src")

@@ -39,6 +39,24 @@ Round 2's 14 defects: 7 FIXED, 2 NOT FIXED at the time (TRACE gameability: still
 
 Mutation totals after round 3: 53 tried, 50 caught, 3 survived (two fsync mutants that need a real power cut, one equivalent mutant). See MUTATION_LOG.txt.
 
+
+## Round 4 (Fable, 04-11-2026, report FABLE_REVIEW_ROUND4_041126.md) - findings and what was done
+
+| # | Finding | Fix | Status |
+|---|---|---|---|
+| R4-1 | `--accept-state` checked only that the evidence PATH was in git HEAD, so three accepts in one working tree could be committed together, and a benign draft could be swapped for the real text after being committed | accepts count newly-true flags against the last entry COMMITTED at HEAD; the previous accepted entry must be committed first; HEAD's copy of the evidence must hash to the recorded sha256; the report ALERTs on several uncommitted entries or several flags newly true against HEAD | FIXED (tests t2, t2b, t2c, t3, gn5) |
+| R4-2 | an APPROVAL line inside a code fence, or a document saying "withdrawn / draft / do not treat as final", counted | fenced text ignored (an unclosed fence swallows the rest, fenced prose does not count toward the minimum); withdrawn / draft / template / not-final / placeholder / revoked lines refuse the evidence | FIXED (tests t4, t4b, t4c, t4d) |
+| R4-3 | CRLF (Windows) responses refused with a misleading reason | text folded (BOM, CRLF, CR) before matching; sha256 still on the raw bytes | FIXED (crlf and bom tests) |
+| R4-4 | deleting the chain tail, recomputing the anchor and deleting `guard_report.json` erased a revocation | the chain must extend every earlier COMMITTED version of the state file (git log); a committed `guard_report.json` that vanishes is an ALERT | FIXED against an honest history; a force-push or a full history rewrite still passes (stated in the guard docstring and README section 5) |
+| R4-5 | builder read a WAL source with its -wal but hashed and stat-checked without it: false UP_TO_DATE, `source_sha256` missing copied rows, a `-shm` created beside the source, read-only media refused | WAL sources are byte-copied (main + -wal, hashed while copied, source unchanged across the copy or VerifyFailed after 3 tries) into a private snapshot and built from that; `source_sha256` = sha256 of "main:<sha>\|wal:<sha or ->"; nothing is ever opened through SQLite beside the source | FIXED (7 WAL tests with real uncheckpointed -wal fixtures, including a power-cut-style main+wal copy and a moving source) |
+| R4-6 | a failed COMMIT (disk full) was masked by "cannot rollback" | ROLLBACK only when a transaction is open, and never allowed to replace the original error | FIXED (test with a connection whose COMMIT fails) |
+| R4-7 | size+mtime guard defeated by `utime()` or a coarse-mtime medium; the 8 MB-only hash mutant survived | full content re-hash at the end for journal-mode sources; hash covers the whole file (20 MB test, change beyond 8 MB) | FIXED (B7b and BN7 caught) |
+| R4-8 | a kill between the two `os.replace` calls left the final path empty and the rerun discarded the COMPLETE scratch | the old output is kept by hard link (rename-aside only where links are unavailable), the scratch is marked COMPLETE for the plan and the rerun verifies and publishes it (status PUBLISHED_FROM_SCRATCH); kept copies get unique names | FIXED (real SIGKILL tests with and without links) |
+| R4-9 | no lock on Windows, directory fsync fails on Windows; `src_rank` unused | directory fsync skipped on Windows and durability explicitly not claimed there; `src_rank` is now cross-checked against the SQL rank in a test | DISCLOSED, not testable here |
+| R4-M | 5 of 8 fresh mutants survived (GN5, GN6, GN7, BN5, BN7) | one test each; plus one mutation per new rule; one dominated check deleted instead of keeping an unkillable mutant (G38) | FIXED: 84 mutations, 80 caught, 4 survive (B11, B12 power-cut; B7, G18 equivalent) |
+
+Mutation totals after round 4: 84 tried, 80 caught, 4 survived. See MUTATION_LOG.txt. Tests: 174 passed, 1 skipped (a read-only-directory test that root cannot run).
+
 ## Where reviewers have not yet disagreed
 
 * No external auditor has reviewed anything yet, so there are **no external findings to show**. Their reply will be added here beside Fable's.

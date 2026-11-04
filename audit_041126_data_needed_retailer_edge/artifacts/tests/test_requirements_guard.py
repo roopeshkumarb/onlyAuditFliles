@@ -573,7 +573,7 @@ class ApprovalsGate(Base):
         self.save(led)
         rep = self.run_guard()
         self.assertEqual(list(rep["done_allowed"].values()), [False])
-        self.assertEqual(self.alerts(rep, "APPROVALS"), [])
+        self.assertIn("3 approval flags are newly true against the last COMMITTED", self.msgs(rep))   # round 4: stricter than INFO
         led["builds"][0]["claimed_status"] = "DONE"
         self.save(led)
         self.assertIn("lacks accepted approval", self.msgs(self.run_guard()))
@@ -762,6 +762,209 @@ class ApprovalsGate(Base):
             led["builds"][0]["claimed_status"] = st
             self.save(led)
             self.assertEqual(self.alerts(self.run_guard(), "APPROVALS"), [], st)
+
+
+    # ---- Fable round 4: defects 1-4 and mutants GN5/GN6/GN7 ----
+
+    def test_t2_three_accepts_in_one_working_tree_then_one_commit_is_refused(self):
+        """Accept one flag, do NOT commit, then try the next: refused either as 'previous entry not committed' or, when two
+        flags are then newly true against HEAD, as the committed-base rule. Never a second uncommitted entry."""
+        led = self.led()
+        for f in G.FLAGS:
+            self.approve(led, f)
+        self.commit_evidence()
+        led1 = copy.deepcopy(led)
+        for f in ("external_auditor", "kumar"):
+            led1["builds"][0][f] = False
+        self.save(led1)
+        ok, msg = self.accept()
+        self.assertTrue(ok, msg)                                # first flag: fine
+        led2 = copy.deepcopy(led)
+        led2["builds"][0]["kumar"] = False
+        self.save(led2)
+        ok, msg = self.accept()                                  # second flag, first one NOT committed
+        self.assertFalse(ok)
+        self.assertIn("newly true against the last COMMITTED", msg)
+        self.save(led)
+        self.assertFalse(self.accept()[0])
+        self.assertEqual(len(json.load(open(os.path.join(self.root, G.STATE)))["entries"]), 1)
+
+    def test_t2c_previous_entry_must_be_committed_before_the_next_accept(self):
+        """One flag newly true against HEAD (so the committed-base rule is quiet), but the previous accepted entry is
+        still uncommitted: the dedicated check must refuse."""
+        led = self.led()
+        self.approve(led, "fable")
+        self.commit_evidence()
+        self.save(led)
+        self.assertTrue(self.accept()[0])                       # entry 1 accepted, NOT committed (HEAD ledger/state unchanged)
+        led = self.led()
+        led["builds"][0]["fable"] = False                        # swap which single flag is on
+        self.approve(led, "external_auditor")
+        self.commit_evidence()
+        self.save(led)
+        ok, msg = self.accept()
+        self.assertFalse(ok)
+        self.assertIn("previous accepted entry is not committed", msg)
+
+    def test_t2b_report_alerts_on_uncommitted_batch_of_accepted_entries(self):
+        self.step("fable")
+        led = self.led()
+        self.approve(led, "external_auditor")
+        self.commit_evidence()
+        self.save(led)
+        self.assertTrue(self.accept()[0])                       # entry 2 accepted, not committed
+        led = self.led()
+        self.approve(led, "kumar")
+        self.commit_evidence()
+        self.save(led)
+        st = json.load(open(os.path.join(self.root, G.STATE)))
+        prev = st["entries"][-1]["hash"]
+        snap = G._snapshot(led)
+        st["entries"].append({"seq": 3, "accepted_ist": "x", "builds": snap, "prev": prev, "hash": G._chain_hash(prev, 3, snap)})
+        st["anchor"] = G._anchor_of(st["entries"])
+        w(self.root, G.STATE, json.dumps(st))                   # what a second --accept-state without a commit would leave
+        self.assertIn("accepted entries are not committed yet", self.msgs(self.run_guard()))
+
+    def test_gn5_exactly_two_newly_true_flags_are_refused_at_accept(self):
+        led = self.led()
+        self.approve(led, "fable")
+        self.approve(led, "external_auditor")
+        self.commit_evidence()
+        self.save(led)
+        ok, msg = self.accept()
+        self.assertFalse(ok)
+        self.assertIn("2 approval flags", msg)
+        self.assertIn("ONE flag per call", msg)                  # the per-call rule itself, not another layer's wording
+
+    def test_t3_benign_draft_committed_then_real_text_written_is_refused(self):
+        led = self.led()
+        rel = EV + "fable_review.md"
+        self.evidence(rel, "A benign committed draft with enough words " * 3)
+        self.commit_evidence()
+        self.approve(led, "fable", rel=rel)                      # rewrites the working file with the APPROVAL text
+        self.save(led)
+        ok, msg = self.accept()
+        self.assertFalse(ok)
+        self.assertIn("differs between git HEAD and the recorded hash", msg)
+
+    def test_t4_approval_line_inside_a_code_fence_is_not_an_approval(self):
+        led = self.led()
+        fenced = "Quoted example line for the reviewer, nothing is approved in this sentence, see below.\n```\n" + ev_text("fable") + "```\n"
+        rel = EV + "fable_review.md"
+        sha = self.evidence(rel, fenced + PROSE)
+        b = led["builds"][0]
+        b.update(fable=True, fable_evidence=rel, fable_evidence_sha256=sha)
+        self.save(led)
+        self.assertIn("only inside a code fence", self.msgs(self.run_guard()))
+
+    def test_t4b_unclosed_fence_swallows_the_rest(self):
+        led = self.led()
+        rel = EV + "fable_review.md"
+        sha = self.evidence(rel, PROSE + "\n~~~\n" + ev_text("fable"))
+        led["builds"][0].update(fable=True, fable_evidence=rel, fable_evidence_sha256=sha)
+        self.save(led)
+        self.assertIn("only inside a code fence", self.msgs(self.run_guard()))
+
+    def test_t4c_prose_inside_a_fence_does_not_count_toward_the_minimum(self):
+        led = self.led()
+        rel = EV + "fable_review.md"
+        sha = self.evidence(rel, "APPROVAL fable APPROVES tools/build.py\n```\n" + PROSE + "```\n")
+        led["builds"][0].update(fable=True, fable_evidence=rel, fable_evidence_sha256=sha)
+        self.save(led)
+        self.assertIn("prose words", self.msgs(self.run_guard()))
+
+    def test_t4d_withdrawn_draft_template_and_not_final_lines_are_refused(self):
+        for extra in ("I withdraw this approval.\n", "This is only a draft.\n", "Please do not treat this as final.\n",
+                      "This is a placeholder until review.\n", "Revoked on request.\n"):
+            led = self.led()
+            rel = EV + "fable_review.md"
+            sha = self.evidence(rel, ev_text("fable", extra=extra))
+            led["builds"][0].update(fable=True, fable_evidence=rel, fable_evidence_sha256=sha)
+            self.save(led)
+            self.assertIn("withdrawn / draft / template", self.msgs(self.run_guard()), extra)
+
+    def test_crlf_evidence_is_accepted_with_a_correct_reason_when_otherwise_refused(self):
+        led = self.led()
+        rel = EV + "fable_review.md"
+        data = ev_text("fable").replace("\n", "\r\n").encode("utf-8")
+        p = os.path.join(self.root, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        open(p, "wb").write(data)
+        led["builds"][0].update(fable=True, fable_evidence=rel, fable_evidence_sha256=hashlib.sha256(data).hexdigest())
+        self.save(led)
+        self.commit_evidence()
+        ctx = {"root": self.root}
+        self.assertIsNone(G.evidence_problem(ctx, led["builds"][0], "fable"), "a Windows (CRLF) response is a valid response")
+        self.assertTrue(self.accept()[0])
+        # and when it is refused for a real reason, the reason names that reason, not a missing line
+        data2 = ("APPROVAL fable APPROVES tools/build.py\r\nshort\r\n").encode("utf-8")
+        open(p, "wb").write(data2)
+        b2 = dict(led["builds"][0], fable_evidence_sha256=hashlib.sha256(data2).hexdigest())
+        why = G.evidence_problem(ctx, b2, "fable")
+        self.assertIn("prose words", why)
+        self.assertNotIn("has no line", why)
+
+    def test_bom_is_folded(self):
+        led = self.led()
+        rel = EV + "fable_review.md"
+        data = b"\xef\xbb\xbf" + ev_text("fable").encode("utf-8")
+        p = os.path.join(self.root, rel)
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        open(p, "wb").write(data)
+        led["builds"][0].update(fable=True, fable_evidence=rel, fable_evidence_sha256=hashlib.sha256(data).hexdigest())
+        self.assertIsNone(G.evidence_problem({"root": self.root}, led["builds"][0], "fable"))
+
+    def test_gn6_report_anchor_head_must_match_not_just_length(self):
+        self._revoked_chain()
+        ctx = {"root": self.root, "rec_cfg": CFG, "families": FAMS, "now": NOW, "git_show": self.gs}
+        G.write_report(ctx, G.run(ctx))
+        rp = os.path.join(self.root, G.REPORT)
+        rep = json.load(open(rp))
+        rep["anchor_history"][-1]["head"] = "0" * 64                 # same length, different head
+        open(rp, "w", encoding="utf-8").write(json.dumps(rep))
+        self.assertIn("anchor_history", self.msgs(self.run_guard()))
+
+    def test_gn7_git_head_chain_must_match_hash_for_hash_not_just_length(self):
+        self._revoked_chain()
+        head = json.loads(self.head[G.STATE].decode())
+        head["entries"][1]["hash"] = "f" * 64                        # same length, one different hash
+        self.head[G.STATE] = json.dumps(head).encode()
+        self.assertIn("git HEAD", self.msgs(self.run_guard()))
+
+    def test_defect4_dropping_the_report_and_recomputing_the_anchor_is_seen_in_history(self):
+        """T8: revoke, drop the tail, recompute the anchor, delete guard_report.json, commit - the old committed state
+        file still has the longer chain, so the shortened one is not an extension of history."""
+        self._revoked_chain()
+        longer = open(os.path.join(self.root, G.STATE), "rb").read()
+        sp = os.path.join(self.root, G.STATE)
+        st = json.load(open(sp))
+        st["entries"].pop()
+        st["anchor"] = G._anchor_of(st["entries"])
+        open(sp, "w", encoding="utf-8").write(json.dumps(st))
+        rp = os.path.join(self.root, G.REPORT)
+        if os.path.exists(rp):
+            os.remove(rp)
+        self.head[G.STATE] = open(sp, "rb").read()                   # "committed" shortened copy
+        rep = self.run_guard(git_history=lambda: [longer])
+        self.assertIn("not an extension of an earlier COMMITTED version", self.msgs(rep))
+        self.assertEqual(list(rep["done_allowed"].values()), [False])
+
+    def test_defect4b_a_committed_report_that_vanishes_is_an_alert(self):
+        self._revoked_chain()
+        ctx = {"root": self.root, "rec_cfg": CFG, "families": FAMS, "now": NOW, "git_show": self.gs}
+        G.write_report(ctx, G.run(ctx))
+        self.head[G.REPORT] = open(os.path.join(self.root, G.REPORT), "rb").read()
+        os.remove(os.path.join(self.root, G.REPORT))
+        self.assertIn("guard_report.json is committed but missing", self.msgs(self.run_guard()))
+
+    def test_honest_limit_three_quick_commits_still_pass(self):
+        """Documented, not a bug: one flag per commit, evidence first, three times in a row, passes a local guard."""
+        self.approve_all()
+        rep = self.run_guard()
+        self.assertEqual(self.alerts(rep, "APPROVALS"), [])
+        self.assertEqual(list(rep["done_allowed"].values()), [True])
+        self.assertIn("HONEST LIMIT", G.__doc__)
+        self.assertIn("force-push", G.__doc__)
 
 
 class ExitCode(unittest.TestCase):

@@ -29,18 +29,32 @@ DEVIATIONS FROM THE DESIGN DOC, for the auditor
   * The doc's opt_chain primary key (dt,strike,opt_type,expiry_flag) is the doc's inference, still to be confirmed.
 
 SAFETY (no UPS: power or network can drop at any instant)
-  * Sources are opened mode=ro + query_only, hashed (sha256) before the copy, and stat-checked after; a source whose
-    size/mtime moved during the build aborts the build. Nothing is ever written to a source. Point this at a COPY of a
-    live-written database (blpro_09 writes niftybkp.db).
+  * A source in WAL mode (niftybkp.db is one) is NEVER opened through SQLite and nothing is ever written beside it (no
+    -shm, no checkpoint): its main file and its -wal are copied byte for byte into a private snapshot directory next to
+    the output, hashed WHILE copied, and the source's size/mtime of both files must be identical before and after the
+    copy (3 tries, then VerifyFailed - a database that is being written cannot be snapshotted honestly; point this at a
+    COPY). The build, the integrity check and source_sha256 all describe exactly those snapshot bytes
+    (source_sha256 = sha256("main:<sha of main>|wal:<sha of -wal or ->")), so a row that lives only in the -wal is both
+    copied and reflected in the hash, and a -wal-only change can never give UP_TO_DATE. The snapshot needs free space equal
+    to the source; it is removed on exit and any stale one (a kill) is removed at the next start. Works on read-only media.
+  * A journal-mode source is opened mode=ro + query_only, hashed (sha256 of the WHOLE file) before the copy, and checked
+    again at the end by size, mtime AND a full re-hash (a utime() or a coarse-mtime medium cannot hide a change). A source
+    that moved aborts the build. Nothing is ever written to a source.
   * Output is built in <out>.building, one source table per transaction (rows + progress committed together,
     synchronous=FULL). A kill between units resumes at the next unit. A kill INSIDE a unit's transaction (SIGKILL, power
     cut) leaves a hot <out>.building-journal; the resume probe opens the scratch file read-write (it is our own file) so
-    SQLite rolls that unit back, and the units already committed are kept. A scratch file that is discarded is removed
-    together with its -journal/-wal/-shm sidecars (a stale journal must never meet a new file). A finished file is verified (row counts and a per-unit
-    content sha256 re-read from the new file, integrity_check), fsynced, then os.replace()d and the directory fsynced.
-    The final path therefore never holds a half-built file.
+    SQLite rolls that unit back, and the units already committed are kept. A failed COMMIT (disk full) can no longer be
+    masked by a second error from ROLLBACK. A scratch file that is discarded is removed together with its
+    -journal/-wal/-shm sidecars (a stale journal must never meet a new file). A finished file is verified (row counts and a
+    per-unit content sha256 re-read from the new file, integrity_check), fsynced, then published.
+  * Publishing never leaves the final path empty: the old output is first given a second name with a hard link (a rename
+    only where hard links are not available), then the verified scratch is os.replace()d over the final name. If a kill
+    lands anywhere in between, the scratch file is already marked COMPLETE for this plan; the next run verifies it again and
+    publishes it (status PUBLISHED_FROM_SCRATCH) instead of rebuilding or discarding it.
   * Re-running with the same sources is a no-op (UP_TO_DATE). An existing different output is refused unless
-    --replace, which moves it aside to <out>.prev-<stamp> - nothing is deleted.
+    --replace, which keeps the old one as <out>.prev-<stamp> - nothing is deleted.
+  * One build per output directory at a time (flock). Windows: the lock and the directory fsync do not exist there; durability
+    is NOT claimed on Windows. Power-cut durability of the fsync calls is not testable without a real power cut.
 """
 from __future__ import annotations
 
@@ -49,12 +63,15 @@ import hashlib
 import json
 import os
 import re
+import shutil
 import sqlite3
 import sys
+import tempfile
 from datetime import datetime, timedelta, timezone
 from urllib.parse import quote
 
-BUILDER_VERSION = "retailer_db_build 1.0"
+BUILDER_VERSION = "retailer_db_build 1.1"
+_USE_LINK = True      # publish keeps the old output reachable through a hard link; False = rename-aside (tests, no-link filesystems)
 UNKNOWN = "UNKNOWN_HISTORICAL"
 VENDORS = ("upstox", "dhan", "kite", "fyers", "nse", "yahoo")
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -225,6 +242,13 @@ def _ro(path: str) -> sqlite3.Connection:
     return con
 
 
+def _snap_conn(path: str) -> sqlite3.Connection:
+    """Open OUR private snapshot copy (a WAL file needs a writable directory for its -shm; this one is ours)."""
+    con = sqlite3.connect(path, timeout=30)
+    con.execute("PRAGMA query_only=ON")
+    return con
+
+
 def file_sha256(path: str) -> str:
     h = hashlib.sha256()
     with open(path, "rb") as f:
@@ -233,13 +257,69 @@ def file_sha256(path: str) -> str:
     return h.hexdigest()
 
 
-def check_source(path: str, mode: str) -> None:
+def _is_wal(path: str) -> bool:
+    """True when the file is (or may be) a WAL-mode database: header read/write version 2, or a non-empty -wal beside it."""
+    with open(path, "rb") as f:
+        hdr = f.read(20)
+    if len(hdr) >= 20 and (hdr[18] == 2 or hdr[19] == 2):
+        return True
+    try:
+        return os.path.getsize(path + "-wal") > 0
+    except OSError:
+        return False
+
+
+def _sig(path):
+    try:
+        st = os.stat(path)
+    except FileNotFoundError:
+        return None
+    return (st.st_size, st.st_mtime_ns)
+
+
+def _copy_hash(src: str, dst: str):
+    """Plain byte copy that hashes what it copies. Never goes through SQLite, so it creates nothing beside the source."""
+    h = hashlib.sha256()
+    n = 0
+    with open(src, "rb") as fi, open(dst, "wb") as fo:
+        for chunk in iter(lambda: fi.read(8 << 20), b""):
+            h.update(chunk)
+            fo.write(chunk)
+            n += len(chunk)
+    return h.hexdigest(), n
+
+
+def fingerprint(main_sha: str, wal_sha) -> str:
+    return hashlib.sha256(("main:%s|wal:%s" % (main_sha, wal_sha or "-")).encode()).hexdigest()
+
+
+def _snapshot(path: str, snapdir: str, idx: int, tries: int = 3) -> dict:
+    """Consistent byte copy of a WAL source (main + -wal). Raises VerifyFailed if it will not hold still."""
+    dst = os.path.join(snapdir, "s%d.db" % idx)
+    wal = path + "-wal"
+    for _ in range(tries):
+        m0, w0 = _sig(path), _sig(wal)
+        msha, mn = _copy_hash(path, dst)
+        wsha, wn = (None, 0)
+        if w0 is not None and w0[0] > 0:
+            wsha, wn = _copy_hash(wal, dst + "-wal")
+        elif os.path.exists(dst + "-wal"):
+            os.remove(dst + "-wal")
+        m1, w1 = _sig(path), _sig(wal)
+        if m0 == m1 and w0 == w1 and mn == m1[0] and (w1 is None or wn == w1[0]):
+            return {"path": dst, "sha256": fingerprint(msha, wsha), "bytes": mn + wn, "main_sha": msha,
+                    "wal_sha": wsha, "wal_bytes": wn}
+    raise VerifyFailed("%s: the database or its -wal changed %d times while it was being copied; it is being written. "
+                       "Point the builder at a COPY of it" % (path, tries))
+
+
+def check_source(path: str, mode: str, snapshot: bool = False) -> None:
     """Refuse anything that is not a healthy SQLite file. Reads only."""
     try:
         with open(path, "rb") as f:
             if f.read(16) != b"SQLite format 3\x00":
                 raise SourceRefused("%s: not a SQLite database" % path)
-        con = _ro(path)
+        con = _snap_conn(path) if snapshot else _ro(path)
         try:
             con.execute("select count(*) from sqlite_master").fetchone()
             if mode != "none":
@@ -259,6 +339,8 @@ def _stat(path):
 
 
 def _fsync_dir(path: str) -> None:
+    if os.name == "nt":                   # a directory cannot be opened for fsync on Windows; durability not claimed there
+        return
     fd = os.open(os.path.dirname(os.path.abspath(path)) or ".", os.O_RDONLY)
     try:
         os.fsync(fd)
@@ -295,9 +377,9 @@ def _guard_rows(run, label, tbl):
         raise SourceRefused("%s: %s while reading %s" % (label, e, tbl))
 
 
-def _copy_unit(out, src_path, label, spec, run_ts, src_sha):
+def _copy_unit(out, src_path, label, spec, run_ts, src_sha, snap=False):
     """One (source, table) unit in ONE transaction. Returns the unit dict."""
-    sc = _ro(src_path)
+    sc = _snap_conn(src_path) if snap else _ro(src_path)
     try:
         try:
             exists = sc.execute("select 1 from sqlite_master where type='table' and name=?", (spec.src_table,)).fetchone()
@@ -357,7 +439,11 @@ def _copy_unit(out, src_path, label, spec, run_ts, src_sha):
                         (label, spec.src_table, "DONE", read, inserted, dup, rejected, h.hexdigest(), src_sha, conflict))
             out.execute("COMMIT")
         except BaseException:
-            out.execute("ROLLBACK")
+            try:                                  # a failed COMMIT (disk full) already ended the transaction: never mask it
+                if out.in_transaction:
+                    out.execute("ROLLBACK")
+            except sqlite3.Error:
+                pass
             raise
         return {"source": label, "table": spec.src_table, "status": "DONE", "rows_read": read,
                 "rows_inserted": inserted, "rows_dup": dup, "rows_rejected": rejected}
@@ -438,17 +524,24 @@ def _rm_tmp(tmp):
             pass
 
 
-def _probe_tmp(tmp, plan):
-    """Is the scratch file ours, for this plan, and still BUILDING? Opened read-write on purpose: it is our own file, and
-    a read-only open cannot roll back the hot journal a kill inside a transaction leaves behind."""
+def _tmp_state(tmp, plan):
+    """None (not ours / other plan / unreadable), 'BUILDING' or 'COMPLETE'. Opened read-write on purpose: it is our own file,
+    and a read-only open cannot roll back the hot journal a kill inside a transaction leaves behind."""
     try:
         c = sqlite3.connect(tmp, timeout=30)
         try:
-            return _meta(c, "plan") == plan and _meta(c, "status") == "BUILDING"
+            if _meta(c, "plan") != plan:
+                return None
+            st = _meta(c, "status")
+            return st if st in ("BUILDING", "COMPLETE") else None
         finally:
             c.close()
     except sqlite3.DatabaseError:
-        return False
+        return None
+
+
+def _probe_tmp(tmp, plan):
+    return _tmp_state(tmp, plan) == "BUILDING"
 
 
 def build(out_path, sources, check="quick", replace=False, _inject=None):
@@ -472,22 +565,82 @@ def build(out_path, sources, check="quick", replace=False, _inject=None):
         os.close(dfd)
 
 
+def _stale_snapshots(out_path):
+    d = os.path.dirname(out_path)
+    for n in os.listdir(d):
+        if n.startswith(os.path.basename(out_path) + ".snap-"):
+            shutil.rmtree(os.path.join(d, n), ignore_errors=True)
+
+
 def _build_locked(out_path, sources, check, replace, _inject):
     labels = [l for _, l in sources]
     if not sources or len(set(labels)) != len(labels):
         raise SourceRefused("need at least one source and every label must be unique: %s" % labels)
-    infos = []
-    for path, label in sources:
-        if not os.path.isfile(path):
-            raise SourceRefused("%s: no such file" % path)
-        if os.path.abspath(path) == out_path or os.path.abspath(path) == out_path + ".building":
-            raise SourceRefused("%s: the output may not be a source" % path)
-        check_source(path, check)
-        size, mt = _stat(path)
-        infos.append({"label": label, "path": os.path.abspath(path), "sha256": file_sha256(path), "bytes": size,
-                      "mtime_ns": mt})
-    plan = _plan_json(infos)
+    _stale_snapshots(out_path)                    # a killed run's private snapshot; we hold the directory lock
+    snapdir = None
+    try:
+        infos = []
+        for idx, (path, label) in enumerate(sources):
+            if not os.path.isfile(path):
+                raise SourceRefused("%s: no such file" % path)
+            if os.path.abspath(path) == out_path or os.path.abspath(path) == out_path + ".building":
+                raise SourceRefused("%s: the output may not be a source" % path)
+            if _is_wal(path):
+                need = os.path.getsize(path) + (_sig(path + "-wal") or (0,))[0]
+                if snapdir is None:
+                    snapdir = tempfile.mkdtemp(prefix=os.path.basename(out_path) + ".snap-", dir=os.path.dirname(out_path))
+                if shutil.disk_usage(snapdir).free < need + (64 << 20):
+                    raise SourceRefused("%s: not enough free space beside the output for its private snapshot (%d bytes)"
+                                        % (path, need))
+                snap = _snapshot(path, snapdir, idx)
+                check_source(snap["path"], check, snapshot=True)
+                infos.append({"label": label, "path": snap["path"], "origin": os.path.abspath(path),
+                              "sha256": snap["sha256"], "bytes": snap["bytes"], "mtime_ns": None, "snapshot": True,
+                              "main_sha": snap["main_sha"], "wal_sha": snap["wal_sha"]})
+            else:
+                check_source(path, check)
+                size, mt = _stat(path)
+                infos.append({"label": label, "path": os.path.abspath(path), "sha256": file_sha256(path), "bytes": size,
+                              "mtime_ns": mt, "snapshot": False})
+        return _build_from(out_path, infos, replace, _inject)
+    finally:
+        if snapdir:
+            shutil.rmtree(snapdir, ignore_errors=True)
 
+
+def _unique_aside(out_path):
+    base = out_path + ".prev-" + datetime.now(IST).strftime("%Y%m%d-%H%M%S")
+    cand, n = base, 1
+    while os.path.exists(cand):
+        cand = "%s-%d" % (base, n)
+        n += 1
+    return cand
+
+
+def _publish(tmp, out_path, _inject):
+    _fsync_file(tmp)
+    moved = None
+    if os.path.exists(out_path):
+        moved = _unique_aside(out_path)
+        linked = False
+        if _USE_LINK:
+            try:
+                os.link(out_path, moved)          # the final path keeps existing the whole time
+                linked = True
+            except OSError:
+                linked = False
+        if not linked:
+            os.replace(out_path, moved)           # no-link filesystem: a window exists, the COMPLETE scratch covers it
+        _fsync_dir(out_path)
+        if _inject:
+            _inject(("PUBLISH", "after_old_output_kept"))
+    os.replace(tmp, out_path)
+    _fsync_dir(out_path)
+    return moved
+
+
+def _build_from(out_path, infos, replace, _inject):
+    plan = _plan_json(infos)
     if os.path.exists(out_path):
         if _complete_and_matches(out_path, plan):
             return {"status": "UP_TO_DATE", "out": out_path, "units": []}
@@ -496,35 +649,38 @@ def _build_locked(out_path, sources, check, replace, _inject):
                             % out_path)
 
     tmp = out_path + ".building"
-    resumed = False
+    state = None
     if os.path.exists(tmp) or os.path.exists(tmp + "-journal"):
-        if os.path.exists(tmp) and _probe_tmp(tmp, plan):
-            resumed = True
-        else:
+        state = _tmp_state(tmp, plan) if os.path.exists(tmp) else None
+        if state is None:
             _rm_tmp(tmp)
+    resumed = state == "BUILDING"
     out = _open_out(tmp)
+    results = []
     try:
-        if not resumed:
+        if state is None:
             out.executescript(DDL)
             out.execute("insert into _build_meta values('plan',?)", (plan,))
             out.execute("insert into _build_meta values('status','BUILDING')")
             out.execute("insert into _build_meta values('run_ts',?)", (now_ist(),))
             out.execute("insert into _build_meta values('builder',?)", (BUILDER_VERSION,))
         run_ts = _meta(out, "run_ts")
-        done = set(out.execute("select source_label,source_table from _build_units").fetchall())
-        results = []
-        for info in infos:
-            for spec in SPECS:
-                if (info["label"], spec.src_table) in done:
-                    continue
-                results.append(_copy_unit(out, info["path"], info["label"], spec, run_ts, info["sha256"]))
-                if _inject:
-                    _inject((info["label"], spec.src_table))
+        if state != "COMPLETE":
+            done = set(out.execute("select source_label,source_table from _build_units").fetchall())
+            for info in infos:
+                for spec in SPECS:
+                    if (info["label"], spec.src_table) in done:
+                        continue
+                    results.append(_copy_unit(out, info["path"], info["label"], spec, run_ts, info["sha256"],
+                                              snap=info["snapshot"]))
+                    if _inject:
+                        _inject((info["label"], spec.src_table))
         _verify(out, dict((s.src_table, s) for s in SPECS))
-        out.execute("BEGIN IMMEDIATE")
-        _rollup(out, run_ts)
-        out.execute("update _build_meta set v='COMPLETE' where k='status'")
-        out.execute("COMMIT")
+        if state != "COMPLETE":
+            out.execute("BEGIN IMMEDIATE")
+            _rollup(out, run_ts)
+            out.execute("update _build_meta set v='COMPLETE' where k='status'")
+            out.execute("COMMIT")
         bad = out.execute("PRAGMA integrity_check").fetchall()
         if bad != [("ok",)]:
             raise VerifyFailed("integrity_check on the new file: %s" % bad[:3])
@@ -533,18 +689,14 @@ def _build_locked(out_path, sources, check, replace, _inject):
         raise
     out.close()
     for info in infos:
-        if _stat(info["path"]) != (info["bytes"], info["mtime_ns"]):
+        if info["snapshot"]:
+            continue                              # built from our own private copy; the source cannot change it
+        if _stat(info["path"]) != (info["bytes"], info["mtime_ns"]) or file_sha256(info["path"]) != info["sha256"]:
             _rm_tmp(tmp)
             raise VerifyFailed("%s changed while it was being read; nothing published" % info["path"])
-    _fsync_file(tmp)
-    moved = None
-    if os.path.exists(out_path):
-        moved = out_path + ".prev-" + datetime.now(IST).strftime("%Y%m%d-%H%M%S")
-        os.replace(out_path, moved)
-        _fsync_dir(out_path)
-    os.replace(tmp, out_path)
-    _fsync_dir(out_path)
-    return {"status": "RESUMED" if resumed else "BUILT", "out": out_path, "moved_aside": moved, "units": results}
+    moved = _publish(tmp, out_path, _inject)
+    status = "PUBLISHED_FROM_SCRATCH" if state == "COMPLETE" else ("RESUMED" if resumed else "BUILT")
+    return {"status": status, "out": out_path, "moved_aside": moved, "units": results}
 
 
 def _parse_source(spec: str):

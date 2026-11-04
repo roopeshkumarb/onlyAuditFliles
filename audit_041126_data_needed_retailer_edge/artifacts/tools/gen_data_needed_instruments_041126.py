@@ -36,6 +36,31 @@ OUT_CSV = os.path.join(ROOT, "docs", "framework", "data_needed_instruments_04112
 OUT_MD = os.path.join(ROOT, "docs", "framework", "DATA_NEEDED_INSTRUMENTS_041126.md")
 CFG = REC.load(os.path.join(ROOT, "config", "recoverability.json"))
 BROKERS = ("upstox", "dhan", "kite", "fyers")
+RESOLVED_CSV = os.path.join(ROOT, "docs", "framework", "resolved_symbols_041126.csv")
+
+
+def load_resolved_symbols(path=RESOLVED_CSV):
+    """{instrument_name: {upstox, dhan, evidence_upstox, evidence_dhan}} from a measured file.
+    A row counts only when its symbol cell AND its evidence cell are both non-empty; a symbol
+    without evidence is ignored (stays UNKNOWN) - a symbol typed by hand is not a finding."""
+    out = {}
+    if not os.path.exists(path):
+        return out
+    with open(path, encoding="utf-8", newline="") as fh:
+        for r in csv.DictReader(fh):
+            name = (r.get("instrument_name") or "").strip()
+            if not name:
+                continue
+            up = (r.get("symbol_upstox") or "").strip()
+            dh = (r.get("symbol_dhan") or "").strip()
+            eu = (r.get("evidence_upstox") or "").strip()
+            ed = (r.get("evidence_dhan") or "").strip()
+            out[name] = {"upstox": up if (up and eu) else "", "dhan": dh if (dh and ed) else "",
+                         "evidence_upstox": eu if (up and eu) else "", "evidence_dhan": ed if (dh and ed) else ""}
+    return out
+
+
+RESOLVED = load_resolved_symbols()
 LIVE, PULL, UNK = "LIVE_ONLY_NON_RECOVERABLE", "PULLABLE_RECOVERABLE", "UNKNOWN"
 
 
@@ -176,10 +201,17 @@ for i, (fy, dbsym) in enumerate(N50.NIFTY50):
     if dbsym == "Tata_Motors_Passenger_Vehicles":
         dh = "securityId 3456 (from config/nifty50.py comment on file NSE_NSE_EQ_3456_...)"
     notes = "db_sym=%s" % dbsym
-    add("NIFTY50_CONSTITUENT", sym, "1m candles history (equity_1m)", U + " (NSE_EQ|<ISIN>; ISIN not in repo)", dh,
+    res = RESOLVED.get(sym, {})
+    up_cell = res.get("upstox") or (U + " (NSE_EQ|<ISIN>; ISIN not in repo)")
+    if res.get("dhan"):
+        dh = res["dhan"]
+    ev_extra = ""
+    if res.get("upstox") or res.get("dhan"):
+        ev_extra = "; resolved: " + " | ".join(x for x in (res.get("evidence_upstox"), res.get("evidence_dhan")) if x)
+    add("NIFTY50_CONSTITUENT", sym, "1m candles history (equity_1m)", up_cell, dh,
         "NSE:%s" % sym, fy, "upstox,dhan,kite,fyers", "W.equity_1m", "CORE",
         "declared family candles_equity_1m", "", "breadth + volume leadership (CLAUDE.md 2.2: breadth from equity_1m)",
-        ln("config/nifty50.py", '"%s"' % fy) + "; " + ln("pullers/shared/dp_families.py", '"candles_equity_1m"'), notes)
+        ln("config/nifty50.py", '"%s"' % fy) + "; " + ln("pullers/shared/dp_families.py", '"candles_equity_1m"') + ev_extra, notes)
 for i, (fy, dbsym) in enumerate(N50.NIFTY50):
     sym = fy[4:-3]
     add("NIFTY50_CONSTITUENT", sym, "live L1 + 5-depth ticks (Kite, TICK_EXTRA_EQ)", U, U, "NSE:%s" % sym, fy, "kite",
@@ -396,8 +428,9 @@ def U_(a, b):
     global n
     n += 1
     w("| %d | %s | %s |" % (n, a, b))
-U_("Upstox NSE_EQ key and Dhan securityId of the 50 constituents (the repo holds only Fyers tickers, Kite-by-name and Dhan db_sym names; CSV symbol cells UNKNOWN: upstox %d, dhan %d, of %d rows)" % (unk_cells["upstox"], unk_cells["dhan"], len(ROWS)),
-   "`SELECT vendor_id,tradingsymbol FROM instruments WHERE source IN ('upstox','dhan') AND tradingsymbol IN (<nifty50_syms.txt>)` on `_state/instruments.db` of each box")
+n_res = sum(1 for v in RESOLVED.values() if v.get("upstox") and v.get("dhan"))
+U_("Upstox NSE_EQ key and Dhan securityId of the 50 constituents: %d of 50 RESOLVED in docs/framework/resolved_symbols_041126.csv (Dhan from the i7 box's scrip_master_20261104.csv, Upstox from the public NSE.json.gz; evidence per row). Remaining UNKNOWN symbol cells in this CSV: upstox %d, dhan %d, of %d rows - these are Kite-only live-tick rows where the Upstox/Dhan cell does not apply, plus indices, futures and options resolved at runtime from the master" % (n_res, unk_cells["upstox"], unk_cells["dhan"], len(ROWS)),
+   "re-run the same two read-only extractions daily (the master changes); the ISIN-based Upstox key is stable, the Dhan securityId should be re-checked after any corporate action")
 U_("Kite instrument_token of every non-index instrument (cells say `from NFO list`)", "`SELECT token,tradingsymbol,why FROM instruments_today` in today's `ticks_YYYYMMDD.db` on each box")
 U_("Whether TICK_EXTRA / weekly flags are really ON on i5 and i7 (compose default OFF)", "`docker exec tickrec env | grep TICK_`, same for depthrec/upstoxrec; or read `status.json` beside each day file")
 U_("GIFT NIFTY: contradiction between gift_nifty_puller.py (keys found 01-11) and DATA_NEEDED_FOR_EDGE G9 (key not found 03-11); live intraday key", "`SELECT * FROM instruments WHERE source='upstox' AND (tradingsymbol LIKE '%GIFT%' OR tradingsymbol LIKE '%SGX%')`; same for dhan/kite")

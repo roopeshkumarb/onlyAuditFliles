@@ -45,8 +45,8 @@ Counting rule (single, stated): a broker is counted for a row when ANY comma-sep
 
 | broker | LIVE_ONLY rows | PULLABLE rows | UNKNOWN-class rows | symbol cells UNKNOWN | symbol cells resolved at runtime from the broker master (placeholder, no value in repo) |
 |---|---|---|---|---|---|
-| upstox | 14 | 59 | 0 | 127 | 4 |
-| dhan | 10 | 61 | 0 | 127 | 1 |
+| upstox | 14 | 59 | 0 | 77 | 4 |
+| dhan | 10 | 61 | 0 | 78 | 1 |
 | kite | 68 | 58 | 0 | 22 | 4 |
 | fyers | 10 | 58 | 0 | 31 | 3 |
 
@@ -76,7 +76,7 @@ Typical option instruments recorded per box per session (rule x count): Kite 148
 
 | # | unknown | resolving step (read-only, after 15:35 IST) |
 |---|---|---|
-| 1 | Upstox NSE_EQ key and Dhan securityId of the 50 constituents (the repo holds only Fyers tickers, Kite-by-name and Dhan db_sym names; CSV symbol cells UNKNOWN: upstox 127, dhan 127, of 183 rows) | `SELECT vendor_id,tradingsymbol FROM instruments WHERE source IN ('upstox','dhan') AND tradingsymbol IN (<nifty50_syms.txt>)` on `_state/instruments.db` of each box |
+| 1 | Upstox NSE_EQ key and Dhan securityId of the 50 constituents: 50 of 50 RESOLVED in docs/framework/resolved_symbols_041126.csv (Dhan from the i7 box's scrip_master_20261104.csv, Upstox from the public NSE.json.gz; evidence per row). Remaining UNKNOWN symbol cells in this CSV: upstox 77, dhan 78, of 183 rows - these are Kite-only live-tick rows where the Upstox/Dhan cell does not apply, plus indices, futures and options resolved at runtime from the master | re-run the same two read-only extractions daily (the master changes); the ISIN-based Upstox key is stable, the Dhan securityId should be re-checked after any corporate action |
 | 2 | Kite instrument_token of every non-index instrument (cells say `from NFO list`) | `SELECT token,tradingsymbol,why FROM instruments_today` in today's `ticks_YYYYMMDD.db` on each box |
 | 3 | Whether TICK_EXTRA / weekly flags are really ON on i5 and i7 (compose default OFF) | `docker exec tickrec env | grep TICK_`, same for depthrec/upstoxrec; or read `status.json` beside each day file |
 | 4 | GIFT NIFTY: contradiction between gift_nifty_puller.py (keys found 01-11) and DATA_NEEDED_FOR_EDGE G9 (key not found 03-11); live intraday key | `SELECT * FROM instruments WHERE source='upstox' AND (tradingsymbol LIKE '%GIFT%' OR tradingsymbol LIKE '%SGX%')`; same for dhan/kite |

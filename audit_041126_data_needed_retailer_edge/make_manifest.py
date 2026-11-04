@@ -24,6 +24,7 @@ docs/framework/REGIME_DATA_NEEDED_041126.md
 docs/framework/FABLE_REVIEW_041126.md
 docs/framework/FABLE_REVIEW_ROUND2_041126.md
 docs/framework/FABLE_REVIEW_ROUND3_041126.md
+docs/framework/FABLE_REVIEW_ROUND4_041126.md
 docs/approvals_evidence/README.md
 docs/framework/REQUIREMENTS_REGISTER.json
 docs/framework/APPROVALS_LEDGER.json

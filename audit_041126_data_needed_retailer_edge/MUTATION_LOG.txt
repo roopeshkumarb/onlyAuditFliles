@@ -1,9 +1,10 @@
-MUTATION LOG - requirements_guard.py and retailer_db_build.py (regenerated 04-11-2026 after Fable round 3)
+MUTATION LOG - requirements_guard.py and retailer_db_build.py (regenerated 04-11-2026 after Fable round 4)
 Runner: docs/audit_pack_041126/mutation_runner.py (each mutation patches ONE exact string in a throwaway copy, then runs tests/test_requirements_guard.py + tests/test_retailer_db_build.py; the repo is never modified).
 
-Result: 53 mutations tried, 50 CAUGHT, 3 SURVIVED. Guard mutants G1-G32: 32 tried, 31 caught, 1 survived. Builder mutants B1-B16 (+B1b) and BN1-BN3b: 21 tried, 19 caught, 2 survived.
+Result: 84 mutations tried, 80 CAUGHT, 4 SURVIVED (B7, B11, B12, G18). Guard mutants (G*, GN*): 45 tried, 44 caught. Builder mutants (B*, BN*): 39 tried, 36 caught.
+Survivors, all explained below: B11/B12 = scratch-file and directory fsync removal (need a real power cut), B7 and G18 = equivalent mutants.
 
-History, stated honestly: round 2 (33 tried): 31 caught, 2 fsync survivors. Fable round 3 then invented 8 new mutants; 4 survived the 117-test suite: GN1 (realpath containment, old requirements_guard.py:379), GN3 (EVIDENCE_DIRS widened to docs/, :64), BN1 (output may be its own source, retailer_db_build.py:483), BN3 (duplicate source labels, :477). Round 3 also showed the gate could be flipped with six tricks (README/pack doc as evidence plus two commands, a symlink in the pack dir, a 40-byte file of path and spaces, a duplicate ledger row spelled ./tools/..., deleting the chain tail, a note saying NOT approved). The guard was changed (evidence only from docs/approvals_evidence/, APPROVAL line required, symlinks/aliases/duplicates refused, one flag per --accept-state, evidence must be in git HEAD, chain anchored in three places) and tests were added for every trick; G1, G5 and G7 were re-pointed at the new code, G17-G32 and BN1/BN1b/BN3/BN3b were added. GN3 = G7 and BN1/BN3 = BN1/BN3 here, all CAUGHT now. GN1 = G18, see below.
+History, stated honestly: round 2: 33 tried, 31 caught, 2 fsync survivors. Round 3 (Fable invented 8 more): 4 survived (GN1=G18, GN3=G7, BN1, BN3); fixed, 53 tried, 50 caught, 3 survived. Round 4 (this log): Fable invented 8 more mutants and 5 survived the 141-test suite: GN5 (two flags per --accept-state), GN6 (report anchor by length only), GN7 (git HEAD chain by length only), BN5 (case-sensitive SRC_ORDER rank), BN7 (source hash of the first 8 MB only). All five are caught now by new tests. One mutant of mine for the new committed-base rule (G38) turned out to be dominated by two other layers (the per-call rule and the 'previous entry not committed' rule): it could not change behaviour, so the redundant check was DELETED instead of keeping a mutant nobody can kill. Round 4 also found real defects, fixed with tests: WAL sources were read with their -wal but hashed and stat-checked without it (false UP_TO_DATE, source_sha256 missing copied rows, a -shm created beside the source), a failed COMMIT was masked by a ROLLBACK error, a kill between the two os.replace calls left the final path empty and the rerun threw the COMPLETE scratch away, a utime() or coarse-mtime medium hid a same-size source change, and on the guard: three accepts in one working tree could be committed together, a benign draft could be swapped after the hash was recorded, an APPROVAL line in a code fence or a 'withdrawn / draft / template' document counted, CRLF responses were refused with the wrong reason, and deleting the tail of the chain plus guard_report.json passed (now caught against earlier committed versions of the state file).
 
 ID   RESULT    MUTATION                                                       KILLED BY (first failing test) / REASON
 G1   CAUGHT    delete the evidence-file-exists branch (Fable G1)              tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_file_missing
@@ -18,7 +19,7 @@ G9   CAUGHT    removed ledger row not alerted                                 te
 G10  CAUGHT    hash chain never verified                                      tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_chain_tampered_or_entry_dropped
 G11  CAUGHT    evidence edited after acceptance not alerted                   tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_and_recorded_hash_both_edited_after_acceptance
 G12  CAUGHT    done_allowed ignores approvals ALERTs                          tests/test_requirements_guard.py::ApprovalsGate::test_one_removed_row_blocks_every_done_even_a_fully_approved_build
-G13  CAUGHT    accept_state accepts while an ALERT stands                     tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_unrevoking_an_approval_state_anchor
+G13  CAUGHT    accept_state accepts while an ALERT stands                     tests/test_requirements_guard.py::ApprovalsGate::test_t2_three_accepts_in_one_working_tree_then_one_commit_is_refused
 G14  CAUGHT    path traversal not rejected by name                            tests/test_requirements_guard.py::ApprovalsGate::test_attack_path_traversal_and_absolute
 G15  CAUGHT    empty / tiny evidence files accepted                           tests/test_requirements_guard.py::ApprovalsGate::test_attack_evidence_too_small
 G16  CAUGHT    true flags with no state chain not alerted                     tests/test_requirements_guard.py::ApprovalsGate::test_attack_state_file_deleted_while_flags_true
@@ -29,29 +30,30 @@ B3   CAUGHT    quick_check result ignored (Fable B3)                          te
 B4   CAUGHT    NULL bars broker -> 'kite' (Fable M4)                          tests/test_retailer_db_build.py::SrcOrderAndStamps::test_null_or_blank_bars_broker_is_unknown_never_a_vendor
 B5   CAUGHT    nifty_1m rows stamped with a broker that supplied nothing      tests/test_retailer_db_build.py::Stamping::test_unknown_historical_never_becomes_a_broker
 B6   CAUGHT    SRC_ORDER ranking removed (scan order decides)                 tests/test_retailer_db_build.py::SrcOrderAndStamps::test_src_order_decides_the_winner_not_scan_order
-B7   CAUGHT    post-read stat guard dropped (Fable M3)                        tests/test_retailer_db_build.py::SrcOrderAndStamps::test_source_moving_during_the_build_publishes_nothing
+B7   SURVIVED  post-read stat guard dropped, full re-hash remains (Fable M3;  EXPECTED EQUIVALENT: since round 4 the full content re-hash (B7b) subsumes the size+mtime check; observable behaviour is identical
+B7b  CAUGHT    post-read FULL re-hash dropped, size+mtime remain (round-4 def tests/test_retailer_db_build.py::FableRound4Hash::test_same_size_same_mtime_change_is_still_caught_at_the_end
 B8   CAUGHT    unrecognised feed name guessed as a vendor                     tests/test_retailer_db_build.py::Stamping::test_unknown_historical_never_becomes_a_broker
 B9   CAUGHT    no-op rerun skipped                                            tests/test_retailer_db_build.py::Safety::test_rerun_is_idempotent_and_touches_nothing
 B10  CAUGHT    content sha256 read-back check skipped                         tests/test_retailer_db_build.py::Safety::test_verification_catches_a_tampered_row
-B11  SURVIVED  final fsync of the scratch file removed                        SURVIVED, cannot be killed here: fsync only matters when the machine loses power between write and flush; a process kill leaves the OS page cache intact so the file is always complete. Needs a real power-cut test on the box (power-pull or a filesystem fault-injection tool). NOT covered; do not read this as covered.
-B12  SURVIVED  every directory fsync removed (0 = all occurrences)            SURVIVED, same reason as B11 for the directory entry (the rename may not be durable after a power cut). NOT covered.
+B11  SURVIVED  final fsync of the scratch file removed                        NOT COVERED: needs a real power cut / fault-injecting filesystem to tell
+B12  SURVIVED  every directory fsync removed (0 = all occurrences)            NOT COVERED: needs a real power cut / fault-injecting filesystem to tell
 B13  CAUGHT    resume probe opened read-only again (round-1 bug)              tests/test_retailer_db_build.py::MidTransactionKill::test_sigkill_inside_a_transaction_resumes_and_converges
 B14  CAUGHT    scratch sidecars no longer removed                             tests/test_retailer_db_build.py::MidTransactionKill::test_rm_tmp_removes_every_sidecar
 B15  CAUGHT    supplier conflicts no longer recorded                          tests/test_retailer_db_build.py::SrcOrderAndStamps::test_cross_source_conflict_is_recorded_first_source_wins
 B16  CAUGHT    build lock removed (Fable defect 5)                            tests/test_retailer_db_build.py::FableRound2::test_second_concurrent_build_is_refused_not_a_sqlite_crash
 G17  CAUGHT    symlinks inside the evidence path accepted (Fable round-3 tric tests/test_requirements_guard.py::ApprovalsGate::test_trick_symlink_in_the_allowed_folder
-G18  SURVIVED  realpath-equals-stated-path check removed (Fable round-3 GN1;  EQUIVALENT MUTANT: with this check removed the symlink walk (G17, which IS caught) has already refused every path that could resolve elsewhere, so no input distinguishes the two programs. Kept as defence in depth; this is Fable's round-3 GN1 and is NOT a test gap.
+G18  SURVIVED  realpath-equals-stated-path check removed (Fable round-3 GN1;  EQUIVALENT: the symlink walk (G17) refuses every path this would
 G19  CAUGHT    duplicate ledger rows not refused (Fable round-3 trick F4)     tests/test_requirements_guard.py::ApprovalsGate::test_trick_duplicate_ledger_row_via_aliases
 G20  CAUGHT    ledger build paths not normalised (aliases and case differ)    tests/test_requirements_guard.py::ApprovalsGate::test_approval_line_must_match_this_flag_and_this_build
 G21  CAUGHT    state-file anchor not checked (tail deletion)                  tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_unrevoking_an_approval_state_anchor
-G22  CAUGHT    guard_report anchor_history not checked                        tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_with_the_state_anchor_also_edited
-G23  CAUGHT    git HEAD copy of the chain not compared                        tests/test_requirements_guard.py::ApprovalsGate::test_trick_chain_tail_deletion_against_the_committed_copy
+G22  CAUGHT    guard_report anchor_history not checked                        tests/test_requirements_guard.py::ApprovalsGate::test_gn6_report_anchor_head_must_match_not_just_length
+G23  CAUGHT    git HEAD copy of the chain not compared                        tests/test_requirements_guard.py::ApprovalsGate::test_gn7_git_head_chain_must_match_hash_for_hash_not_just_length
 G24  CAUGHT    'not approved' / 'rejected' / FAIL verdict lines accepted (Fab tests/test_requirements_guard.py::ApprovalsGate::test_trick_not_approved_note_cannot_be_evidence
 G25  CAUGHT    several flags may flip in one --accept-state (Fable round-3 tr tests/test_requirements_guard.py::ApprovalsGate::test_committing_the_three_flags_first_does_not_bypass_the_one_flag_rule
 G26  CAUGHT    evidence need not be committed in git HEAD before the flip     tests/test_requirements_guard.py::ApprovalsGate::test_accept_refuses_a_flag_whose_evidence_is_not_committed
 G27  CAUGHT    true flags accepted when git history is unreadable             tests/test_requirements_guard.py::ApprovalsGate::test_accept_refuses_any_true_flag_when_git_history_is_unreadable
 G28  CAUGHT    a README may be evidence (Fable round-3 trick A)               tests/test_requirements_guard.py::ApprovalsGate::test_trick_readme_as_evidence
-G29  CAUGHT    evidence with the APPROVAL line and no prose accepted          tests/test_requirements_guard.py::ApprovalsGate::test_evidence_with_the_line_but_no_prose_is_refused
+G29  CAUGHT    evidence with the APPROVAL line and no prose accepted          tests/test_requirements_guard.py::ApprovalsGate::test_crlf_evidence_is_accepted_with_a_correct_reason_when_otherwise_refused
 G30  CAUGHT    non-canonical evidence path spellings accepted                 tests/test_requirements_guard.py::ApprovalsGate::test_noncanonical_evidence_path_is_refused
 G31  CAUGHT    anchor_history never written to guard_report.json              tests/test_requirements_guard.py::ApprovalsGate::test_anchor_history_is_carried_in_the_report_and_grows_with_the_chain
 G32  CAUGHT    anchor never written to the state file                         tests/test_requirements_guard.py::ApprovalsGate::test_a_response_that_merely_says_failure_in_prose_is_not_rejected
@@ -59,10 +61,43 @@ BN1  CAUGHT    output file may be its own source (Fable round-3 BN1)          te
 BN1b CAUGHT    scratch .building file may be a source                         tests/test_retailer_db_build.py::FableRound3::test_bn1b_scratch_file_may_not_be_a_source
 BN3  CAUGHT    duplicate source labels accepted (Fable round-3 BN3)           tests/test_retailer_db_build.py::FableRound3::test_bn3_duplicate_source_labels_are_refused
 BN3b CAUGHT    empty source list accepted                                     tests/test_retailer_db_build.py::FableRound3::test_bn3b_no_sources_is_refused
+GN5  CAUGHT    two flags may flip in one --accept-state (Fable round-4 GN5)   tests/test_requirements_guard.py::ApprovalsGate::test_gn5_exactly_two_newly_true_flags_are_refused_at_accept
+GN6  CAUGHT    report anchor compared by length only (Fable round-4 GN6)      tests/test_requirements_guard.py::ApprovalsGate::test_gn6_report_anchor_head_must_match_not_just_length
+GN7  CAUGHT    git HEAD chain compared by length only (Fable round-4 GN7)     tests/test_requirements_guard.py::ApprovalsGate::test_gn7_git_head_chain_must_match_hash_for_hash_not_just_length
+G33  CAUGHT    APPROVAL line inside a code fence counts (round-4 defect 2)    tests/test_requirements_guard.py::ApprovalsGate::test_t4_approval_line_inside_a_code_fence_is_not_an_approval
+G34  CAUGHT    withdrawn / draft / template / not-final lines accepted (round tests/test_requirements_guard.py::ApprovalsGate::test_t4d_withdrawn_draft_template_and_not_final_lines_are_refused
+G35  CAUGHT    CRLF not folded: Windows responses refused with a misleading r tests/test_requirements_guard.py::ApprovalsGate::test_crlf_evidence_is_accepted_with_a_correct_reason_when_otherwise_refused
+G36  CAUGHT    evidence text at git HEAD need not equal the approved text (ro tests/test_requirements_guard.py::ApprovalsGate::test_t3_benign_draft_committed_then_real_text_written_is_refused
+G37  CAUGHT    previous accepted entry may be uncommitted at the next accept  tests/test_requirements_guard.py::ApprovalsGate::test_t2c_previous_entry_must_be_committed_before_the_next_accept
+G39  CAUGHT    report does not ALERT on several uncommitted accepted entries  tests/test_requirements_guard.py::ApprovalsGate::test_t2b_report_alerts_on_uncommitted_batch_of_accepted_entries
+G40  CAUGHT    report does not ALERT on several flags newly true against HEAD tests/test_requirements_guard.py::ApprovalsGate::test_attack_flag_flipped_true_but_never_accepted
+G41  CAUGHT    chain need not extend earlier COMMITTED versions of the state  tests/test_requirements_guard.py::ApprovalsGate::test_defect4_dropping_the_report_and_recomputing_the_anchor_is_seen_in_history
+G42  CAUGHT    a committed guard_report.json may vanish unnoticed (round-4 de tests/test_requirements_guard.py::ApprovalsGate::test_defect4b_a_committed_report_that_vanishes_is_an_alert
+G43  CAUGHT    prose inside a code fence counts toward the 20-word minimum    tests/test_requirements_guard.py::ApprovalsGate::test_t4c_prose_inside_a_fence_does_not_count_toward_the_minimum
+BN5  CAUGHT    SQL SRC_ORDER rank is case-sensitive (Fable round-4 BN5)       tests/test_retailer_db_build.py::FableRound4Rank::test_rank_is_case_and_blank_insensitive_and_python_agrees_with_sql
+BN5b CAUGHT    Python src_rank is case-sensitive, disagrees with SQL          tests/test_retailer_db_build.py::FableRound4Rank::test_rank_is_case_and_blank_insensitive_and_python_agrees_with_sql
+BN7  CAUGHT    source sha256 covers only the first 8 MB (Fable round-4 BN7)   tests/test_retailer_db_build.py::FableRound4Hash::test_file_sha256_covers_the_whole_file
+B17  CAUGHT    snapshot accepted even if the source moved while it was copied tests/test_retailer_db_build.py::FableRound4Wal::test_a_source_that_moves_once_is_retried_and_then_snapshotted
+B18  CAUGHT    WAL header not recognised (only a non-empty -wal triggers the  tests/test_retailer_db_build.py::FableRound4Wal::test_wal_header_alone_is_enough_even_with_no_wal_file
+B18b CAUGHT    a non-empty -wal beside a non-WAL header ignored               tests/test_retailer_db_build.py::FableRound4Wal::test_a_nonempty_wal_beside_a_journal_header_is_still_treated_as_wal
+B19  CAUGHT    source_sha256 / plan ignore the -wal (round-4 defect 5: false  tests/test_retailer_db_build.py::FableRound4Wal::test_wal_header_alone_is_enough_even_with_no_wal_file
+B20  CAUGHT    ROLLBACK after a failed COMMIT masks the disk-full error (roun tests/test_retailer_db_build.py::FableRound4Commit::test_disk_full_on_commit_is_reported_as_disk_full
+B21  CAUGHT    old output moved aside by rename: final path empty for an inst tests/test_retailer_db_build.py::FableRound4Publish::test_with_hard_links_the_final_path_is_never_empty
+B22  CAUGHT    a COMPLETE scratch file is discarded instead of published (rou tests/test_retailer_db_build.py::FableRound4Publish::test_no_link_filesystem_window_is_closed_by_reusing_the_complete_scratch
+B23  CAUGHT    snapshot sources re-checked against the live source (would fla tests/test_retailer_db_build.py::FableRound4Wal::test_a_source_that_moves_once_is_retried_and_then_snapshotted
+B24  CAUGHT    private snapshot directory not removed on exit                 tests/test_retailer_db_build.py::FableRound4Wal::test_not_enough_free_space_for_the_snapshot_is_refused_before_copying
+B25  CAUGHT    stale snapshot directory of a killed run not removed           tests/test_retailer_db_build.py::FableRound4Wal::test_stale_snapshot_dir_from_a_killed_run_is_removed
+B26  CAUGHT    two replaces in one second overwrite the kept old output       tests/test_retailer_db_build.py::FableRound4Publish::test_two_replaces_in_one_second_do_not_overwrite_the_kept_copy
+B27  CAUGHT    WAL sources opened directly through SQLite again (round-4 defe tests/test_retailer_db_build.py::FableRound4Wal::test_a_source_that_moves_once_is_retried_and_then_snapshotted
+B28  CAUGHT    no free-space check before the private snapshot                tests/test_retailer_db_build.py::FableRound4Wal::test_not_enough_free_space_for_the_snapshot_is_refused_before_copying
+B29  CAUGHT    scratch file never reused (no resume, no publish-from-scratch) tests/test_retailer_db_build.py::Safety::test_interrupted_run_leaves_no_half_file_and_resumes
 
 Equivalence and limits:
 - B11/B12 (scratch-file fsync and directory fsync): NOT covered. A process kill leaves the OS page cache intact, so only a real power cut or a filesystem fault-injection tool can show the difference. Do not read SURVIVED as covered.
 - G18: equivalent mutant, see its row.
+- B7: equivalent since round 4 (see its row); B7b removes the re-hash instead and is CAUGHT.
 - G14 (path traversal by name): '..' is also removed by normpath, and the result must sit in the one allowed folder, so the folder rule usually refuses first; the by-name rule additionally refuses evidence/sub/../x.md, which would normalise to an allowed path. Tested.
 - B1 (row-count check in _verify): the content hash also fails when a row is missing, so the check is redundant for correctness; it gives a precise message, and the test asserts the message.
-- Guard limits NOT tested by any mutation, and cannot be: someone with write access who rewrites the ledger, the evidence, the hash, the chain, guard_report.json and git history together passes a local guard; one person can also approve all three flags in three visible commits. The guard is an accident-and-sloppiness check. The real gate is Kumar and the external auditor.
+- Windows: the directory flock and directory fsync do not exist there; the builder skips them and claims no durability on Windows. Not tested.
+- Guard limits NOT tested by any mutation, and cannot be: someone with write access who rewrites the ledger, the evidence, the hash, the chain, guard_report.json AND git history together (a force-push) passes a local guard; "separate commits" holds only while history is honest, and one person can approve all three flags in three quick, visible commits. The guard is an accident-and-sloppiness check. The real gate is Kumar and the external auditor.
+- Builder limits: a WAL source is snapshotted by byte copy; a database that is being written while it is copied is refused after three tries (VerifyFailed), so a live niftybkp.db must still be copied first. Real-power-cut durability and a real niftybkp.db are not tested here.
