@@ -1,5 +1,5 @@
 {
- "generated": "04-11-2026 01:01 IST",
+ "generated": "04-11-2026 12:11 IST",
  "files": [
   {
    "path": ".gitignore",
@@ -62,6 +62,12 @@
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261103_fable_independent_report_CONDENSED.md"
   },
   {
+   "path": "AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md",
+   "sha256": "2476f9f9a244697d54ecfa731a2199cb0c627ed9d4273a46504c8213a96cc770",
+   "bytes": 6370,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md"
+  },
+  {
    "path": "AUDITOR_RESPONSES/README.md",
    "sha256": "f24cbf380c2937f1a91354ea394cf6a482a93d4dc8b2172bb5612faedf661247",
    "bytes": 258,
@@ -69,14 +75,14 @@
   },
   {
    "path": "CHANGELOG.md",
-   "sha256": "ac055de4f4c7387dfe665b9f3fa4b0e5ec289dbcffe632896fa518acf62e7832",
-   "bytes": 3834,
+   "sha256": "e8c4ef184c0a15adf8c037e36d220c30e66e9a9306e6917f6ba86f0aabc09df1",
+   "bytes": 4157,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/CHANGELOG.md"
   },
   {
    "path": "CLAIMS_LEDGER.csv",
-   "sha256": "b8986021bdbbb38a735af9a4defc5f3191ea498b247f04bbbc7d3462ee0faefd",
-   "bytes": 14398,
+   "sha256": "7b053f7d1027a471cb97fa1f4231f175d68929ec8b5635055a8fa9f429f33a7a",
+   "bytes": 16251,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/CLAIMS_LEDGER.csv"
   },
   {
@@ -87,14 +93,14 @@
   },
   {
    "path": "LATEST.md",
-   "sha256": "a6e9ae9ca52393c2976ffab112d42601dea594fb47a9212fff90427dab07ee55",
-   "bytes": 9905,
+   "sha256": "a4461afdf6b9ff950efc4372433c24183e9f451f04cb4a743596db8bde94891c",
+   "bytes": 11043,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/LATEST.md"
   },
   {
    "path": "README.md",
-   "sha256": "7701700e2efcb39c67a9d68de0d4f4a14f31e84f0c979e76d7ef41279babe59e",
-   "bytes": 147416,
+   "sha256": "2f4156b2417d9119926fe336312b124abb0eca522056267cdd3b676d0499c7a7",
+   "bytes": 150550,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/README.md"
   },
   {
@@ -516,6 +522,186 @@
    "sha256": "36389dd422fa2be7beabb3137e9892691489c67a51799c60e0aaaaeb775b4231",
    "bytes": 92823,
    "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_031126_live_only_and_data_master/RECOVERABLE_CONSTITUENTS_021126.csv"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/DISAGREEMENTS.md",
+   "sha256": "504b858ea2d371fce6002c405a046ebbce67e8082b15cf06e280bbb7d7565cae",
+   "bytes": 4927,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/DISAGREEMENTS.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/MANIFEST.sha256",
+   "sha256": "0831a53c052fac45500bb3db217815a03c093cf4cb73f632c3e1bbc4b943897f",
+   "bytes": 2577,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/MANIFEST.sha256"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/README.md",
+   "sha256": "9d7bdb929adc554d1b5a7d4720969d99df5a4d3295a9a27fe914aadbe1199850",
+   "bytes": 9149,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/README.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/REDACTIONS.txt",
+   "sha256": "6a8c5a1376dfad0da32b687f824f2da0adf32b0d8b11ed875d99590fb4f15a79",
+   "bytes": 186,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/REDACTIONS.txt"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/CLAUDE.md",
+   "sha256": "0e948641900c44f009eff742f3cac02afd4f430a3702b0b902ebac756f84b142",
+   "bytes": 5947,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/CLAUDE.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/config/recoverability.json",
+   "sha256": "73872f38d8eb52e3d77a814c4db5ec7afe2d3dea58897b76c653a64e66ff6a9b",
+   "bytes": 11468,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/config/recoverability.json"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_LEDGER.json",
+   "sha256": "1b7c760c6a998ffa523264ca930b78e2bc78d81a3d3fb401194c3bfea05de65d",
+   "bytes": 2365,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/APPROVALS_LEDGER.json"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/DATA_NEEDED_INSTRUMENTS_041126.md",
+   "sha256": "9fd1c519d8d01d1938077f133fdda334ddda139f3d284d980ce76886f02e24d4",
+   "bytes": 9697,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/DATA_NEEDED_INSTRUMENTS_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FABLE_REVIEW_041126.md",
+   "sha256": "2476f9f9a244697d54ecfa731a2199cb0c627ed9d4273a46504c8213a96cc770",
+   "bytes": 6370,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FABLE_REVIEW_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md",
+   "sha256": "8ae5aaec8e07c6c2a1e34a8e7605bcfb67cfc691bc8c0ff0845efbc40fe9667a",
+   "bytes": 30356,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/LIVE_CENSUS_041126.csv",
+   "sha256": "5a8d5e6879ce5797793a523c4faf79ef88421199dad55c595cf7f1d704670d05",
+   "bytes": 143923,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/LIVE_CENSUS_041126.csv"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/LIVE_CENSUS_041126.md",
+   "sha256": "19c2421961f81f32c47a175a7072b48f68dfa2ec44636dbd769d7247cc5bb437",
+   "bytes": 6737,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/LIVE_CENSUS_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/REGIME_DATA_NEEDED_041126.md",
+   "sha256": "577b748634ad9b2137167122ea1d42a979991284373844e1afe40dbf1e96408e",
+   "bytes": 17003,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/REGIME_DATA_NEEDED_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/REQUIREMENTS_REGISTER.json",
+   "sha256": "7d5d34e59965ec62b2c7296af44a438bc059aa5fd1f65292fd6082d3782e57c2",
+   "bytes": 12173,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/REQUIREMENTS_REGISTER.json"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/RETAILER_DB_EDGE_SCHEMA_041126.md",
+   "sha256": "b4ff201bad024f2925987fdefdfba898cfda45a7c75d7132418ff9de5d15db75",
+   "bytes": 22191,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/RETAILER_DB_EDGE_SCHEMA_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/RETAILER_PULLER_DESIGN_041126.md",
+   "sha256": "07171d452700f32c658418868afafc6ed90ab13b0270c654a539a53ee8ebcecd",
+   "bytes": 22909,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/RETAILER_PULLER_DESIGN_041126.md"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/data_needed_instruments_041126.csv",
+   "sha256": "0db1119c327a2f3cfc2beed2e20296e88a21a9b5e1f58ed87debb3a075ad4aa5",
+   "bytes": 70757,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/data_needed_instruments_041126.csv"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/docs/framework/guard_report.json",
+   "sha256": "77900b34cac00e905d0b99ad4833b0a82e6b3cc763c2154e57381d839295e4e3",
+   "bytes": 13213,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/docs/framework/guard_report.json"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/pullers/shared/dp_families.py",
+   "sha256": "ed653a538edc8ffd28da7366f4e4b164eb46b155fcf99c8d8df7385a9257af84",
+   "bytes": 11141,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/pullers/shared/dp_families.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/pullers/shared/dp_recoverability.py",
+   "sha256": "bb1cea710bdd1965a485801da655d25ee90ff96947b86c983390649b7906fca9",
+   "bytes": 3362,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/pullers/shared/dp_recoverability.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_dp_recoverability.py",
+   "sha256": "a2e9401e64d3543353bcd29d9d6debb40af808d785a89c5caf6946081655c370",
+   "bytes": 5880,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_dp_recoverability.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_gen_data_needed_instruments.py",
+   "sha256": "fb51b5609280cc2e6ec241d4c102ebd7034ac27192afecbad463bdc7ce8c1537",
+   "bytes": 4383,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_gen_data_needed_instruments.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_recoverability_placement.py",
+   "sha256": "633b61a0a38c3aa567db396979e0e5ef0ddb2e51f6f6e469e4f20bd703f42e4a",
+   "bytes": 4070,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_recoverability_placement.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_requirements_guard.py",
+   "sha256": "ef849a2f929eb138938c5839aea4b849d8d9bd7df1da8800154d0954a9f9ef63",
+   "bytes": 13667,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_requirements_guard.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tests/test_retailer_db_build.py",
+   "sha256": "298e5f65e0c4f9f55e9ebe3c31d6262c1b93702902903899749b55fa92bf0289",
+   "bytes": 24036,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tests/test_retailer_db_build.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tools/gen_data_needed_instruments_041126.py",
+   "sha256": "f08c9ffa6e5073bab2662088effaee076afb6a0178176ec1a9238204db79a4a4",
+   "bytes": 36444,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tools/gen_data_needed_instruments_041126.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tools/requirements_guard.py",
+   "sha256": "c3c96ead691740a364b1204e41150c476beb4dda903cdfe8848e4e4992b0d8d3",
+   "bytes": 26075,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tools/requirements_guard.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tools/retailer_db_build.py",
+   "sha256": "0a7a79748eb90180f85caff1fb52d9bced3ac62492444ce2fadb52ed554c2aec",
+   "bytes": 27594,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tools/retailer_db_build.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/artifacts/tools/retailer_db_inventory.py",
+   "sha256": "73b0f5d34d044bb930d8585493b5b8efc59510b8da40bbbf2284ef64ccdf5b39",
+   "bytes": 5773,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/artifacts/tools/retailer_db_inventory.py"
+  },
+  {
+   "path": "audit_041126_data_needed_retailer_edge/make_manifest.py",
+   "sha256": "1d369423acb3357f5299d66b1dcf0407b021f04b017292e92c59a2c68c1b3f9a",
+   "bytes": 4049,
+   "raw_url": "https://raw.githubusercontent.com/roopeshkumarb/onlyAuditFliles/main/audit_041126_data_needed_retailer_edge/make_manifest.py"
   },
   {
    "path": "tools_audit_publish.py",

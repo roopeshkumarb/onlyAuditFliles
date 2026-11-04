@@ -1,0 +1,66 @@
+{
+  "title": "Approvals ledger - three approvals per build (Fable, external auditor, Kumar). A build may be called DONE only when all three are true.",
+  "rule": "Flip a flag to true ONLY with its <flag>_evidence filled in (file path for fable/external, a dated quote for kumar). The guard rejects a true flag without evidence and any claimed_status DONE/COMPLETE/GREEN without all three.",
+  "builds": [
+    {
+      "path": "tools/retailer_db_build.py",
+      "kind": "tool",
+      "test": "tests/test_retailer_db_build.py",
+      "claimed_status": "DRAFT",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": "04-11 Fable review: PASS-WITH-FIXES (docs/framework/FABLE_REVIEW_041126.md) - that is not an approval"
+    },
+    {
+      "path": "tools/retailer_db_inventory.py",
+      "kind": "tool",
+      "test": "tests/test_retailer_db_build.py",
+      "claimed_status": "DRAFT",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": ""
+    },
+    {
+      "path": "tools/gen_data_needed_instruments_041126.py",
+      "kind": "tool",
+      "test": "tests/test_gen_data_needed_instruments.py",
+      "claimed_status": "DRAFT",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": "tests/test_gen_data_needed_instruments.py added 04-11 (6 tests); approvals still all false"
+    },
+    {
+      "path": "tools/requirements_guard.py",
+      "kind": "tool",
+      "test": "tests/test_requirements_guard.py",
+      "claimed_status": "DRAFT",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": "this guard is itself a new build"
+    },
+    {
+      "path": "config/recoverability.json",
+      "kind": "config",
+      "test": "tests/test_dp_recoverability.py",
+      "claimed_status": "PROPOSED",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": "classifier config; Fable found global_1m/opt_ohlc_1m defect, fixed 04-11, re-review pending"
+    },
+    {
+      "path": "pullers/shared/dp_recoverability.py",
+      "kind": "module",
+      "test": "tests/test_dp_recoverability.py",
+      "claimed_status": "PROPOSED",
+      "fable": false,
+      "external_auditor": false,
+      "kumar": false,
+      "note": "tools/tools_pdf.py H17: written spec, not yet a proven tool"
+    }
+  ]
+}

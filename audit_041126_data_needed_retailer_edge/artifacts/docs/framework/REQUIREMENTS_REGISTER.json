@@ -1,0 +1,397 @@
+{
+  "title": "Kumar's 31 requirements + 5 sequence rules as machine-checkable rules",
+  "source": "Kumar's numbered list (message of 04-11-2026). Text is verbatim-equivalent, grammar tidied, nothing added.",
+  "status": "PROPOSED - a new build, needs Fable + external auditor + Kumar (see APPROVALS_LEDGER.json)",
+  "traceability_cutoff": "04-11-2026 00:00",
+  "traceability_rule": "every TASKS.jsonl task id touched at/after the cutoff must cite an R-id or S-id in title/why/note/src in at least one of its entries; otherwise ALERT 'unmapped work'",
+  "live_only_markers": [
+    "depth",
+    "tick",
+    "tbt",
+    "quote",
+    "opt_chain",
+    "greeks",
+    "opt_snapshot",
+    "microstructure",
+    "order_flow",
+    "opt_atm",
+    "opt_summary"
+  ],
+  "window_limited_must_be_non_recoverable": [
+    "global_1m",
+    "opt_ohlc_1m"
+  ],
+  "old_puller_names": [
+    "kitepuller",
+    "dhanpuller",
+    "fyerspuller",
+    "upstoxpuller"
+  ],
+  "move_safety_markers": {
+    "tools/ssd_to_hdd_move.sh": [
+      "sha256sum",
+      "ALLOW_REMOVE",
+      "/proc/mounts",
+      ".part"
+    ],
+    "tools/retailer_db_build.py": [
+      "os.replace",
+      "fsync"
+    ]
+  },
+  "friday_deadline_ist": "2026-11-06T20:00:00+05:30",
+  "required_csv_columns": [
+    "group",
+    "instrument_name",
+    "feeds_by_brokers",
+    "class",
+    "store_table",
+    "why_needed_for_regime",
+    "evidence"
+  ],
+  "machine_checkable_note": "Rules marked TRACE-only (R07,R10,R14,R17,R21,R22,R24,R25,R27,R28) cannot be proven by a mechanical check; the guard reports them AMBER (traceability only), never GREEN.",
+  "requirements": [
+    {
+      "id": "R01",
+      "text": "Where is my full database path on all boxes? Plan it so source databases can never corrupt - no UPS, power/network can fail any time, every file/DB move must be safe.",
+      "rules": [
+        "MOVE_SAFETY",
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/ALL_DB_PATHS_021126.csv",
+        "docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md"
+      ]
+    },
+    {
+      "id": "R02",
+      "text": "After the new retail pullers, how much will data size shrink? Two separate pullers - one non-recoverable, one recoverable on SSD - with proof of where the non-recoverable data is, per broker.",
+      "rules": [
+        "JOIN_LIVE_SAFE",
+        "INSTR_DETAIL",
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/RETAILER_PULLER_DESIGN_041126.md",
+        "docs/framework/LIVE_CENSUS_041126.md"
+      ]
+    },
+    {
+      "id": "R03",
+      "text": "(After an incomplete answer) Wrong - real data was lost track of; there are bigger databases than reported.",
+      "rules": [
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/LIVE_CENSUS_041126.md",
+        "docs/framework/LIVE_CENSUS_041126.csv"
+      ]
+    },
+    {
+      "id": "R04",
+      "text": "Why second and third chances? Read the global instructions; how to change them; open CLAUDE.md for update (clickable link).",
+      "rules": [
+        "CLAUDE_MD"
+      ],
+      "evidence_files": [
+        "CLAUDE.md"
+      ]
+    },
+    {
+      "id": "R05",
+      "text": "Build a puller exclusively for non-recoverable data on i5 and i7, same shared method, then stop the old pullers - with a clear three-source-proven non-recoverable list per broker.",
+      "rules": [
+        "JOIN_LIVE_SAFE",
+        "NO_OLD_STOP",
+        "APPROVALS",
+        "TOOL_TESTS"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R06",
+      "text": "Auditor file must name every live-only instrument per broker - full files, not summaries; public audit link; you do the work.",
+      "rules": [
+        "INSTR_DETAIL",
+        "CSV_TOTALS",
+        "AUDIT_REPO"
+      ],
+      "evidence_files": [
+        "docs/framework/data_needed_instruments_041126.csv",
+        "docs/framework/DATA_NEEDED_INSTRUMENTS_041126.md"
+      ]
+    },
+    {
+      "id": "R07",
+      "text": "I do not want manual work.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R08",
+      "text": "Show who the three auditors are, what list was proposed, what they agreed/disagreed on, and both sides.",
+      "rules": [
+        "APPROVALS",
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/FABLE_REVIEW_041126.md",
+        "docs/framework/APPROVALS_LEDGER.json"
+      ]
+    },
+    {
+      "id": "R09",
+      "text": "One table: every non-recoverable live-only instrument and which broker feeds it; another table for recoverable data on SSD. Full detail, must hold for years; sufficient for regime detection across timeframes, direction prediction and edge.",
+      "rules": [
+        "INSTR_DETAIL",
+        "CSV_TOTALS",
+        "JOIN_UNKNOWN"
+      ],
+      "evidence_files": [
+        "docs/framework/data_needed_instruments_041126.csv"
+      ]
+    },
+    {
+      "id": "R10",
+      "text": "'Recording sessions' means pulling the data - full data. Finding the edge means not trading every day.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R11",
+      "text": "Overnight authority: agents in parallel, decide as admin. Objective only: retail-sufficient complete data for regime detection, ML, backtest, paper trading, live signals, intraday direction - all from my GUI. 4 premium brokers in parallel on both RAID-HDD machines protect live data; recoverable goes to SSD, pulled later to avoid load.",
+      "rules": [
+        "JOIN_LIVE_SAFE",
+        "INSTR_DETAIL",
+        "NO_OLD_STOP"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R12",
+      "text": "First tab of the new engine: every live-only non-recoverable data point, grouped, as live graphs - GIFT NIFTY, options, VIX, OI, futures, Bank Nifty, world markets, news/events, NIFTY50 volumes, BEES, FII/DII, each separately.",
+      "rules": [
+        "INSTR_DETAIL"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R13",
+      "text": "Use the public audit repo https://github.com/roopeshkumarb/onlyAuditFliles for audits, every time, for future use always.",
+      "rules": [
+        "AUDIT_REPO"
+      ],
+      "evidence_files": [
+        "docs/framework/AUDIT_PUBLISH_RULE.md"
+      ]
+    },
+    {
+      "id": "R14",
+      "text": "Execute the gated CAVEMAN queue BLK-001..BLK-010: start with BLK-001, give proof, do not start BLK-002 until I verify.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R15",
+      "text": "Give a complete audit report with your own proof for an external auditor.",
+      "rules": [
+        "APPROVALS",
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/FABLE_REVIEW_041126.md"
+      ]
+    },
+    {
+      "id": "R16",
+      "text": "Do not be stuck on one access method: test direct SSH, DSM web port, i5-to-i7, Pi5-to-i7.",
+      "rules": [
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/ACCESS_ROUTES_031126.md"
+      ]
+    },
+    {
+      "id": "R17",
+      "text": "If a box is not responding assume a power issue - retry every 15 minutes, recheck now; do not wait on me.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R18",
+      "text": "Check all connectivity - a successful direct connection to every box.",
+      "rules": [
+        "DOCS_PRESENT"
+      ],
+      "evidence_files": [
+        "docs/framework/ACCESS_ROUTES_031126.md"
+      ]
+    },
+    {
+      "id": "R19",
+      "text": "Office laptop cannot install anything (GlobalProtect, Cortex XDR): give a safe script reaching all boxes and the local network.",
+      "rules": [
+        "NO_BAT"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R20",
+      "text": "The earlier .cmd/.bat worked, but Cortex XDR flags .bat files as dangerous and reports to IT - is there another way?",
+      "rules": [
+        "NO_BAT"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R21",
+      "text": "Travel phone: no camera, no GPS, Android, Google Play Store.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R22",
+      "text": "Continue - top-priority tasks now.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R23",
+      "text": "Add weekly-expiry recording and the missing live-only recorders without asking; it belongs in the data-needed list; check for similar gaps and audit with both reviewers; move SSD data on i5/i7 to HDD after market hours.",
+      "rules": [
+        "WEEKLY_PRESENT",
+        "INSTR_DETAIL",
+        "MOVE_SAFETY"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R24",
+      "text": "I'm sleeping - state the exact sequence until I'm back.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R25",
+      "text": "The three scheduled checks are existing-build maintenance, not future-build work.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R26",
+      "text": "Is 750 rows the data our engine needs? Does that satisfy the main goal? Why no visible progress toward it?",
+      "rules": [
+        "INSTR_DETAIL",
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R27",
+      "text": "labels_1m does not exist - will it help the engine; is it pulled live or not?",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R28",
+      "text": "State how each task connects to my main goal.",
+      "rules": [
+        "TRACE"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R29",
+      "text": "Is the audited, proven data-needed list ready? SSD/HDD load balancer? Live no-latency graphics engine? Only prebuilt proven tools? CPU/RAM/disk load balancers? List must specify live-only to HDD; recoverable to SSD temporarily on every device then moved to i5 and i7; Pi5 data also moves to i5.",
+      "rules": [
+        "JOIN_LIVE_SAFE",
+        "SSD_NONREC",
+        "POLICY_FILE",
+        "MOVE_SAFETY",
+        "APPROVALS"
+      ],
+      "evidence_files": []
+    },
+    {
+      "id": "R30",
+      "text": "Did you get my approval for the live-only to HDD setup? Is that list audited externally and by Fable? Is what is recorded enough to satisfy the main goal as a retailer?",
+      "rules": [
+        "APPROVALS"
+      ],
+      "evidence_files": [
+        "docs/framework/APPROVALS_LEDGER.json"
+      ]
+    },
+    {
+      "id": "R31",
+      "text": "Only prebuilt tools; anything built needs three approvals - Fable, an external auditor, and me. Running out of space on i7 and i5; finish what is needed to move to the new pullers - retailer_db_edge.",
+      "rules": [
+        "APPROVALS",
+        "TOOL_TESTS",
+        "NO_OLD_STOP",
+        "POLICY_FILE"
+      ],
+      "evidence_files": []
+    }
+  ],
+  "sequence": [
+    {
+      "id": "S1",
+      "text": "Before Friday: finalize the data-needed list, scoped to intraday regime detection across multiple timeframes, not the whole wish-list.",
+      "rules": [
+        "INSTR_DETAIL",
+        "CSV_TOTALS"
+      ]
+    },
+    {
+      "id": "S2",
+      "text": "Then build retailer_db_edge by filling it from existing databases - not re-pulling from brokers; every row carries a stamp of which broker supplied it.",
+      "rules": [
+        "MOVE_SAFETY",
+        "APPROVALS",
+        "TOOL_TESTS"
+      ]
+    },
+    {
+      "id": "S3",
+      "text": "Once the base DB is ready and proven, switch new pulling to the new pullers built against the finalized list.",
+      "rules": [
+        "APPROVALS"
+      ]
+    },
+    {
+      "id": "S4",
+      "text": "Only after the new pullers are running and proven, stop the old pullers completely - never before.",
+      "rules": [
+        "NO_OLD_STOP"
+      ]
+    },
+    {
+      "id": "S5",
+      "text": "Friday 20:00 IST onward: every database on every machine moves off SSD entirely - only HDD and Google Drive.",
+      "rules": [
+        "FRIDAY_SSD",
+        "SSD_NONREC"
+      ]
+    }
+  ]
+}

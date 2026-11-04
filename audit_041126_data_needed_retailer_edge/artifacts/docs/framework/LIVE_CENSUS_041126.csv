@@ -1,0 +1,817 @@
+box,broker,instrument,kind,source_file,rows_or_count,evidence
+i5,kite,NIFTY26N0923150CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10220034 expiry=2026-11-09 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923200CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10221058 expiry=2026-11-09 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923250CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10221826 expiry=2026-11-09 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923300CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10222338 expiry=2026-11-09 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923350CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10222850 expiry=2026-11-09 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923400CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10223362 expiry=2026-11-09 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923450CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10223874 expiry=2026-11-09 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923500CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10224386 expiry=2026-11-09 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923550CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10224898 expiry=2026-11-09 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923600CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10225410 expiry=2026-11-09 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923650CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10225922 expiry=2026-11-09 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923700CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10226434 expiry=2026-11-09 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923750CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10226946 expiry=2026-11-09 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923800CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10227458 expiry=2026-11-09 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923850CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10227970 expiry=2026-11-09 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923900CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10228738 expiry=2026-11-09 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923950CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10230018 expiry=2026-11-09 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924000CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10230530 expiry=2026-11-09 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924050CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10231042 expiry=2026-11-09 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924100CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10231554 expiry=2026-11-09 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924150CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10232066 expiry=2026-11-09 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924200CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10232578 expiry=2026-11-09 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924250CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10234114 expiry=2026-11-09 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924300CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10235394 expiry=2026-11-09 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924350CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10239234 expiry=2026-11-09 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924400CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10239746 expiry=2026-11-09 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924450CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10240258 expiry=2026-11-09 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924500CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10240770 expiry=2026-11-09 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924550CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10241282 expiry=2026-11-09 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924600CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10241794 expiry=2026-11-09 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924650CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=10242306 expiry=2026-11-09 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV22900CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16467202 expiry=2026-11-23 strike=22900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV22950CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16467714 expiry=2026-11-23 strike=22950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23000CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16469762 expiry=2026-11-23 strike=23000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23050CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16471554 expiry=2026-11-23 strike=23050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23100CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16472834 expiry=2026-11-23 strike=23100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23150CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16473346 expiry=2026-11-23 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23200CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16473858 expiry=2026-11-23 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23250CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16474370 expiry=2026-11-23 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23300CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16475394 expiry=2026-11-23 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23350CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16475906 expiry=2026-11-23 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23400CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16476418 expiry=2026-11-23 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23450CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16476930 expiry=2026-11-23 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23500CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16479490 expiry=2026-11-23 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23550CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16480002 expiry=2026-11-23 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23600CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16480514 expiry=2026-11-23 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23650CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16481026 expiry=2026-11-23 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23700CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16481538 expiry=2026-11-23 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23750CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16482562 expiry=2026-11-23 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23800CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16483074 expiry=2026-11-23 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23850CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16483586 expiry=2026-11-23 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23900CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16484098 expiry=2026-11-23 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23950CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16484610 expiry=2026-11-23 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24000CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16485634 expiry=2026-11-23 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24050CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16486146 expiry=2026-11-23 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24100CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16486658 expiry=2026-11-23 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24150CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16487170 expiry=2026-11-23 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24200CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16487682 expiry=2026-11-23 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24250CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16488194 expiry=2026-11-23 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24300CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16488706 expiry=2026-11-23 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24350CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16489218 expiry=2026-11-23 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24400CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16489730 expiry=2026-11-23 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24450CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16490242 expiry=2026-11-23 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24500CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16490754 expiry=2026-11-23 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24550CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16491266 expiry=2026-11-23 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24600CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16491778 expiry=2026-11-23 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24650CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16492290 expiry=2026-11-23 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24700CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16492802 expiry=2026-11-23 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24750CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16493314 expiry=2026-11-23 strike=24750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24800CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16493826 expiry=2026-11-23 strike=24800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24850CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16494850 expiry=2026-11-23 strike=24850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24900CE,LIVE_ONLY:CE,ticks/i5/ticks_20261104.db,token=16495362 expiry=2026-11-23 strike=24900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ADANIENT,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=6401 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,APOLLOHOSP,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=40193 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ASIANPAINT,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=60417 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BAJFINANCE,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=81153 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BEL,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=98049 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,HDFCLIFE,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=119553 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,CIPLA,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=177665 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,DRREDDY,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=225537 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,EICHERMOT,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=232961 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY FIN SERVICE,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=257801 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY BANK,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=260105 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,GRASIM,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=315393 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,HDFCBANK,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=341249 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,HINDALCO,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=348929 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,HINDUNILVR,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=356865 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,INFY,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=408065 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ITC,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=424961 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,KOTAKBANK,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=492033 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TRENT,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=502785 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,M&M,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=519937 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ONGC,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=633601 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,RELIANCE,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=738561 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,SBIN,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=779521 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,SUNPHARMA,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=857857 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TATACONSUM,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=878593 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TMPV,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=884737 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TATASTEEL,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=895745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TITAN,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=897537 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,WIPRO,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=969473 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,SHRIRAMFIN,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=1102337 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ICICIBANK,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=1270529 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ETERNAL,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=1304833 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,AXISBANK,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=1510401 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,HCLTECH,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=1850625 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTYBEES,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2707457 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BHARTIARTL,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2714625 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,MARUTI,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2815745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,INDIGO,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2865921 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,LT,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2939649 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ULTRACEMCO,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2952193 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TCS,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2953217 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NTPC,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=2977281 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,JSWSTEEL,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=3001089 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,TECHM,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=3465729 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,POWERGRID,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=3834113 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,ADANIPORTS,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=3861249 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BAJAJ-AUTO,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=4267265 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BAJAJFINSV,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=4268801 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NESTLEIND,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=4598529 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,JIOFIN,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=4644609 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,COALINDIA,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=5215745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,SBILIFE,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=5582849 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,MAXHEALTH,LIVE_ONLY:EQ,ticks/i5/ticks_20261104.db,token=5728513 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,BANKNIFTY26NOVFUT,LIVE_ONLY:FUT,ticks/i5/ticks_20261104.db,token=15735298 expiry=2026-11-23 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOVFUT,LIVE_ONLY:FUT,ticks/i5/ticks_20261104.db,token=15736578 expiry=2026-11-23 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26DECFUT,LIVE_ONLY:FUT,ticks/i5/ticks_20261104.db,token=15072002 expiry=2026-12-29 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY 50,LIVE_ONLY:INDEX,ticks/i5/ticks_20261104.db,token=256265 expiry=None strike=None,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,INDIA VIX,LIVE_ONLY:INDEX,ticks/i5/ticks_20261104.db,token=264969 expiry=None strike=None,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923150PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10220290 expiry=2026-11-09 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923200PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10221314 expiry=2026-11-09 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923250PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10222082 expiry=2026-11-09 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923300PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10222594 expiry=2026-11-09 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923350PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10223106 expiry=2026-11-09 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923400PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10223618 expiry=2026-11-09 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923450PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10224130 expiry=2026-11-09 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923500PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10224642 expiry=2026-11-09 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923550PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10225154 expiry=2026-11-09 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923600PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10225666 expiry=2026-11-09 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923650PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10226178 expiry=2026-11-09 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923700PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10226690 expiry=2026-11-09 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923750PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10227202 expiry=2026-11-09 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923800PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10227714 expiry=2026-11-09 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923850PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10228226 expiry=2026-11-09 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923900PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10228994 expiry=2026-11-09 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0923950PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10230274 expiry=2026-11-09 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924000PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10230786 expiry=2026-11-09 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924050PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10231298 expiry=2026-11-09 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924100PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10231810 expiry=2026-11-09 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924150PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10232322 expiry=2026-11-09 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924200PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10232834 expiry=2026-11-09 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924250PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10234882 expiry=2026-11-09 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924300PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10235650 expiry=2026-11-09 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924350PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10239490 expiry=2026-11-09 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924400PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10240002 expiry=2026-11-09 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924450PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10240514 expiry=2026-11-09 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924500PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10241026 expiry=2026-11-09 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924550PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10241538 expiry=2026-11-09 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924600PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10242050 expiry=2026-11-09 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26N0924650PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=10242562 expiry=2026-11-09 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV22900PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16467458 expiry=2026-11-23 strike=22900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV22950PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16469506 expiry=2026-11-23 strike=22950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23000PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16470274 expiry=2026-11-23 strike=23000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23050PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16472578 expiry=2026-11-23 strike=23050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23100PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16473090 expiry=2026-11-23 strike=23100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23150PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16473602 expiry=2026-11-23 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23200PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16474114 expiry=2026-11-23 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23250PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16475138 expiry=2026-11-23 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23300PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16475650 expiry=2026-11-23 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23350PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16476162 expiry=2026-11-23 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23400PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16476674 expiry=2026-11-23 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23450PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16479234 expiry=2026-11-23 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23500PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16479746 expiry=2026-11-23 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23550PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16480258 expiry=2026-11-23 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23600PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16480770 expiry=2026-11-23 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23650PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16481282 expiry=2026-11-23 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23700PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16482306 expiry=2026-11-23 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23750PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16482818 expiry=2026-11-23 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23800PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16483330 expiry=2026-11-23 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23850PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16483842 expiry=2026-11-23 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23900PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16484354 expiry=2026-11-23 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV23950PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16485378 expiry=2026-11-23 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24000PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16485890 expiry=2026-11-23 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24050PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16486402 expiry=2026-11-23 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24100PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16486914 expiry=2026-11-23 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24150PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16487426 expiry=2026-11-23 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24200PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16487938 expiry=2026-11-23 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24250PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16488450 expiry=2026-11-23 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24300PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16488962 expiry=2026-11-23 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24350PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16489474 expiry=2026-11-23 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24400PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16489986 expiry=2026-11-23 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24450PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16490498 expiry=2026-11-23 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24500PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16491010 expiry=2026-11-23 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24550PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16491522 expiry=2026-11-23 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24600PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16492034 expiry=2026-11-23 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24650PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16492546 expiry=2026-11-23 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24700PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16493058 expiry=2026-11-23 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24750PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16493570 expiry=2026-11-23 strike=24750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24800PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16494594 expiry=2026-11-23 strike=24800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24850PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16495106 expiry=2026-11-23 strike=24850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,kite,NIFTY26NOV24900PE,LIVE_ONLY:PE,ticks/i5/ticks_20261104.db,token=16495618 expiry=2026-11-23 strike=24900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23750-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39949 expiry=2026-11-09 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23750-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39950 expiry=2026-11-09 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23800-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39951 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23800-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39952 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23850-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39953 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23850-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39954 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23900-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39956 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23900-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39957 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23950-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39961 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23950-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39962 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24000-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39963 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24000-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39964 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24050-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39965 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24050-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39966 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24100-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39967 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24100-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39968 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24150-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39969 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24150-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39970 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24200-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39971 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24200-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39972 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24250-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39977 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24250-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39980 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24300-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39982 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24300-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39983 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24350-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=39997 expiry=2026-11-09 strike=24350.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24350-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=39998 expiry=2026-11-09 strike=24350.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23800-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64387 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23800-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64388 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23850-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64389 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23850-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64390 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23900-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64391 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23900-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64392 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23950-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64393 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-23950-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64396 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24000-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64397 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24000-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64398 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24050-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64399 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24050-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64400 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24100-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64401 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24100-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64402 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24150-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64403 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24150-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64404 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24200-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64405 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24200-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64406 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24250-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64407 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24250-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64408 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24300-CE,LIVE_ONLY:depth_d20_CE,depth/i5/depth_20261104.db,secid=64409 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-24300-PE,LIVE_ONLY:depth_d20_PE,depth/i5/depth_20261104.db,secid=64410 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,dhan,NIFTY-Nov2026-FUT,LIVE_ONLY:depth_d200_FUT,depth/i5/depth_20261104.db,secid=61471 expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,Nifty 50,LIVE_ONLY:feed_full_d30_INDEX,upstox_live/i5/upstox_20261104.db,key=NSE_INDEX|Nifty 50 expiry=None strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,India VIX,LIVE_ONLY:feed_full_d30_INDEX,upstox_live/i5/upstox_20261104.db,key=NSE_INDEX|India VIX expiry=None strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23800-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39951 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23800-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39952 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23850-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39953 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23850-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39954 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23900-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39956 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23900-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39957 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23950-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39961 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23950-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39962 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24000-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39963 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24000-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39964 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24050-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39965 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24050-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39966 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24100-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39967 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24100-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39968 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24150-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39969 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24150-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39970 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24200-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39971 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24200-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39972 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24250-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39977 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24250-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39980 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24300-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39982 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24300-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|39983 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-FUT,LIVE_ONLY:feed_full_d30_FUT,upstox_live/i5/upstox_20261104.db,key=NSE_FO|61471 expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23800-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64387 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23800-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64388 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23850-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64389 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23850-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64390 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23900-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64391 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23900-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64392 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23950-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64393 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-23950-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64396 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24000-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64397 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24000-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64398 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24050-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64399 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24050-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64400 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24100-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64401 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24100-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64402 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24150-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64403 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24150-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64404 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24200-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64405 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24200-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64406 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24250-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64407 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24250-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64408 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24300-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64409 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,NIFTY-Nov2026-24300-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/i5/upstox_20261104.db,key=NSE_FO|64410 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,fyers,NSE:NIFTY26NOVFUT,LIVE_ONLY:tbt_FUT,fyers_tbt/i5/tbt_20261104.db,expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,fyers,NSE:NIFTY26NOV23700PE,LIVE_ONLY:tbt_PE,fyers_tbt/i5/tbt_20261104.db,expiry=2026-11-23 strike=23700.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,fyers,NSE:NIFTY26NOV23750CE,LIVE_ONLY:tbt_CE,fyers_tbt/i5/tbt_20261104.db,expiry=2026-11-23 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,fyers,NSE:NIFTY26NOV23750PE,LIVE_ONLY:tbt_PE,fyers_tbt/i5/tbt_20261104.db,expiry=2026-11-23 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,fyers,NSE:NIFTY26NOV23800CE,LIVE_ONLY:tbt_CE,fyers_tbt/i5/tbt_20261104.db,expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i5,upstox,upstox/pullerfull_upstox_151026-0031.db,FILE:PULLER_HISTORY_DB,upstox/pullerfull_upstox_151026-0031.db,68529475584,find -size +20M -printf (metadata only) mtime 2026-11-03 12:33
+i5,fyers,fyers/pullerfull_fyers_151026-0030.db,FILE:PULLER_HISTORY_DB,fyers/pullerfull_fyers_151026-0030.db,28468727808,find -size +20M -printf (metadata only) mtime 2026-11-03 12:32
+i5,dhan,dhan/pullerfull_dhan_151026-0031.db,FILE:PULLER_HISTORY_DB,dhan/pullerfull_dhan_151026-0031.db,16143200256,find -size +20M -printf (metadata only) mtime 2026-10-23 09:49
+i5,none,_static_copies/nse_121026-1534.db,FILE:PULLER_HISTORY_DB,_static_copies/nse_121026-1534.db,9833893888,find -size +20M -printf (metadata only) mtime 2026-10-28 04:29
+i5,nse,nse/nse_121026-1534.db,FILE:PULLER_HISTORY_DB,nse/nse_121026-1534.db,9833893888,find -size +20M -printf (metadata only) mtime 2026-10-15 00:42
+i5,none,_static_copies/fyers_121026-1534.db,FILE:PULLER_HISTORY_DB,_static_copies/fyers_121026-1534.db,6047989760,find -size +20M -printf (metadata only) mtime 2026-10-28 03:48
+i5,fyers,fyers/fyers_121026-1534.db,FILE:PULLER_HISTORY_DB,fyers/fyers_121026-1534.db,6047989760,find -size +20M -printf (metadata only) mtime 2026-10-15 03:26
+i5,upstox,upstox/puller930_upstox_151026-0033.db,FILE:PULLER_HISTORY_DB,upstox/puller930_upstox_151026-0033.db,3596623872,find -size +20M -printf (metadata only) mtime 2026-10-22 23:33
+i5,none,_static_copies/dhan_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/dhan_121026-1533.db,2865065984,find -size +20M -printf (metadata only) mtime 2026-10-28 03:25
+i5,dhan,dhan/dhan_121026-1533.db,FILE:PULLER_HISTORY_DB,dhan/dhan_121026-1533.db,2865065984,find -size +20M -printf (metadata only) mtime 2026-10-14 16:51
+i5,none,_backup/141026-1514/dhan.db,FILE:OTHER_DB,_backup/141026-1514/dhan.db,2864992256,find -size +20M -printf (metadata only) mtime 2026-10-14 16:26
+i5,none,_cold_from_ssd/fyers/pullerfull_fyers_141026-1658.db,FILE:PULLER_HISTORY_DB,_cold_from_ssd/fyers/pullerfull_fyers_141026-1658.db,2480058368,find -size +20M -printf (metadata only) mtime 2026-11-01 18:05
+i5,none,_static_copies/pullerfull_fyers_141026-1658.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_fyers_141026-1658.db,2480058368,find -size +20M -printf (metadata only) mtime 2026-10-28 03:09
+i5,fyers,fyers/pullerfull_fyers_141026-1658.db,FILE:PULLER_HISTORY_DB,fyers/pullerfull_fyers_141026-1658.db,2480058368,find -size +20M -printf (metadata only) mtime 2026-10-15 00:03
+i5,none,_segsync/sealed/2026-10-28_dhan_dhan_121026-1533.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_dhan_dhan_121026-1533.delta0001.db,1894440960,find -size +20M -printf (metadata only) mtime 2026-10-28 05:52
+i5,upstox,upstox_live/i5/upstox_20261027.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261027.db,1692618752,find -size +20M -printf (metadata only) mtime 2026-10-27 15:34
+i5,upstox,upstox_live/i5/upstox_20261026.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261026.db,1686818816,find -size +20M -printf (metadata only) mtime 2026-10-26 15:34
+i5,upstox,upstox_live/i5/upstox_20261023.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261023.db,1656406016,find -size +20M -printf (metadata only) mtime 2026-10-26 09:01
+i5,none,_segsync/sealed/2026-10-28_fyers_pullerfull_fyers_141026-1658.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_fyers_pullerfull_fyers_141026-1658.delta0001.db,1648529408,find -size +20M -printf (metadata only) mtime 2026-10-28 06:24
+i5,kite,kite/pullerfull_kite_151026-0030.db,FILE:PULLER_HISTORY_DB,kite/pullerfull_kite_151026-0030.db,1627869184,find -size +20M -printf (metadata only) mtime 2026-11-04 11:33
+i5,upstox,upstox_live/i5/upstox_20261022.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261022.db,1606467584,find -size +20M -printf (metadata only) mtime 2026-10-23 09:00
+i5,upstox,upstox_live/i5/upstox_20261021.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261021.db,1598164992,find -size +20M -printf (metadata only) mtime 2026-10-22 09:00
+i5,none,_static_copies/upstox_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/upstox_121026-1533.db,1416859648,find -size +20M -printf (metadata only) mtime 2026-10-28 02:57
+i5,upstox,upstox/upstox_121026-1533.db,FILE:PULLER_HISTORY_DB,upstox/upstox_121026-1533.db,1416859648,find -size +20M -printf (metadata only) mtime 2026-10-14 16:54
+i5,upstox,upstox_live/i5/upstox_20261028.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261028.db,1409380352,find -size +20M -printf (metadata only) mtime 2026-10-29 09:03
+i5,upstox,upstox_live/i5/upstox_20261102.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261102.db,1402212352,find -size +20M -printf (metadata only) mtime 2026-11-02 15:34
+i5,none,_backup/141026-1514/upstox.db,FILE:OTHER_DB,_backup/141026-1514/upstox.db,1399238656,find -size +20M -printf (metadata only) mtime 2026-10-14 16:05
+i5,upstox,upstox_live/i5/upstox_20261019.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261019.db,1385787392,find -size +20M -printf (metadata only) mtime 2026-10-19 15:34
+i5,upstox,upstox_live/i5/upstox_20261016.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261016.db,1381060608,find -size +20M -printf (metadata only) mtime 2026-10-16 15:34
+i5,none,_static_copies/kite_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/kite_121026-1533.db,1374199808,find -size +20M -printf (metadata only) mtime 2026-10-28 02:46
+i5,kite,kite/kite_121026-1533.db,FILE:PULLER_HISTORY_DB,kite/kite_121026-1533.db,1374199808,find -size +20M -printf (metadata only) mtime 2026-10-14 16:23
+i5,upstox,upstox_live/i5/upstox_20261029.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261029.db,1357811712,find -size +20M -printf (metadata only) mtime 2026-10-30 09:00
+i5,upstox,upstox_live/i5/upstox_20261030.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261030.db,1295298560,find -size +20M -printf (metadata only) mtime 2026-10-30 15:33
+i5,dhan,depth/i5/depth_20261023.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261023.db,1287753728,find -size +20M -printf (metadata only) mtime 2026-10-23 15:34
+i5,kite,ticks/i5/ticks_20261019.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261019.db,1283563520,find -size +20M -printf (metadata only) mtime 2026-10-19 15:35
+i5,kite,ticks/i5/ticks_20261016.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261016.db,1251233792,find -size +20M -printf (metadata only) mtime 2026-10-16 15:35
+i5,kite,ticks/i5/ticks_20261015.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261015.db,1212837888,find -size +20M -printf (metadata only) mtime 2026-10-15 15:35
+i5,dhan,depth/i5/depth_20261022.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261022.db,1176948736,find -size +20M -printf (metadata only) mtime 2026-10-23 09:00
+i5,dhan,depth/i5/depth_20261021.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261021.db,1176096768,find -size +20M -printf (metadata only) mtime 2026-10-22 09:00
+i5,kite,ticks/i5/ticks_20261102.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261102.db,1141895168,find -size +20M -printf (metadata only) mtime 2026-11-02 15:35
+i5,dhan,depth/i5/depth_20261016.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261016.db,1140793344,find -size +20M -printf (metadata only) mtime 2026-10-16 15:35
+i5,upstox,upstox_live/i5/upstox_20261103.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261103.db,1121996800,find -size +20M -printf (metadata only) mtime 2026-11-03 15:33
+i5,dhan,depth/i5/depth_20261019.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261019.db,1119096832,find -size +20M -printf (metadata only) mtime 2026-10-19 15:34
+i5,kite,ticks/i5/ticks_20261028.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261028.db,1117777920,find -size +20M -printf (metadata only) mtime 2026-10-28 15:35
+i5,kite,ticks/i5/ticks_20261103.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261103.db,1114222592,find -size +20M -printf (metadata only) mtime 2026-11-03 15:34
+i5,none,_cold_from_ssd/dhan/pullerfull_dhan_141026-1658.db,FILE:PULLER_HISTORY_DB,_cold_from_ssd/dhan/pullerfull_dhan_141026-1658.db,1085706240,find -size +20M -printf (metadata only) mtime 2026-11-01 18:05
+i5,none,_static_copies/pullerfull_dhan_141026-1658.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_dhan_141026-1658.db,1085706240,find -size +20M -printf (metadata only) mtime 2026-10-28 02:37
+i5,dhan,dhan/pullerfull_dhan_141026-1658.db,FILE:PULLER_HISTORY_DB,dhan/pullerfull_dhan_141026-1658.db,1085706240,find -size +20M -printf (metadata only) mtime 2026-10-15 00:41
+i5,kite,ticks/i5/ticks_20261029.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261029.db,1075535872,find -size +20M -printf (metadata only) mtime 2026-10-29 15:35
+i5,kite,ticks/i5/ticks_20261030.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261030.db,1045999616,find -size +20M -printf (metadata only) mtime 2026-10-30 15:35
+i5,none,_segsync/sealed/2026-10-28_upstox_upstox_121026-1533.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_upstox_upstox_121026-1533.delta0001.db,964546560,find -size +20M -printf (metadata only) mtime 2026-10-28 06:30
+i5,none,_segsync/sealed/2026-10-28_kite_pullerfull_kite_151026-0030.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_kite_pullerfull_kite_151026-0030.delta0001.db,922472448,find -size +20M -printf (metadata only) mtime 2026-10-28 06:27
+i5,none,_segsync/sealed/2026-10-28_kite_kite_121026-1533.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_kite_kite_121026-1533.delta0001.db,904712192,find -size +20M -printf (metadata only) mtime 2026-10-28 06:25
+i5,none,_segsync/sealed/2026-10-28_dhan_pullerfull_dhan_141026-1658.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_dhan_pullerfull_dhan_141026-1658.delta0001.db,893722624,find -size +20M -printf (metadata only) mtime 2026-10-28 05:54
+i5,dhan,depth/i5/depth_20261028.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261028.db,877445120,find -size +20M -printf (metadata only) mtime 2026-10-29 09:04
+i5,fyers,fyers/puller930_fyers_151026-0032.db,FILE:PULLER_HISTORY_DB,fyers/puller930_fyers_151026-0032.db,868155392,find -size +20M -printf (metadata only) mtime 2026-10-23 16:27
+i5,kite,ticks/i5/ticks_20261026.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261026.db,846766080,find -size +20M -printf (metadata only) mtime 2026-10-26 15:34
+i5,dhan,depth/i5/depth_20261102.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261102.db,846069760,find -size +20M -printf (metadata only) mtime 2026-11-02 15:35
+i5,kite,ticks/i5/ticks_20261023.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261023.db,844992512,find -size +20M -printf (metadata only) mtime 2026-10-23 15:35
+i5,kite,ticks/i5/ticks_20261027.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261027.db,821067776,find -size +20M -printf (metadata only) mtime 2026-10-27 15:35
+i5,kite,ticks/i5/ticks_20261022.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261022.db,817426432,find -size +20M -printf (metadata only) mtime 2026-10-22 15:35
+i5,kite,ticks/i5/ticks_20261021.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261021.db,806420480,find -size +20M -printf (metadata only) mtime 2026-10-21 15:35
+i5,dhan,depth/i5/depth_20261030.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261030.db,782143488,find -size +20M -printf (metadata only) mtime 2026-10-30 15:35
+i5,none,_segsync/sealed/2026-10-28_fyers_puller930_fyers_151026-0032.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_fyers_puller930_fyers_151026-0032.delta0001.db,757428224,find -size +20M -printf (metadata only) mtime 2026-10-28 06:22
+i5,dhan,depth/i5/depth_20261027.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261027.db,744267776,find -size +20M -printf (metadata only) mtime 2026-10-27 15:34
+i5,none,_cold_from_ssd/upstox/pullerfull_upstox_141026-1657.db,FILE:PULLER_HISTORY_DB,_cold_from_ssd/upstox/pullerfull_upstox_141026-1657.db,706760704,find -size +20M -printf (metadata only) mtime 2026-11-01 18:06
+i5,none,_static_copies/pullerfull_upstox_141026-1657.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_upstox_141026-1657.db,706760704,find -size +20M -printf (metadata only) mtime 2026-10-28 02:31
+i5,upstox,upstox/pullerfull_upstox_141026-1657.db,FILE:PULLER_HISTORY_DB,upstox/pullerfull_upstox_141026-1657.db,706760704,find -size +20M -printf (metadata only) mtime 2026-10-15 00:29
+i5,dhan,depth/i5/depth_20261103.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261103.db,687292416,find -size +20M -printf (metadata only) mtime 2026-11-03 15:34
+i5,kite,ticks/i5/ticks_20261104.db,FILE:LIVE_RECORDER_DAYFILE,ticks/i5/ticks_20261104.db,663965696,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,upstox,upstox_live/i5/upstox_20261104.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/i5/upstox_20261104.db,640118784,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,none,_segsync/sealed/2026-10-28_upstox_pullerfull_upstox_141026-1657.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_upstox_pullerfull_upstox_141026-1657.delta0001.db,638349312,find -size +20M -printf (metadata only) mtime 2026-10-28 06:29
+i5,nse,nse/pullerfull_nse_151026-0032.db,FILE:PULLER_HISTORY_DB,nse/pullerfull_nse_151026-0032.db,633540608,find -size +20M -printf (metadata only) mtime 2026-11-04 10:37
+i5,nse,nse/puller930_nse_151026-0033.db,FILE:PULLER_HISTORY_DB,nse/puller930_nse_151026-0033.db,571080704,find -size +20M -printf (metadata only) mtime 2026-11-04 11:34
+i5,none,_state/discovery/discovery.db,FILE:OTHER_DB,_state/discovery/discovery.db,387555328,find -size +20M -printf (metadata only) mtime 2026-11-04 11:41
+i5,kite,kite/puller930_kite_151026-0032.db,FILE:PULLER_HISTORY_DB,kite/puller930_kite_151026-0032.db,381403136,find -size +20M -printf (metadata only) mtime 2026-11-04 11:33
+i5,none,_segsync/sealed/2026-10-28_nse_pullerfull_nse_151026-0032.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_nse_pullerfull_nse_151026-0032.delta0001.db,358559744,find -size +20M -printf (metadata only) mtime 2026-10-28 06:28
+i5,dhan,depth/i5/depth_20261104.db,FILE:LIVE_RECORDER_DAYFILE,depth/i5/depth_20261104.db,351178752,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,none,_segsync/sealed/2026-10-28_nse_puller930_nse_151026-0033.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_nse_puller930_nse_151026-0033.delta0001.db,335278080,find -size +20M -printf (metadata only) mtime 2026-10-28 06:27
+i5,none,_state/jobs_fullpuller.db,FILE:OTHER_DB,_state/jobs_fullpuller.db,311013376,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,none,_static_copies/pullerfull_kite_141026-1722.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_kite_141026-1722.db,289607680,find -size +20M -printf (metadata only) mtime 2026-10-28 02:27
+i5,kite,kite/pullerfull_kite_141026-1722.db,FILE:PULLER_HISTORY_DB,kite/pullerfull_kite_141026-1722.db,289607680,find -size +20M -printf (metadata only) mtime 2026-10-15 00:10
+i5,none,_cold_from_ssd/upstox/puller930_upstox_141026-1659.db,FILE:PULLER_HISTORY_DB,_cold_from_ssd/upstox/puller930_upstox_141026-1659.db,281780224,find -size +20M -printf (metadata only) mtime 2026-11-01 18:05
+i5,none,_static_copies/puller930_upstox_141026-1659.db,FILE:PULLER_HISTORY_DB,_static_copies/puller930_upstox_141026-1659.db,281780224,find -size +20M -printf (metadata only) mtime 2026-10-28 02:24
+i5,upstox,upstox/puller930_upstox_141026-1659.db,FILE:PULLER_HISTORY_DB,upstox/puller930_upstox_141026-1659.db,281780224,find -size +20M -printf (metadata only) mtime 2026-10-15 00:28
+i5,none,_segsync/sealed/2026-10-28_upstox_puller930_upstox_141026-1659.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_upstox_puller930_upstox_141026-1659.delta0001.db,270258176,find -size +20M -printf (metadata only) mtime 2026-10-28 06:28
+i5,fyers,fyers_tbt/i5/tbt_20261027.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261027.db,239771648,find -size +20M -printf (metadata only) mtime 2026-10-27 15:34
+i5,none,_research/exit_study/exit_study.db,FILE:OTHER_DB,_research/exit_study/exit_study.db,211566592,find -size +20M -printf (metadata only) mtime 2026-10-17 23:12
+i5,none,_segsync/sealed/2026-10-28_kite_pullerfull_kite_141026-1722.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_kite_pullerfull_kite_141026-1722.delta0001.db,201547776,find -size +20M -printf (metadata only) mtime 2026-10-28 06:26
+i5,none,_state/instruments.db,FILE:OTHER_DB,_state/instruments.db,187748352,find -size +20M -printf (metadata only) mtime 2026-11-04 11:39
+i5,fyers,fyers_tbt/i5/tbt_20261022.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261022.db,185913344,find -size +20M -printf (metadata only) mtime 2026-10-23 09:00
+i5,fyers,fyers_tbt/i5/tbt_20261028.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261028.db,185208832,find -size +20M -printf (metadata only) mtime 2026-10-29 09:05
+i5,fyers,fyers_tbt/i5/tbt_20261029.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261029.db,178360320,find -size +20M -printf (metadata only) mtime 2026-10-30 09:01
+i5,fyers,fyers_tbt/i5/tbt_20261102.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261102.db,173948928,find -size +20M -printf (metadata only) mtime 2026-11-02 15:32
+i5,fyers,fyers_tbt/i5/tbt_20261103.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261103.db,169463808,find -size +20M -printf (metadata only) mtime 2026-11-03 15:31
+i5,none,_research/weekly10y.db,FILE:OTHER_DB,_research/weekly10y.db,167665664,find -size +20M -printf (metadata only) mtime 2026-10-17 10:49
+i5,fyers,fyers_tbt/i5/tbt_20261030.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261030.db,166440960,find -size +20M -printf (metadata only) mtime 2026-10-30 15:34
+i5,fyers,fyers_tbt/i5/tbt_20261016.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261016.db,160350208,find -size +20M -printf (metadata only) mtime 2026-10-16 15:30
+i5,fyers,fyers_tbt/i5/tbt_20261023.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261023.db,138752000,find -size +20M -printf (metadata only) mtime 2026-10-26 09:01
+i5,none,_research/t0784_ev_181026.db,FILE:OTHER_DB,_research/t0784_ev_181026.db,116895744,find -size +20M -printf (metadata only) mtime 2026-10-18 13:09
+i5,none,_static_copies/puller930_nse_141026-1700.db,FILE:PULLER_HISTORY_DB,_static_copies/puller930_nse_141026-1700.db,113434624,find -size +20M -printf (metadata only) mtime 2026-10-28 02:21
+i5,nse,nse/puller930_nse_141026-1700.db,FILE:PULLER_HISTORY_DB,nse/puller930_nse_141026-1700.db,113434624,find -size +20M -printf (metadata only) mtime 2026-10-15 00:03
+i5,none,_segsync/sealed/2026-10-28_nse_puller930_nse_141026-1700.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_nse_puller930_nse_141026-1700.delta0001.db,108920832,find -size +20M -printf (metadata only) mtime 2026-10-28 06:27
+i5,nse,nse/pullerfull_nse_141026-1657.db,FILE:PULLER_HISTORY_DB,nse/pullerfull_nse_141026-1657.db,78712832,find -size +20M -printf (metadata only) mtime 2026-10-15 00:00
+i5,none,_segsync/sealed/2026-10-28_kite_puller930_kite_151026-0032.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_kite_puller930_kite_151026-0032.delta0001.db,76640256,find -size +20M -printf (metadata only) mtime 2026-10-28 06:26
+i5,none,_segsync/sealed/2026-10-28_nse_pullerfull_nse_141026-1657.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync/sealed/2026-10-28_nse_pullerfull_nse_141026-1657.delta0001.db,75706368,find -size +20M -printf (metadata only) mtime 2026-10-28 06:28
+i5,fyers,fyers_tbt/i5/tbt_20261104.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261104.db,72544256,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,none,_research/book_replay/extract_181026.db,FILE:OTHER_DB,_research/book_replay/extract_181026.db,71270400,find -size +20M -printf (metadata only) mtime 2026-10-18 15:50
+i5,fyers,fyers_tbt/i5/tbt_20261026.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/i5/tbt_20261026.db,59244544,find -size +20M -printf (metadata only) mtime 2026-10-26 15:33
+i5,none,_research/eod10y.db,FILE:OTHER_DB,_research/eod10y.db,56446976,find -size +20M -printf (metadata only) mtime 2026-10-17 20:24
+i5,none,_state/coverage/coverage.db,FILE:OTHER_DB,_state/coverage/coverage.db,44638208,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i5,dhan,dhan/baskets/dhanhq_history_master_fullpuller_A-Z_I5.db,FILE:PULLER_HISTORY_DB,dhan/baskets/dhanhq_history_master_fullpuller_A-Z_I5.db,43851776,find -size +20M -printf (metadata only) mtime 2026-10-26 12:29
+i5,none,_state/expired/progress.db,FILE:OTHER_DB,_state/expired/progress.db,39997440,find -size +20M -printf (metadata only) mtime 2026-11-04 11:45
+i5,none,_baskets_251025/dhanhq_history_master_fullpuller_A-Z_I5.db,FILE:OTHER_DB,_baskets_251025/dhanhq_history_master_fullpuller_A-Z_I5.db,38023168,find -size +20M -printf (metadata only) mtime 2026-10-26 22:24
+i5,none,_backup/141026-1514/yahoo.db,FILE:OTHER_DB,_backup/141026-1514/yahoo.db,34930688,find -size +20M -printf (metadata only) mtime 2026-10-14 15:47
+i5,yahoo,yahoo/yahoo_121026-1533.db,FILE:PULLER_HISTORY_DB,yahoo/yahoo_121026-1533.db,34930688,find -size +20M -printf (metadata only) mtime 2026-10-14 15:46
+i5,upstox,upstox/baskets/upstoxplus_history_master_fullpuller_A-Z_I5.db,FILE:PULLER_HISTORY_DB,upstox/baskets/upstoxplus_history_master_fullpuller_A-Z_I5.db,31064064,find -size +20M -printf (metadata only) mtime 2026-10-26 12:31
+i5,fyers,fyers/baskets/fyersprime_history_master_fullpuller_A-Z_I5.db,FILE:PULLER_HISTORY_DB,fyers/baskets/fyersprime_history_master_fullpuller_A-Z_I5.db,29888512,find -size +20M -printf (metadata only) mtime 2026-10-26 12:32
+i5,none,_baskets_251025/upstoxplus_history_master_fullpuller_A-Z_I5.db,FILE:OTHER_DB,_baskets_251025/upstoxplus_history_master_fullpuller_A-Z_I5.db,27172864,find -size +20M -printf (metadata only) mtime 2026-10-26 22:07
+i5,none,_baskets_251025/fyersprime_history_master_fullpuller_A-Z_I5.db,FILE:OTHER_DB,_baskets_251025/fyersprime_history_master_fullpuller_A-Z_I5.db,27119616,find -size +20M -printf (metadata only) mtime 2026-10-26 21:56
+i5,none,_research/reverse_study/reverse_extra.db,FILE:OTHER_DB,_research/reverse_study/reverse_extra.db,26488832,find -size +20M -printf (metadata only) mtime 2026-10-18 00:03
+i5,kite,kite/baskets/kiteconnect_history_master_fullpuller_A-Z_I5.db,FILE:PULLER_HISTORY_DB,kite/baskets/kiteconnect_history_master_fullpuller_A-Z_I5.db,25309184,find -size +20M -printf (metadata only) mtime 2026-10-26 12:29
+i5,none,_baskets_251025/kiteconnect_history_master_fullpuller_A-Z_I5.db,FILE:OTHER_DB,_baskets_251025/kiteconnect_history_master_fullpuller_A-Z_I5.db,21729280,find -size +20M -printf (metadata only) mtime 2026-10-26 22:18
+i7,kite,NIFTY26N0923200CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10221058 expiry=2026-11-09 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923250CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10221826 expiry=2026-11-09 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923300CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10222338 expiry=2026-11-09 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923350CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10222850 expiry=2026-11-09 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923400CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10223362 expiry=2026-11-09 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923450CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10223874 expiry=2026-11-09 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923500CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10224386 expiry=2026-11-09 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923550CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10224898 expiry=2026-11-09 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923600CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10225410 expiry=2026-11-09 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923650CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10225922 expiry=2026-11-09 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923700CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10226434 expiry=2026-11-09 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923750CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10226946 expiry=2026-11-09 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923800CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10227458 expiry=2026-11-09 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923850CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10227970 expiry=2026-11-09 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923900CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10228738 expiry=2026-11-09 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923950CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10230018 expiry=2026-11-09 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924000CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10230530 expiry=2026-11-09 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924050CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10231042 expiry=2026-11-09 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924100CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10231554 expiry=2026-11-09 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924150CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10232066 expiry=2026-11-09 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924200CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10232578 expiry=2026-11-09 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924250CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10234114 expiry=2026-11-09 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924300CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10235394 expiry=2026-11-09 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924350CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10239234 expiry=2026-11-09 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924400CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10239746 expiry=2026-11-09 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924450CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10240258 expiry=2026-11-09 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924500CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10240770 expiry=2026-11-09 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924550CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10241282 expiry=2026-11-09 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924600CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10241794 expiry=2026-11-09 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924650CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10242306 expiry=2026-11-09 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924700CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=10242818 expiry=2026-11-09 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV22950CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16467714 expiry=2026-11-23 strike=22950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23000CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16469762 expiry=2026-11-23 strike=23000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23050CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16471554 expiry=2026-11-23 strike=23050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23100CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16472834 expiry=2026-11-23 strike=23100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23150CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16473346 expiry=2026-11-23 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23200CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16473858 expiry=2026-11-23 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23250CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16474370 expiry=2026-11-23 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23300CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16475394 expiry=2026-11-23 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23350CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16475906 expiry=2026-11-23 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23400CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16476418 expiry=2026-11-23 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23450CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16476930 expiry=2026-11-23 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23500CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16479490 expiry=2026-11-23 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23550CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16480002 expiry=2026-11-23 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23600CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16480514 expiry=2026-11-23 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23650CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16481026 expiry=2026-11-23 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23700CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16481538 expiry=2026-11-23 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23750CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16482562 expiry=2026-11-23 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23800CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16483074 expiry=2026-11-23 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23850CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16483586 expiry=2026-11-23 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23900CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16484098 expiry=2026-11-23 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23950CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16484610 expiry=2026-11-23 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24000CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16485634 expiry=2026-11-23 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24050CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16486146 expiry=2026-11-23 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24100CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16486658 expiry=2026-11-23 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24150CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16487170 expiry=2026-11-23 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24200CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16487682 expiry=2026-11-23 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24250CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16488194 expiry=2026-11-23 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24300CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16488706 expiry=2026-11-23 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24350CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16489218 expiry=2026-11-23 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24400CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16489730 expiry=2026-11-23 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24450CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16490242 expiry=2026-11-23 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24500CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16490754 expiry=2026-11-23 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24550CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16491266 expiry=2026-11-23 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24600CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16491778 expiry=2026-11-23 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24650CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16492290 expiry=2026-11-23 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24700CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16492802 expiry=2026-11-23 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24750CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16493314 expiry=2026-11-23 strike=24750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24800CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16493826 expiry=2026-11-23 strike=24800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24850CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16494850 expiry=2026-11-23 strike=24850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24900CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16495362 expiry=2026-11-23 strike=24900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24950CE,LIVE_ONLY:CE,ticks/j1800/ticks_20261104.db,token=16495874 expiry=2026-11-23 strike=24950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ADANIENT,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=6401 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,APOLLOHOSP,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=40193 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ASIANPAINT,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=60417 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BAJFINANCE,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=81153 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BEL,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=98049 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,HDFCLIFE,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=119553 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,CIPLA,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=177665 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,DRREDDY,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=225537 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,EICHERMOT,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=232961 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY FIN SERVICE,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=257801 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY BANK,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=260105 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,GRASIM,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=315393 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,HDFCBANK,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=341249 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,HINDALCO,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=348929 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,HINDUNILVR,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=356865 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,INFY,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=408065 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ITC,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=424961 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,KOTAKBANK,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=492033 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TRENT,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=502785 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,M&M,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=519937 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ONGC,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=633601 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,RELIANCE,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=738561 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,SBIN,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=779521 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,SUNPHARMA,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=857857 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TATACONSUM,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=878593 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TMPV,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=884737 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TATASTEEL,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=895745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TITAN,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=897537 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,WIPRO,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=969473 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,SHRIRAMFIN,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=1102337 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ICICIBANK,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=1270529 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ETERNAL,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=1304833 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,AXISBANK,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=1510401 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,HCLTECH,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=1850625 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTYBEES,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2707457 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BHARTIARTL,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2714625 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,MARUTI,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2815745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,INDIGO,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2865921 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,LT,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2939649 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ULTRACEMCO,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2952193 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TCS,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2953217 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NTPC,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=2977281 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,JSWSTEEL,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=3001089 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,TECHM,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=3465729 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,POWERGRID,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=3834113 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,ADANIPORTS,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=3861249 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BAJAJ-AUTO,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=4267265 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BAJAJFINSV,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=4268801 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NESTLEIND,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=4598529 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,JIOFIN,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=4644609 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,COALINDIA,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=5215745 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,SBILIFE,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=5582849 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,MAXHEALTH,LIVE_ONLY:EQ,ticks/j1800/ticks_20261104.db,token=5728513 expiry= strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,BANKNIFTY26NOVFUT,LIVE_ONLY:FUT,ticks/j1800/ticks_20261104.db,token=15735298 expiry=2026-11-23 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOVFUT,LIVE_ONLY:FUT,ticks/j1800/ticks_20261104.db,token=15736578 expiry=2026-11-23 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26DECFUT,LIVE_ONLY:FUT,ticks/j1800/ticks_20261104.db,token=15072002 expiry=2026-12-29 strike=0.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY 50,LIVE_ONLY:INDEX,ticks/j1800/ticks_20261104.db,token=256265 expiry=None strike=None,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,INDIA VIX,LIVE_ONLY:INDEX,ticks/j1800/ticks_20261104.db,token=264969 expiry=None strike=None,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923200PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10221314 expiry=2026-11-09 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923250PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10222082 expiry=2026-11-09 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923300PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10222594 expiry=2026-11-09 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923350PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10223106 expiry=2026-11-09 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923400PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10223618 expiry=2026-11-09 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923450PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10224130 expiry=2026-11-09 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923500PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10224642 expiry=2026-11-09 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923550PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10225154 expiry=2026-11-09 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923600PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10225666 expiry=2026-11-09 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923650PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10226178 expiry=2026-11-09 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923700PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10226690 expiry=2026-11-09 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923750PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10227202 expiry=2026-11-09 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923800PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10227714 expiry=2026-11-09 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923850PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10228226 expiry=2026-11-09 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923900PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10228994 expiry=2026-11-09 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0923950PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10230274 expiry=2026-11-09 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924000PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10230786 expiry=2026-11-09 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924050PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10231298 expiry=2026-11-09 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924100PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10231810 expiry=2026-11-09 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924150PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10232322 expiry=2026-11-09 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924200PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10232834 expiry=2026-11-09 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924250PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10234882 expiry=2026-11-09 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924300PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10235650 expiry=2026-11-09 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924350PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10239490 expiry=2026-11-09 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924400PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10240002 expiry=2026-11-09 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924450PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10240514 expiry=2026-11-09 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924500PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10241026 expiry=2026-11-09 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924550PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10241538 expiry=2026-11-09 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924600PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10242050 expiry=2026-11-09 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924650PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10242562 expiry=2026-11-09 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26N0924700PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=10243074 expiry=2026-11-09 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV22950PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16469506 expiry=2026-11-23 strike=22950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23000PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16470274 expiry=2026-11-23 strike=23000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23050PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16472578 expiry=2026-11-23 strike=23050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23100PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16473090 expiry=2026-11-23 strike=23100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23150PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16473602 expiry=2026-11-23 strike=23150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23200PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16474114 expiry=2026-11-23 strike=23200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23250PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16475138 expiry=2026-11-23 strike=23250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23300PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16475650 expiry=2026-11-23 strike=23300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23350PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16476162 expiry=2026-11-23 strike=23350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23400PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16476674 expiry=2026-11-23 strike=23400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23450PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16479234 expiry=2026-11-23 strike=23450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23500PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16479746 expiry=2026-11-23 strike=23500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23550PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16480258 expiry=2026-11-23 strike=23550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23600PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16480770 expiry=2026-11-23 strike=23600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23650PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16481282 expiry=2026-11-23 strike=23650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23700PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16482306 expiry=2026-11-23 strike=23700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23750PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16482818 expiry=2026-11-23 strike=23750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23800PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16483330 expiry=2026-11-23 strike=23800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23850PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16483842 expiry=2026-11-23 strike=23850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23900PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16484354 expiry=2026-11-23 strike=23900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV23950PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16485378 expiry=2026-11-23 strike=23950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24000PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16485890 expiry=2026-11-23 strike=24000.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24050PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16486402 expiry=2026-11-23 strike=24050.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24100PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16486914 expiry=2026-11-23 strike=24100.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24150PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16487426 expiry=2026-11-23 strike=24150.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24200PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16487938 expiry=2026-11-23 strike=24200.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24250PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16488450 expiry=2026-11-23 strike=24250.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24300PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16488962 expiry=2026-11-23 strike=24300.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24350PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16489474 expiry=2026-11-23 strike=24350.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24400PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16489986 expiry=2026-11-23 strike=24400.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24450PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16490498 expiry=2026-11-23 strike=24450.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24500PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16491010 expiry=2026-11-23 strike=24500.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24550PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16491522 expiry=2026-11-23 strike=24550.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24600PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16492034 expiry=2026-11-23 strike=24600.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24650PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16492546 expiry=2026-11-23 strike=24650.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24700PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16493058 expiry=2026-11-23 strike=24700.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24750PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16493570 expiry=2026-11-23 strike=24750.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24800PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16494594 expiry=2026-11-23 strike=24800.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24850PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16495106 expiry=2026-11-23 strike=24850.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24900PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16495618 expiry=2026-11-23 strike=24900.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,kite,NIFTY26NOV24950PE,LIVE_ONLY:PE,ticks/j1800/ticks_20261104.db,token=16496130 expiry=2026-11-23 strike=24950.0,SELECT instruments_today (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23700-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39947 expiry=2026-11-09 strike=23700.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23700-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39948 expiry=2026-11-09 strike=23700.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23750-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39949 expiry=2026-11-09 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23750-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39950 expiry=2026-11-09 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23800-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39951 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23800-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39952 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23850-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39953 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23850-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39954 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23900-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39956 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23900-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39957 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23950-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39961 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23950-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39962 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24000-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39963 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24000-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39964 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24050-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39965 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24050-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39966 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24100-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39967 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24100-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39968 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24150-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39969 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24150-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39970 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24200-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39971 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24200-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39972 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24250-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39977 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24250-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39980 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24300-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=39982 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24300-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=39983 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23750-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64385 expiry=2026-11-23 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23750-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64386 expiry=2026-11-23 strike=23750.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23800-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64387 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23800-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64388 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23850-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64389 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23850-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64390 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23900-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64391 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23900-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64392 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23950-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64393 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-23950-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64396 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24000-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64397 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24000-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64398 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24050-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64399 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24050-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64400 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24100-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64401 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24100-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64402 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24150-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64403 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24150-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64404 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24200-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64405 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24200-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64406 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24250-CE,LIVE_ONLY:depth_d20_CE,depth/j1800/depth_20261104.db,secid=64407 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-24250-PE,LIVE_ONLY:depth_d20_PE,depth/j1800/depth_20261104.db,secid=64408 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,dhan,NIFTY-Nov2026-FUT,LIVE_ONLY:depth_d200_FUT,depth/j1800/depth_20261104.db,secid=61471 expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,Nifty 50,LIVE_ONLY:feed_full_d30_INDEX,upstox_live/j1800/upstox_20261104.db,key=NSE_INDEX|Nifty 50 expiry=None strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,India VIX,LIVE_ONLY:feed_full_d30_INDEX,upstox_live/j1800/upstox_20261104.db,key=NSE_INDEX|India VIX expiry=None strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23800-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39951 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23800-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39952 expiry=2026-11-09 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23850-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39953 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23850-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39954 expiry=2026-11-09 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23900-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39956 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23900-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39957 expiry=2026-11-09 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23950-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39961 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23950-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39962 expiry=2026-11-09 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24000-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39963 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24000-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39964 expiry=2026-11-09 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24050-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39965 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24050-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39966 expiry=2026-11-09 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24100-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39967 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24100-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39968 expiry=2026-11-09 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24150-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39969 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24150-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39970 expiry=2026-11-09 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24200-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39971 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24200-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39972 expiry=2026-11-09 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24250-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39977 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24250-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39980 expiry=2026-11-09 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24300-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39982 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24300-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|39983 expiry=2026-11-09 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-FUT,LIVE_ONLY:feed_full_d30_FUT,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|61471 expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23800-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64387 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23800-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64388 expiry=2026-11-23 strike=23800.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23850-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64389 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23850-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64390 expiry=2026-11-23 strike=23850.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23900-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64391 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23900-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64392 expiry=2026-11-23 strike=23900.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23950-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64393 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-23950-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64396 expiry=2026-11-23 strike=23950.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24000-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64397 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24000-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64398 expiry=2026-11-23 strike=24000.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24050-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64399 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24050-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64400 expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24100-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64401 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24100-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64402 expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24150-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64403 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24150-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64404 expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24200-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64405 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24200-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64406 expiry=2026-11-23 strike=24200.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24250-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64407 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24250-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64408 expiry=2026-11-23 strike=24250.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24300-CE,LIVE_ONLY:feed_full_d30_CE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64409 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,NIFTY-Nov2026-24300-PE,LIVE_ONLY:feed_full_d30_PE,upstox_live/j1800/upstox_20261104.db,key=NSE_FO|64410 expiry=2026-11-23 strike=24300.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,fyers,NSE:NIFTY26NOVFUT,LIVE_ONLY:tbt_FUT,fyers_tbt/j1800/tbt_20261104.db,expiry=2026-11-23 strike=None,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,fyers,NSE:NIFTY26NOV24050PE,LIVE_ONLY:tbt_PE,fyers_tbt/j1800/tbt_20261104.db,expiry=2026-11-23 strike=24050.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,fyers,NSE:NIFTY26NOV24100CE,LIVE_ONLY:tbt_CE,fyers_tbt/j1800/tbt_20261104.db,expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,fyers,NSE:NIFTY26NOV24100PE,LIVE_ONLY:tbt_PE,fyers_tbt/j1800/tbt_20261104.db,expiry=2026-11-23 strike=24100.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,fyers,NSE:NIFTY26NOV24150CE,LIVE_ONLY:tbt_CE,fyers_tbt/j1800/tbt_20261104.db,expiry=2026-11-23 strike=24150.0,SELECT instruments (mode=ro) 04-11-2026; status.json
+i7,upstox,upstox/pullerfull_upstox_151026-0041.db,FILE:PULLER_HISTORY_DB,upstox/pullerfull_upstox_151026-0041.db,84290527232,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,fyers,fyers/pullerfull_fyers_151026-0040.db,FILE:PULLER_HISTORY_DB,fyers/pullerfull_fyers_151026-0040.db,33705910272,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,dhan,dhan/pullerfull_dhan_151026-0040.db,FILE:PULLER_HISTORY_DB,dhan/pullerfull_dhan_151026-0040.db,15767040000,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,none,_static_copies/nse_121026-1534.db,FILE:PULLER_HISTORY_DB,_static_copies/nse_121026-1534.db,9833893888,find -size +20M -printf (metadata only) mtime 2026-10-28 04:55
+i7,upstox,upstox/puller930_upstox_151026-0053.db,FILE:PULLER_HISTORY_DB,upstox/puller930_upstox_151026-0053.db,7666216960,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,kite,kite/pullerfull_kite_151026-0040.db,FILE:PULLER_HISTORY_DB,kite/pullerfull_kite_151026-0040.db,7307227136,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,none,_static_copies/fyers_121026-1534.db,FILE:PULLER_HISTORY_DB,_static_copies/fyers_121026-1534.db,6047989760,find -size +20M -printf (metadata only) mtime 2026-10-28 04:04
+i7,nse,nse/pullerfull_nse_151026-0053.db,FILE:PULLER_HISTORY_DB,nse/pullerfull_nse_151026-0053.db,3553996800,find -size +20M -printf (metadata only) mtime 2026-11-04 11:32
+i7,none,_static_copies/dhan_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/dhan_121026-1533.db,2865065984,find -size +20M -printf (metadata only) mtime 2026-10-28 03:32
+i7,none,_static_copies/pullerfull_fyers_141026-1658.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_fyers_141026-1658.db,2480058368,find -size +20M -printf (metadata only) mtime 2026-10-28 03:16
+i7,upstox,upstox/upstox_141026-1043.db,FILE:PULLER_HISTORY_DB,upstox/upstox_141026-1043.db,1981169664,find -size +20M -printf (metadata only) mtime 2026-10-15 00:58
+i7,none,_segsync_in/i5/2026-10-28_dhan_dhan_121026-1533.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_dhan_dhan_121026-1533.delta0001.db,1894440960,find -size +20M -printf (metadata only) mtime 2026-10-28 06:35
+i7,upstox,upstox_live/j1800/upstox_20261027.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261027.db,1722441728,find -size +20M -printf (metadata only) mtime 2026-10-27 15:34
+i7,upstox,upstox_live/j1800/upstox_20261026.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261026.db,1681473536,find -size +20M -printf (metadata only) mtime 2026-10-26 15:34
+i7,fyers,fyers/fyers_141026-0143.db,FILE:PULLER_HISTORY_DB,fyers/fyers_141026-0143.db,1668268032,find -size +20M -printf (metadata only) mtime 2026-10-14 16:35
+i7,upstox,upstox_live/j1800/upstox_20261023.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261023.db,1650122752,find -size +20M -printf (metadata only) mtime 2026-10-23 15:35
+i7,none,_segsync_in/i5/2026-10-28_fyers_pullerfull_fyers_141026-1658.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_fyers_pullerfull_fyers_141026-1658.delta0001.db,1648529408,find -size +20M -printf (metadata only) mtime 2026-10-28 09:12
+i7,upstox,upstox_live/j1800/upstox_20261022.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261022.db,1612615680,find -size +20M -printf (metadata only) mtime 2026-10-23 09:01
+i7,upstox,upstox_live/j1800/upstox_20261021.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261021.db,1577979904,find -size +20M -printf (metadata only) mtime 2026-10-22 09:00
+i7,fyers,fyers/puller930_fyers_151026-0053.db,FILE:PULLER_HISTORY_DB,fyers/puller930_fyers_151026-0053.db,1461108736,find -size +20M -printf (metadata only) mtime 2026-11-04 11:23
+i7,none,_static_copies/upstox_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/upstox_121026-1533.db,1416859648,find -size +20M -printf (metadata only) mtime 2026-10-28 03:01
+i7,upstox,upstox_live/j1800/upstox_20261028.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261028.db,1402511360,find -size +20M -printf (metadata only) mtime 2026-10-29 09:00
+i7,none,_static_copies/kite_121026-1533.db,FILE:PULLER_HISTORY_DB,_static_copies/kite_121026-1533.db,1374199808,find -size +20M -printf (metadata only) mtime 2026-10-28 02:50
+i7,upstox,upstox_live/j1800/upstox_20261029.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261029.db,1373069312,find -size +20M -printf (metadata only) mtime 2026-10-30 09:00
+i7,upstox,upstox_live/j1800/upstox_20261030.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261030.db,1289293824,find -size +20M -printf (metadata only) mtime 2026-10-30 15:35
+i7,dhan,depth/j1800/depth_20261023.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261023.db,1279074304,find -size +20M -printf (metadata only) mtime 2026-10-23 15:34
+i7,kite,ticks/j1800/ticks_20261016.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261016.db,1250340864,find -size +20M -printf (metadata only) mtime 2026-10-16 15:35
+i7,kite,ticks/j1800/ticks_20261015.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261015.db,1209741312,find -size +20M -printf (metadata only) mtime 2026-10-15 15:34
+i7,upstox,upstox/pullerfull_upstox_141026-1644.db,FILE:PULLER_HISTORY_DB,upstox/pullerfull_upstox_141026-1644.db,1196765184,find -size +20M -printf (metadata only) mtime 2026-10-15 00:52
+i7,upstox,upstox_live/j1800/upstox_20261103.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261103.db,1175420928,find -size +20M -printf (metadata only) mtime 2026-11-03 15:34
+i7,dhan,depth/j1800/depth_20261021.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261021.db,1171922944,find -size +20M -printf (metadata only) mtime 2026-10-22 09:01
+i7,dhan,depth/j1800/depth_20261022.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261022.db,1167818752,find -size +20M -printf (metadata only) mtime 2026-10-23 09:01
+i7,kite,ticks/j1800/ticks_20261028.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261028.db,1114136576,find -size +20M -printf (metadata only) mtime 2026-10-28 15:35
+i7,kite,ticks/j1800/ticks_20261103.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261103.db,1102602240,find -size +20M -printf (metadata only) mtime 2026-11-03 15:34
+i7,none,_static_copies/pullerfull_dhan_141026-1658.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_dhan_141026-1658.db,1085706240,find -size +20M -printf (metadata only) mtime 2026-10-28 02:41
+i7,kite,ticks/j1800/ticks_20261029.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261029.db,1085382656,find -size +20M -printf (metadata only) mtime 2026-10-29 15:35
+i7,upstox,upstox_live/j1800/upstox_20261102.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261102.db,1055260672,find -size +20M -printf (metadata only) mtime 2026-11-02 13:57
+i7,kite,ticks/j1800/ticks_20261030.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261030.db,1048162304,find -size +20M -printf (metadata only) mtime 2026-10-30 15:35
+i7,fyers,fyers/pullerfull_fyers_141026-1644.db,FILE:PULLER_HISTORY_DB,fyers/pullerfull_fyers_141026-1644.db,992505856,find -size +20M -printf (metadata only) mtime 2026-10-15 00:44
+i7,none,_segsync_in/i5/2026-10-28_kite_pullerfull_kite_151026-0030.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_kite_pullerfull_kite_151026-0030.delta0001.db,922472448,find -size +20M -printf (metadata only) mtime 2026-10-28 11:58
+i7,none,_segsync_in/i5/2026-10-28_kite_kite_121026-1533.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_kite_kite_121026-1533.delta0001.db,904712192,find -size +20M -printf (metadata only) mtime 2026-10-28 11:25
+i7,dhan,depth/j1800/depth_20261029.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261029.db,896163840,find -size +20M -printf (metadata only) mtime 2026-10-30 09:00
+i7,none,_segsync_in/i5/2026-10-28_dhan_pullerfull_dhan_141026-1658.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_dhan_pullerfull_dhan_141026-1658.delta0001.db,893722624,find -size +20M -printf (metadata only) mtime 2026-10-28 08:01
+i7,dhan,depth/j1800/depth_20261028.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261028.db,876158976,find -size +20M -printf (metadata only) mtime 2026-10-29 09:01
+i7,kite,ticks/j1800/ticks_20261102.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261102.db,851656704,find -size +20M -printf (metadata only) mtime 2026-11-02 13:57
+i7,kite,ticks/j1800/ticks_20261023.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261023.db,846733312,find -size +20M -printf (metadata only) mtime 2026-10-23 15:35
+i7,kite,ticks/j1800/ticks_20261026.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261026.db,844496896,find -size +20M -printf (metadata only) mtime 2026-10-26 15:34
+i7,kite,ticks/j1800/ticks_20261027.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261027.db,840826880,find -size +20M -printf (metadata only) mtime 2026-10-27 15:35
+i7,kite,ticks/j1800/ticks_20261022.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261022.db,816623616,find -size +20M -printf (metadata only) mtime 2026-10-22 15:34
+i7,dhan,depth/j1800/depth_20261103.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261103.db,808673280,find -size +20M -printf (metadata only) mtime 2026-11-03 15:34
+i7,kite,ticks/j1800/ticks_20261021.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261021.db,796495872,find -size +20M -printf (metadata only) mtime 2026-10-21 15:35
+i7,dhan,depth/j1800/depth_20261030.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261030.db,785637376,find -size +20M -printf (metadata only) mtime 2026-10-30 15:34
+i7,none,_segsync_in/i5/2026-10-28_fyers_puller930_fyers_151026-0032.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_fyers_puller930_fyers_151026-0032.delta0001.db,757428224,find -size +20M -printf (metadata only) mtime 2026-10-28 09:00
+i7,dhan,dhan/dhan_141026-1043.db,FILE:PULLER_HISTORY_DB,dhan/dhan_141026-1043.db,756506624,find -size +20M -printf (metadata only) mtime 2026-10-28 12:19
+i7,dhan,depth/j1800/depth_20261027.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261027.db,742903808,find -size +20M -printf (metadata only) mtime 2026-10-27 15:33
+i7,none,_static_copies/pullerfull_upstox_141026-1657.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_upstox_141026-1657.db,706760704,find -size +20M -printf (metadata only) mtime 2026-10-28 02:33
+i7,kite,ticks/j1800/ticks_20261104.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261104.db,662151168,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,dhan,depth/j1800/depth_20261102.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261102.db,645574656,find -size +20M -printf (metadata only) mtime 2026-11-02 13:58
+i7,upstox,upstox_live/j1800/upstox_20261104.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261104.db,642105344,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,dhan,dhan/pullerfull_dhan_141026-1644.db,FILE:PULLER_HISTORY_DB,dhan/pullerfull_dhan_141026-1644.db,627355648,find -size +20M -printf (metadata only) mtime 2026-10-15 00:41
+i7,nse,nse/puller930_nse_151026-0053.db,FILE:PULLER_HISTORY_DB,nse/puller930_nse_151026-0053.db,572555264,find -size +20M -printf (metadata only) mtime 2026-11-04 11:39
+i7,none,_state/premium_trial/premium_trial.db,FILE:OTHER_DB,_state/premium_trial/premium_trial.db,556969984,find -size +20M -printf (metadata only) mtime 2026-10-25 19:41
+i7,upstox,upstox/puller930_upstox_141026-1645.db,FILE:PULLER_HISTORY_DB,upstox/puller930_upstox_141026-1645.db,502329344,find -size +20M -printf (metadata only) mtime 2026-10-15 00:53
+i7,kite,kite/puller930_kite_141026-1646.db,FILE:PULLER_HISTORY_DB,kite/puller930_kite_141026-1646.db,442957824,find -size +20M -printf (metadata only) mtime 2026-10-15 00:51
+i7,none,_state/discovery/discovery.db,FILE:OTHER_DB,_state/discovery/discovery.db,400908288,find -size +20M -printf (metadata only) mtime 2026-11-04 11:36
+i7,dhan,dhan/puller930_dhan_151026-0053.db,FILE:PULLER_HISTORY_DB,dhan/puller930_dhan_151026-0053.db,374534144,find -size +20M -printf (metadata only) mtime 2026-11-04 11:24
+i7,dhan,depth/j1800/depth_20261104.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261104.db,346603520,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,kite,kite/kite_141026-1042.db,FILE:PULLER_HISTORY_DB,kite/kite_141026-1042.db,317652992,find -size +20M -printf (metadata only) mtime 2026-10-14 16:33
+i7,none,_static_copies/pullerfull_kite_141026-1722.db,FILE:PULLER_HISTORY_DB,_static_copies/pullerfull_kite_141026-1722.db,289607680,find -size +20M -printf (metadata only) mtime 2026-10-28 02:28
+i7,none,_static_copies/puller930_upstox_141026-1659.db,FILE:PULLER_HISTORY_DB,_static_copies/puller930_upstox_141026-1659.db,281780224,find -size +20M -printf (metadata only) mtime 2026-10-28 02:25
+i7,kite,ticks/j1800/ticks_20261019.db,FILE:LIVE_RECORDER_DAYFILE,ticks/j1800/ticks_20261019.db,248414208,find -size +20M -printf (metadata only) mtime 2026-10-19 10:24
+i7,dhan,depth/j1800/depth_20261019.db,FILE:LIVE_RECORDER_DAYFILE,depth/j1800/depth_20261019.db,202981376,find -size +20M -printf (metadata only) mtime 2026-10-19 10:23
+i7,none,_segsync_in/i5/2026-10-28_kite_pullerfull_kite_141026-1722.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_kite_pullerfull_kite_141026-1722.delta0001.db,201547776,find -size +20M -printf (metadata only) mtime 2026-10-28 11:48
+i7,none,_state/instruments.db,FILE:OTHER_DB,_state/instruments.db,188076032,find -size +20M -printf (metadata only) mtime 2026-11-04 11:36
+i7,fyers,fyers_tbt/j1800/tbt_20261103.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/j1800/tbt_20261103.db,170496000,find -size +20M -printf (metadata only) mtime 2026-11-03 15:35
+i7,none,_state/jobs_fullpuller.db,FILE:OTHER_DB,_state/jobs_fullpuller.db,156958720,find -size +20M -printf (metadata only) mtime 2026-11-04 11:46
+i7,upstox,upstox_live/j1800/upstox_20261019.db,FILE:LIVE_RECORDER_DAYFILE,upstox_live/j1800/upstox_20261019.db,133349376,find -size +20M -printf (metadata only) mtime 2026-10-19 10:24
+i7,nse,nse/pullerfull_nse_141026-1643.db,FILE:PULLER_HISTORY_DB,nse/pullerfull_nse_141026-1643.db,113598464,find -size +20M -printf (metadata only) mtime 2026-10-15 00:53
+i7,nse,nse/puller930_nse_141026-1645.db,FILE:PULLER_HISTORY_DB,nse/puller930_nse_141026-1645.db,113594368,find -size +20M -printf (metadata only) mtime 2026-10-15 00:47
+i7,none,_segsync_canary/puller930_nse_141026-1700.db,FILE:PULLER_HISTORY_DB,_segsync_canary/puller930_nse_141026-1700.db,113434624,find -size +20M -printf (metadata only) mtime 2026-10-28 02:57
+i7,none,_static_copies/puller930_nse_141026-1700.db,FILE:PULLER_HISTORY_DB,_static_copies/puller930_nse_141026-1700.db,113434624,find -size +20M -printf (metadata only) mtime 2026-10-28 02:22
+i7,fyers,fyers_tbt/j1800/tbt_20261028.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/j1800/tbt_20261028.db,92143616,find -size +20M -printf (metadata only) mtime 2026-10-28 15:30
+i7,none,_segsync_in/i5/2026-10-28_kite_puller930_kite_151026-0032.delta0001.db,FILE:PULLER_HISTORY_DB,_segsync_in/i5/2026-10-28_kite_puller930_kite_151026-0032.delta0001.db,76640256,find -size +20M -printf (metadata only) mtime 2026-10-28 11:36
+i7,nse,nse/nse_141026-0143.db,FILE:PULLER_HISTORY_DB,nse/nse_141026-0143.db,75763712,find -size +20M -printf (metadata only) mtime 2026-10-28 12:19
+i7,fyers,fyers_tbt/j1800/tbt_20261104.db,FILE:LIVE_RECORDER_DAYFILE,fyers_tbt/j1800/tbt_20261104.db,70631424,find -size +20M -printf (metadata only) mtime 2026-11-04 11:44
+i7,none,_state/expired/progress.db,FILE:OTHER_DB,_state/expired/progress.db,32169984,find -size +20M -printf (metadata only) mtime 2026-11-04 11:37
+i7,yahoo,yahoo/pullerfull_yahoo_151026-0053.db,FILE:PULLER_HISTORY_DB,yahoo/pullerfull_yahoo_151026-0053.db,23334912,find -size +20M -printf (metadata only) mtime 2026-11-04 11:00

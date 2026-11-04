@@ -1,4 +1,10 @@
-# LATEST: open for verification (updated 04-11-2026 ~00:55 IST; newest first)
+# LATEST: open for verification (updated 04-11-2026 ~12:30 IST; newest first)
+## ROUND 5 (04-11 day): data-needed list per instrument, live census, retailer DB builder, guard
+Start with audit_041126_data_needed_retailer_edge/README.md (what is claimed, what is NOT proven, 10 questions) and DISAGREEMENTS.md (all 14 Fable round-1 findings and their fixes). Fable round-1 report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md. Claims C-051..C-055. Approvals: Fable round 2 PENDING, external auditor PENDING, owner PENDING - nothing is called done.
+### R5-1 | which instruments are live-only vs pullable, per broker | NOT PROVEN
+Evidence: artifacts/docs/framework/data_needed_instruments_041126.csv + LIVE_CENSUS_041126.csv. Open: broker symbol cells UNKNOWN; GIFT NIFTY live is recorded nowhere; USDINR daily, BANKNIFTY options, Sensex F&O unrecorded. Auditor: is the live-only/pullable split right for an intraday regime+direction edge? Which table is misclassified?
+### R5-2 | N-1 first live proof | census shows weekly expiry recording ON on both boxes (Dhan 49, Upstox 47)
+### R5-3 | retailer_db_build.py | sandbox-tested, never run on real data. Try to corrupt a source or invent a broker stamp.
 SECOND FABLE REVIEW stored: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md (found and fixed a silent defect: 0 constituents would have been recorded). Please verify fixes N-1..N-4 against it.
 OWNER RULE: every outside-auditor verdict is verified with Fable. Fable's audit of tonight's changes: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md. README.md inlines the evidence.
 

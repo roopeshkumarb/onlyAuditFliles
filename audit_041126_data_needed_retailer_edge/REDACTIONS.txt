@@ -1,0 +1,2 @@
+Files whose pack copy differs from the repo file ONLY by these replacements [('192.168.2.x', '<LAN-subnet>'), ('192.168.', '<LAN>.')]:
+docs/framework/FRIDAY_SSD_MIGRATION_PLAN_041126.md

@@ -1,0 +1,168 @@
+{
+  "title": "Which data can be pulled again (RECOVERABLE) and which cannot (NON_RECOVERABLE) - decides the disk it may be written to",
+  "status": "PROPOSED 28-10-2026 by Claude from Kumar's rule: 'tick data and other those which cannot be recovered must not use SSD'. The class list below is MINE and must be confirmed by Kumar and the external auditors. Anything NOT matched is UNKNOWN and is treated as NON_RECOVERABLE (protected) and reported loudly.",
+  "kumar_rule": "NON_RECOVERABLE data: HDD only (never SSD) on every device. RECOVERABLE history: SSD, designed to be pulled and stored on the SSDs of the i5, i7 and Pi5.",
+  "classes": {
+    "live_ticks": {
+      "recoverable": false,
+      "patterns": [
+        "tick",
+        "tbt",
+        "upstox_live",
+        "live_feed",
+        "feed_frames",
+        "upstox_20"
+      ],
+      "why": "a tick that was not recorded cannot be bought back (02-11-2026 audit: added upstox_live, live_feed, feed_frames so the real folder names match instead of falling to UNKNOWN); 'upstox_20' matches the daily recorder file upstox_YYYYMMDD.db (classify() looks at the file NAME only, not the folder)"
+    },
+    "live_depth": {
+      "recoverable": false,
+      "patterns": [
+        "depth",
+        "dhan200",
+        "order_book",
+        "orderbook"
+      ],
+      "why": "5/20/200-level order book exists only at the moment it streams"
+    },
+    "live_order_flow": {
+      "recoverable": false,
+      "patterns": [
+        "order_flow",
+        "orderflow",
+        "trade_flow",
+        "tradeflow",
+        "trade_microstructure",
+        "microstructure"
+      ],
+      "why": "option order flow carries the intraday direction lead; live-only (04-11-2026: trade_microstructure_1m added - last-traded-qty/trade-level detail from the same live quote call, dp_families.py family 'trade_microstructure', confirmed not in any history-replay API)"
+    },
+    "live_chain_snapshots": {
+      "recoverable": false,
+      "patterns": [
+        "chain_snap",
+        "chain_live",
+        "optionchain_live",
+        "opt_chain_1m",
+        "option_chain",
+        "opt_snapshot_live",
+        "greeks_1m",
+        "opt_summary_1m",
+        "opt_atm_1m"
+      ],
+      "why": "IV, greeks and OI of the chain at time t are not served again later (ASSUMPTION: opt_chain_1m comes from live snapshots; confirm per source). 04-11-2026: added the other five opt_chain_1m family members (dp_families.py 'option_chain': opt_snapshot_live, greeks_1m, opt_summary_1m, opt_atm_1m) and the rows_raw dataset name 'option_chain' itself (dp_verify.py DATASETS maps it to the upstox store) - same live-snapshot nature, all previously fell through to UNKNOWN by name"
+    },
+    "live_quotes": {
+      "recoverable": false,
+      "patterns": [
+        "quote",
+        "bidask",
+        "bid_ask",
+        "market_state_1m"
+      ],
+      "why": "bid/ask at time t (04-11-2026: added market_state_1m, dp_families.py 'quote_depth' family, and the rows_raw dataset name 'quote_depth' already matches the bare 'quote' pattern above)"
+    },
+    "live_news": {
+      "recoverable": false,
+      "patterns": [
+        "news"
+      ],
+      "why": "feeds drop old items; time of arrival is part of the data"
+    },
+    "instrument_master_snapshots": {
+      "recoverable": false,
+      "patterns": [
+        "instrument_master",
+        "instruments_master",
+        "master_snapshot",
+        "instruments",
+        "expiry_calendar",
+        "index_membership"
+      ],
+      "why": "only today's list is served; old lists needed to map old contracts (small files). 04-11-2026: added instruments/expiry_calendar/index_membership - dp_families.py 'instruments' family (K.instruments, U.instruments, W.expiry_calendar, W.index_membership), same today-only nature as instrument_master, previously UNKNOWN by name"
+    },
+    "history_candles": {
+      "recoverable": true,
+      "recoverable_until": "per broker, probed (UNKNOWN until probed)",
+      "patterns": [
+        "history",
+        "candles",
+        "ohlc",
+        "_1m_hist",
+        "bars_hist",
+        "nifty_1m",
+        "vix_1m",
+        "index_1m",
+        "fut_1m",
+        "equity_1m",
+        "sector_1m",
+        "nifty_daily",
+        "index_daily",
+        "global_daily",
+        "gift_nifty_1d",
+        "niftybees_1d",
+        "macro_futures_1d"
+      ],
+      "why": "the broker serves past candles again, within its window. 04-11-2026: REMOVED the bare 'rows_raw' pattern (see rows_raw_warning_021126 below, now resolved by classifying its datasets individually instead) and ADDED the actual 1-minute/daily OHLC table names this project holds - nifty_1m, vix_1m, index_1m, fut_1m, equity_1m, sector_1m, nifty_daily, index_daily, global_daily, global_1m (Yahoo). These are the single biggest recoverable class (CLAUDE.md 1.1: nifty_1m alone is 1.78M rows / ~29GB on the archive) and were previously falling through to UNKNOWN - and by this file's own fail-safe rule, UNKNOWN is treated as NON_RECOVERABLE, so before this fix the classifier would have pinned ALL of history onto HDD and never let any of it be the temporarily-on-SSD case Kumar asked for. vix_1m/opt_* windows are shorter per CLAUDE.md 1.1 (Aug/Sep 2025+) - 'recoverable_until' stays UNKNOWN-per-broker rather than a typed date, so it degrades honestly outside that window instead of claiming a recoverability it hasn't probed. 04-11-2026 (Fable review, defect list): added gift_nifty_1d, niftybees_1d, macro_futures_1d - DAILY candle tables written by pullers/shared/{gift_nifty,niftybees,macro_futures}_puller.py (dp_families-style daily history). Caveat: macro_futures contract ids roll and a stale id returns empty silently, and GIFT keys are contradictory between docs, so 'recoverable' here means re-pullable IF the right key is resolved, not guaranteed."
+    },
+    "expired_contracts_history": {
+      "recoverable": true,
+      "recoverable_until": "UNKNOWN: broker window must be probed; becomes NON_RECOVERABLE when the window is about to close",
+      "patterns": [
+        "expired"
+      ],
+      "why": "served by brokers only for a limited past"
+    },
+    "exchange_archives": {
+      "recoverable": true,
+      "recoverable_until": "NSE archive retention (UNKNOWN)",
+      "patterns": [
+        "bhavcopy",
+        "participant_oi",
+        "participant_vol",
+        "nsereports",
+        "flows_archive",
+        "fii_dii",
+        "corporate_actions",
+        "market_1d",
+        "breadth_1d",
+        "derivative_activity"
+      ],
+      "why": "NSE publishes them again. 04-11-2026: added participant_vol, fii_dii (covers rows_raw dataset names 'participant_vol'/'fii_dii' per dp_verify.py DATASETS, and the family table fii_dii_daily), corporate_actions, market_1d, breadth_1d, derivative_activity - all previously UNKNOWN by name. breadth_1d is CLAUDE.md 2.2's breadth feature, computed from equity_1m (itself now RECOVERABLE above) - recoverable by recomputation, not an independent broker guarantee, noted here rather than assumed."
+    },
+    "reference_lists": {
+      "recoverable": true,
+      "recoverable_until": "n/a",
+      "patterns": [
+        "reference",
+        "epoch_meta",
+        "market_holidays",
+        "holidays",
+        "trading_holidays",
+        "trading_calendar"
+      ],
+      "why": "re-fetched on demand. 04-11-2026: added holidays/trading_holidays/trading_calendar - dp_families.py 'calendar' family (rows_raw dataset 'holidays' per dp_verify.py DATASETS; CLAUDE.md 1.1's trading_holidays table, which already degrades to the Tuesday-rule fallback when its own NSE source is unreadable - this placement rule does not change that fallback, only where the table may be written)"
+    },
+    "window_limited_intraday": {
+      "recoverable": false,
+      "patterns": [
+        "global_1m",
+        "opt_ohlc_1m"
+      ],
+      "why": "04-11-2026 (Fable review defect): a table only PARTLY re-pullable is protected, i.e. HDD-only, until its window is proven. global_1m: Yahoo serves 1m for ~7 days per request and only ~30 days at all (pullers/fullpuller/download_engine.py INTERVAL_HISTORY_CAP_DAYS yahoo 1m=30), so older minutes cannot be bought back. opt_ohlc_1m: CLAUDE.md 1.1 holds it only from 2025-09-15 and SRC_ORDER includes upstox_live, i.e. some rows are live-built, so the 'ohlc' name pattern must not make it SSD-eligible. Re-class to RECOVERABLE only after a per-broker window probe proves it."
+    },
+    "manual_curated": {
+      "recoverable": false,
+      "patterns": [
+        "event_calendar"
+      ],
+      "why": "04-11-2026: the RBI/FOMC/CPI event calendar is hand-maintained (CLAUDE.md 5.4: 'No broker provides this'; repo file config/event_calendar.json). It cannot be re-pulled from anyone, so it is protected (HDD, never SSD-only). CLAUDE.md 3 also puts it on SSD + cloud sync; a Drive/peer copy is a BACKUP of it, not a re-pull source, so this stays NON_RECOVERABLE until a verified second copy is proven."
+    }
+  },
+  "unknown_rule": "A name that matches no class is UNKNOWN and is treated as NON_RECOVERABLE: written to HDD only, and reported. Never defaulted to SSD.",
+  "order_of_match": "NON_RECOVERABLE classes are tested first; a name that matches both kinds is NON_RECOVERABLE.",
+  "pi_note": "The Pi5 has one disk and it is an SSD (measured 28-10). It has NO HDD, so it can hold RECOVERABLE data only. It never stores NON_RECOVERABLE data as a primary. Open point for Kumar: add a USB hard disk to the Pi, or keep the Pi to recoverable data and copies of nothing non-recoverable.",
+  "live_cache": "The live engine's working copy of today's ticks lives in RAM (tmpfs), never on an SSD. The HDD file is the record.",
+  "rows_raw_warning_021126": "RESOLVED 04-11-2026 (PROPOSED, needs the same Kumar+auditor confirmation as the rest of this file): rows_raw was classed RECOVERABLE by the bare 'rows_raw' pattern, which named the CONTAINER table, not its contents - and the puller databases store multiple datasets inside it (dp_verify.py DATASETS: quote_depth, option_chain, fii_dii, participant_oi, participant_vol, holidays; rows_raw's own PRIMARY KEY is (dataset,key,ts), confirming dataset is the real unit). Fix: removed the bare 'rows_raw' pattern entirely; 'quote_depth' and 'option_chain' now match live_quotes/live_chain_snapshots (NON_RECOVERABLE) and 'fii_dii'/'participant_vol'/'holidays' now match exchange_archives/reference_lists (RECOVERABLE, 'participant_oi' already matched before this fix) - so placement is decided per DATASET NAME as classify() is actually called (dp_recoverability.classify() takes 'a dataset name or a file path', which this always meant), not per container table.",
+  "join_audit_041126": "A computed join of every table dp_families.py FAMILIES declares against this file's classes (not hand-typed - see the join script referenced in docs/tasks/TASKS.jsonl T-1316/T-1318) found 28 of 36 declared store tables UNKNOWN before today's edit, including nifty_1m/vix_1m/fut_1m/equity_1m - the single largest recoverable class in the project. All 28 are now matched; re-run the same join after any future change to dp_families.py or this file to catch drift, rather than trusting this file to stay in sync by hand. FABLE FIX 04-11-2026: global_1m and opt_ohlc_1m moved to window_limited_intraday (NON_RECOVERABLE). FABLE FIX 04-11-2026 (E): gift_nifty_1d/niftybees_1d/macro_futures_1d -> RECOVERABLE (history_candles); event_calendar -> NON_RECOVERABLE (manual_curated)."
+}

@@ -1,4 +1,5 @@
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 12:30 IST: ROUND 5 published - per-instrument data-needed list, live census (both boxes), retailer DB builder, requirements guard, Fable round-1 findings (14) with fixes. CORRECTION: C-053 (global_1m/opt_ohlc_1m misclassified as recoverable) and the 259/269 distinct-name figure (true: 236/246). C-051..C-055.
 - 04-11-2026 01:50 IST: A3 fix deployed (depth/upstox recorders now holiday-aware); deploy caused a disclosed brief outage of both recorders on both boxes (T-1314, C-048); i5 gap histogram finalized as PARTIAL (C-050), not retried further; SSD off-market growth rate measured (C-049).
 - 04-11-2026 01:15 IST: tools/home_connect.sh (SOCKS + forwards to the whole LAN, Pi as jump host) tested from outside the LAN; i5/i7 forbid forwarding. C-046.
 - 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.

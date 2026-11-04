@@ -25,7 +25,13 @@ The author and any AI agent it spawns share one model family; you are the indepe
 
 ---
 
-# LATEST: open for verification (updated 04-11-2026 ~00:55 IST; newest first)
+# LATEST: open for verification (updated 04-11-2026 ~12:30 IST; newest first)
+## ROUND 5 (04-11 day): data-needed list per instrument, live census, retailer DB builder, guard
+Start with audit_041126_data_needed_retailer_edge/README.md (what is claimed, what is NOT proven, 10 questions) and DISAGREEMENTS.md (all 14 Fable round-1 findings and their fixes). Fable round-1 report: AUDITOR_RESPONSES/20261104_FABLE_DATA_NEEDED_REVIEW_ROUND1.md. Claims C-051..C-055. Approvals: Fable round 2 PENDING, external auditor PENDING, owner PENDING - nothing is called done.
+### R5-1 | which instruments are live-only vs pullable, per broker | NOT PROVEN
+Evidence: artifacts/docs/framework/data_needed_instruments_041126.csv + LIVE_CENSUS_041126.csv. Open: broker symbol cells UNKNOWN; GIFT NIFTY live is recorded nowhere; USDINR daily, BANKNIFTY options, Sensex F&O unrecorded. Auditor: is the live-only/pullable split right for an intraday regime+direction edge? Which table is misclassified?
+### R5-2 | N-1 first live proof | census shows weekly expiry recording ON on both boxes (Dhan 49, Upstox 47)
+### R5-3 | retailer_db_build.py | sandbox-tested, never run on real data. Try to corrupt a source or invent a broker stamp.
 SECOND FABLE REVIEW stored: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_REREVIEW_CONDENSED.md (found and fixed a silent defect: 0 constituents would have been recorded). Please verify fixes N-1..N-4 against it.
 OWNER RULE: every outside-auditor verdict is verified with Fable. Fable's audit of tonight's changes: AUDITOR_RESPONSES/20261103_FABLE_NIGHT_AUDIT_CONDENSED.md. README.md inlines the evidence.
 
@@ -144,11 +150,17 @@ C-047,04-11-2026,dp_depthrec and dp_upstoxrec now skip known NSE holidays (audit
 C-048,04-11-2026,deploying the A3 fix caused a live depthrec/upstoxrec outage (both boxes) when a cleanup command removed the running containers instead of only the stuck duplicates,TRUE (author's own error),audit_031126_NIGHT_weekly_extras_move/16_a3_holiday_fix_raw.txt,T-1314; outage window unmeasured (estimate 3-5 min); occurred outside the 09:00-15:40 session window so no live market data was lost; fixed by immediate docker compose up
 C-049,04-11-2026,/volume2 on i5 off-market growth rate measured between two byte-level df readings (21:39 and 00:50),PROVEN,audit_031126_BLK002_raw_proof/04 + 05 + this entry,used 216063025152->216078082048 bytes (+15056896 B = ~14.4 MB) over ~3h11m = ~4.5 MB/h off-market; the earlier df -h '~3 days' estimate (C-021) stays RETRACTED; a session-hours reading is still needed for the real rate
 C-050,04-11-2026,the i5 gap histogram (tool 31) is complete for all 4 recorders,FALSE - PARTIAL,audit_031126_BLK001_livewatch/32_gap_histogram_i5.csv,ticks and depth present (10 days each, two depth-20261029 rows read 0 rows - read anomaly, unexplained); upstox_live, fyers_tbt and ALL of 03-11 depth are MISSING; the i7 histogram (33) is complete and stands as the stronger evidence for the 90 s threshold
+C-051,04-11-2026,the per-instrument data-needed list (183 rows) classes 85 live-only / 94 pullable / 4 UNKNOWN,NOT PROVEN,audit_041126_data_needed_retailer_edge/artifacts/docs/framework/data_needed_instruments_041126.csv,declared in code only; broker symbol cells for Upstox/Dhan constituents are UNKNOWN; not yet matched to broker masters
+C-052,04-11-2026,recorders hold on BOTH i5 and i7 today: Kite 202 / Dhan 49 / Upstox 47 / Fyers 5 live-only instruments; weekly expiry and TICK_EXTRA are ON,PROVEN (single read-only snapshot),audit_041126_data_needed_retailer_edge/artifacts/docs/framework/LIVE_CENSUS_041126.csv,distinct names are 236 per box / 246 union (an earlier 259/269 was (broker,name) pairs - CORRECTED); per-token tick row counts UNKNOWN (timed out at 5 s); not independently re-run
+C-053,04-11-2026,config/recoverability.json had marked global_1m RECOVERABLE (Yahoo serves ~30 days of 1m) and opt_ohlc_1m SSD-eligible by name,RETRACTED then FIXED,audit_041126_data_needed_retailer_edge/DISAGREEMENTS.md,found by the Fable review; both now protected (NON_RECOVERABLE) until a per-broker window is probed; 25 recoverability tests pass
+C-054,04-11-2026,retailer_db_build.py (initial retailer DB from existing DBs with supplier stamps): 21 tests pass and 11 of 12 mutations caught,PROVEN (sandbox only),audit_041126_data_needed_retailer_edge/artifacts/tools/retailer_db_build.py,never run on a real DB; surviving mutation = removal of the final fsync (needs a real power cut); NOT approved by Fable round 2 / external auditor / owner
+C-055,04-11-2026,requirements guard (R01-R31) reports 0 ALERT and refuses to call any build DONE: 0 of 6 builds have all three approvals,PROVEN (sandbox),audit_041126_data_needed_retailer_edge/artifacts/tools/requirements_guard.py,traceability rule is gameable (any cited R-id passes) - audit question Q10
 ```
 
 ---
 
 # CHANGELOG (newest first; corrections are marked CORRECTION)
+- 04-11-2026 12:30 IST: ROUND 5 published - per-instrument data-needed list, live census (both boxes), retailer DB builder, requirements guard, Fable round-1 findings (14) with fixes. CORRECTION: C-053 (global_1m/opt_ohlc_1m misclassified as recoverable) and the 259/269 distinct-name figure (true: 236/246). C-051..C-055.
 - 04-11-2026 01:50 IST: A3 fix deployed (depth/upstox recorders now holiday-aware); deploy caused a disclosed brief outage of both recorders on both boxes (T-1314, C-048); i5 gap histogram finalized as PARTIAL (C-050), not retried further; SSD off-market growth rate measured (C-049).
 - 04-11-2026 01:15 IST: tools/home_connect.sh (SOCKS + forwards to the whole LAN, Pi as jump host) tested from outside the LAN; i5/i7 forbid forwarding. C-046.
 - 04-11-2026 00:30 IST: restart policy 'always' on the recording stack (both boxes + compose) as the fix for 'recorders stay down after a power cut' without needing the DSM login; C-045 CONFIGURED NOT PROVEN.
@@ -161,7 +173,6 @@ C-050,04-11-2026,the i5 gap histogram (tool 31) is complete for all 4 recorders,
 - 03-11-2026 21:55 IST: independent Fable review + comparison with outside auditor stored (AUDITOR_RESPONSES/). livewatch v3 (22 tests, fail-closed, IST-explicit, per-day bound, frames-based freshness, alarm-only for multi-socket death, state dir off /tmp). CORRECTIONS: C-021 '~3 days' RETRACTED; C-027 'i5 has 3 routes' RETRACTED; C-022 now PROVEN; INDEX md5s were stale (regenerated). New files 02b, 20(v3), 25, 26, BLK002/05.
 - 03-11-2026 21:20 IST: auditor 1 response stored; README now inlines all evidence; livewatch v2 (90 s + per-connection) written, NOT deployed; new files 18-24 and BLK002/04; C-005, C-009 updated, C-019..C-022 added; /volume2 99% full registered (T-1312).
 - 03-11-2026 16:20 IST: added README (fixed entry point), AUDITOR_PROTOCOL, LATEST, CLAIMS_LEDGER, MANIFEST/SHA256SUMS, AUDITOR_RESPONSES template, 17_access_routes_raw.txt.
-- 03-11-2026 16:10 IST: CORRECTION to 13_ADDENDUM: Dhan d20 gaps were hidden because the gap script merged d20 and d200 frames. Claim C-006 RETRACTED. livewatch consequence added.
 
 
 ---
