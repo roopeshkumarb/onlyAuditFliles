@@ -1,0 +1,254 @@
+PASTE THIS WHOLE TEXT INTO THE AUDITOR. Everything needed is below; no links to open.
+
+ROLE: independent adversarial auditor. Say UNKNOWN when you cannot verify (UNKNOWN is never zero). Under 800 words.
+
+CONTEXT: Retail trader (India), ADVISORY intraday NIFTY 50 directional engine, no live orders. Data pullers will STOP pulling anything not on the list below because disks are saturated. A series that is live-only, or older than a broker 1-minute history window (Dhan 5 days, Upstox 28 days, Kite 60 days, Fyers 100 days), is lost for good once it stops being pulled.
+Retail limits: NO signed option order flow, NO dealer GEX, NO intraday FII/DII (EOD only), NO historical tick depth.
+
+FACTS (from the owner's repo, so you need not guess):
+- The list has 176 rows. An earlier Opus audit found a 167-row list incomplete; 9 rows were added afterwards (U168-U176: sector/MIDCAP/NEXT50 indices 1m, GIFT NIFTY 1m, Upstox global 1m series, NSE F&O bhavcopy, participant_vol, CM bhavcopy/MTO delivery, india_macro, BANKNIFTY futures daily) and U024, U051 (Yahoo 1m DXY/US10Y/GOLD, was DROP), U054 corrected. That fix is NOT re-audited.
+- None of the added rows is dealer gamma or signed order flow.
+- Constituents: the NIFTY 50 rows follow a static config file; the Opus audit recommends following a point-in-time index_membership instead (not done yet).
+- Manual event calendar is row U067. Instrument masters are on the list.
+- A separate Fable audit (05-11) answered: NO more data needed now (confidence ~75%), and no intraday edge is demonstrated anywhere in the repo (direction AUC 0.52; momentum, gap, opening range, straddle, GIFT intraday all null). It also flagged an open conflict: engine code says equity_1m holds ETFs, not constituents, while the list marks constituents recorded.
+
+QUESTIONS: (1) Is more data needed beyond the list? First line YES (top items) or NO, with confidence and what would change your mind. (2) For each extra item: obtainable at retail from which broker/free source (UNKNOWN if unverified), recoverable later or live-only, storage cost (mark estimates), evidence of predictive value (cite or say speculation), verdict ADD NOW / ADD LATER / SKIP. (3) Any row unnecessary? (4) Do you agree with the Opus audit's rows to add and NOT SAFE groups? (5) Any rows marked PULLABLE that need more history than the brokers serve (fatal)? (6) Any sign an edge is demonstrated?
+Answer as: ITEM / CLAIMS (AGREE | DISAGREE | UNPROVEN) / MISSING PROOF YOU WANT RUN / ASSUMPTIONS FOUND / VERDICT (VERIFIED | NOT VERIFIED | VERIFIED WITH CONDITIONS). State which model you are.
+
+=================== PART 1: OPUS AUDIT (verbatim) ===================
+# Adversarial audit: is the DATA-NEEDED list safe to govern a live-only pull policy? (05-11-2026)
+Auditor: Claude Opus 5.5 (claude-opus-5-5), independent. Read-only; scripts in /tmp/audit (fwd.py, rev.py, sim.py).
+
+## Verdict: FAIL as written; PASS-WITH-FIXES once the 6 ADD rows below and fixes D1-D4 are in.
+The live-only gate itself is built safely (`pullers/dhan/dp_liveonly.py:244-266`: it refuses only a key that is listed NOT_NEEDED **and** RECOVERABLE, and UNKNOWN or unlisted keys are allowed). But the list misses inputs the code reads, and the gate's recoverability test is wrong for window-limited intraday data (D2).
+
+## 1. Forward proof
+The file has 167 rows, not 165, and 215 citations. All 215 file:line citations exist. 197 contain their cite token at that line. 10 cite CLAUDE.md only, with no code reader. 18 rows have no consumer. Six citations exist but do not read what the row claims:
+* U022-U050 (Yahoo daily) cite `global_cues.py:84`. That line reads `global_cues_1m`, which is built from **1m** Upstox GLOBAL_* and Yahoo bars (`tools/global_wire.py:144-161`). Only 16 series feed it. ASX200, BTC, COPPER, EURUSD, KOSPI, NASDAQ, RUT, SSE, SILVER, US2Y, USDJPY and VIX_US daily feed nothing there.
+* U022 cites `global_cues.py:38`, which is a label tuple, not a read.
+* U024 (MCX) cites `global_cues.py:84`. The real reader is `global_context.py:231` (`macro_1d`).
+* U064 cites `constituents_top20.py:216` (`_prior_session`). That code reads no membership: the list is the static `config/nifty50.py`.
+* U013/U014 cite `regime_6m_build.py:69` (`options_chain_summary`). That table's history comes from the **NSE F&O bhavcopy** (`daily_recorder.py:90`); only today's row comes from live snapshots (`daily_writers.py:235`).
+
+## 2. Reverse proof: inputs the code reads that no row covers
+| Input | Read at | Classifier today | Recoverable? |
+|---|---|---|---|
+| Sector indices + NIFTY MIDCAP 100 + NIFTY NEXT 50, 1m (`index_1m`) | `derived_wide.py:452-489` (datasets 109/110/112/115); `feature_compute_full.py:890` | NOT_NEEDED (bulk reason 1) | Only inside the broker window (Fyers 100 d); older minutes are lost |
+| GIFT NIFTY **1m** (Upstox `GLOBAL_INDEX\|SGX NIFTY`) + Upstox GLOBAL_INDEX/INDICATOR 1m (DJI, SPX, BRENT, WTI, USDINR...) | `global_wire.py:89-103,144` -> `global_cues.py:84`, `regime_forecast2_export.py:38` | UNKNOWN or NOT_NEEDED, depending on the master (sim.py: master name "SGX NIFTY" gives NOT_NEEDED) | Unproven |
+| Yahoo 1m DXY / US10Y / GOLD (U051 = DROP) | `global_wire.py:147-150` | outside the coverage ledger | **No**: Yahoo serves ~30 d, then lost |
+| NSE F&O bhavcopy (NIFTY contracts) | `eod_pit.py:156`, `options_context.py` (judge gate 18, `judge_engine.py:106`), `options_chain_summary` | NOT_NEEDED ("duplicates broker candles", which is false: broker candles have no EOD OI of expired strikes); `fo_bhavcopy` snap = UNKNOWN | Yes (NSE archive) |
+| participant_vol | `eod_pit.py:130` | NOT_NEEDED (`needed_vs_pulled.py:49`) | Yes (NSE archive, 2012+) |
+| CM bhavcopy / MTO delivery, `india_macro` | `eod_pit.py:218,229,242` | no row | Yes / manual |
+| BANKNIFTY future daily | `global_context.py:55,224` | NOT_NEEDED | Yes, within the window |
+| MCX crude/gold daily (U024 = OPTIONAL_KEEP) | `global_context.py:231` | NOT_NEEDED: the classifier treats every non-NIFTY future as unneeded, which contradicts U024 | Expired months: no (Dhan serves only active contracts) |
+
+These are covered: VIX pre-2025 fallback (U010 futures realized vol), `fut_1m traded_volume` (U010), all 50 constituents (they match `config/nifty50.py` exactly), holidays (U058), event calendar (U067), masters (U060-063), and the NIFTY option chain (U014). Native 5m/15m is never read: `mtf_regime_engine.py:136`, `regime_spine.py:235,311` and `multi_timeframe.py:170` all resample 1m or daily data. U054/U055 say "nothing reads it", but `eod_pit.py:280` reads `derivative_activity`.
+
+## 3. The five NOT_NEEDED bulk reasons
+1. Unnamed indices: **NOT SAFE**. Sector indices, MIDCAP 100 and NEXT 50 are read (table above). Recoverable only inside the broker window.
+2. NSE contract-level daily: **NOT SAFE** unless `tools/nse_reports.py` (the lake) keeps fetching the FO UDiFF files, because the engine's copy is built from the lake (`nse_eod_copy.py`). Recoverable from the NSE archive.
+3. Equities outside the NIFTY 50: **SAFE today**, but the list is static. At the next NIFTY 50 rebalance an entering stock's ticks are lost for good and its 1m is recoverable only within the window. Needs a rule that follows `index_membership`.
+4. Fyers 5s-45s: **SAFE** (no reader). But the gate calls them RECOVERABLE without any probe, so stopping them is an owner decision to lose them for good.
+5. Stock F&O / MCX: **SAFE for stock F&O. NOT SAFE for MCX crude/gold and BANKNIFTY futures**, which `global_context` reads.
+
+## 4. Ranked defects
+* **D1 (high).** Sector, MIDCAP 100 and NEXT 50 1m will be refused. Loss: all derived_wide 109/110/112/115 history older than ~100 days.
+* **D2 (high).** `dp_liveonly.class_name_for` (`:229-241`) maps every non-NSE, non-expired job to `history_candles_<src>_<iv>`, so it always returns RECOVERABLE. That bypasses `recoverability.json`'s `window_limited_intraday` rule (global_1m, opt_ohlc_1m) and probes no window. Loss: any window-limited key listed NOT_NEEDED (Yahoo/Upstox global 1m, Fyers seconds) is gone for good.
+* **D3 (high).** No GIFT 1m row (U018 is 1D only, U019 is ticks), and U051 is DROP. Loss: the GIFT/DXY/US10Y/brent inputs of the gap cue. `global_cues_1m` has been stale since 16-10 (`lc_families.py:466`), so this loss has already started.
+* **D4 (medium).** No rows for the F&O bhavcopy, participant_vol, delivery/MTO or `india_macro`, which feed the edge-research reader (`eod_pit` -> `edge_ladder.py:157`) and judge gate 18.
+* **D5 (medium).** The classifier contradicts its own rows: MCX (U024), and GIFT detection depends on the master's name text, not on the U018 key.
+* **D6 (low).** Wrong citations (section 1). U015 names no strike band, so a puller that follows the list cannot know which strikes to pull.
+
+## 5. Rows to ADD
+1. NSE sector indices + NIFTY MIDCAP 100 + NIFTY NEXT 50, 1m (`index_1m`), REQUIRED_ENGINE.
+2. GIFT NIFTY 1m + Upstox GLOBAL_INDEX/INDICATOR 1m, REQUIRED_ENGINE, window-limited.
+3. Yahoo 1m DXY / ^TNX / GC=F (change U051 from DROP to REQUIRED_ENGINE), NON_RECOVERABLE.
+4. NSE F&O UDiFF bhavcopy (NIFTY contracts) + participant_vol + CM bhavcopy/MTO delivery + `india_macro`.
+5. BANKNIFTY near-month future 1d; MCX crude/gold daily (make the classifier honour U024).
+6. A membership-follow rule: the constituent rows equal `index_membership` of the prior session, not a static 50.
+
+## 6. Unproven
+* The Upstox master names for the GLOBAL_* keys. The masters were not in /tmp/board, and the upstox DBs on i5 have no `instruments` table.
+* Per-broker windows for index 1m, Fyers seconds and Upstox global 1m.
+* Whether `tools/nse_reports.py` falls under the stop policy.
+* No `pull_policy.json` is deployed yet (the i5 `_state` directory holds none), so nothing has been refused so far.
+* GB/day of live data, which the coverage ledger does not see.
+
+
+=================== PART 2: THE LIST (176 rows: id | name | decision | primary broker | intervals | store | recoverability class) ===================
+U001 | NIFTY 50 index 1m+1d candles | REQUIRED_ENGINE | upstox | 1m,5m,15m,30m,60m,120m,1D | nifty_1m | RECOVERABLE
+U002 | NIFTY 50 index live ticks | REQUIRED_OWNER | upstox | tick,1m | ticks_live | NON_RECOVERABLE
+U003 | India VIX 1m+1d candles | REQUIRED_ENGINE | upstox | 1m,1D | vix_1m | RECOVERABLE
+U004 | India VIX live ticks | REQUIRED_ENGINE | upstox | tick,1m | ticks_live | NON_RECOVERABLE
+U005 | NIFTY BANK 1m+1d candles | REQUIRED_ENGINE | upstox | 1m,1D | index_1m | RECOVERABLE
+U006 | NIFTY BANK live ticks | REQUIRED_OWNER | kite | tick | ticks_live | NON_RECOVERABLE
+U007 | SENSEX (BSE) 1m+1d candles | REQUIRED_ENGINE | upstox | 1m,1D | index_1m | RECOVERABLE
+U008 | NIFTY FIN SERVICE 1m+1d candles | OPTIONAL_KEEP | upstox | 1m,1D | index_1m | RECOVERABLE
+U009 | NIFTY MID SELECT 1m+1d candles | OPTIONAL_KEEP | upstox | 1m,1D | index_1m | RECOVERABLE
+U010 | NIFTY near-month future 1m candles + OI + traded volume | REQUIRED_ENGINE | upstox | 1m,5m,1D | fut_1m | RECOVERABLE
+U011 | NIFTY monthly+next-month future live ticks/depth/OI | REQUIRED_ENGINE | upstox | tick,1m | ticks_depth_live | NON_RECOVERABLE
+U012 | BANKNIFTY near-month future live ticks | REQUIRED_OWNER | kite | tick | ticks_live | NON_RECOVERABLE
+U013 | NIFTY options live ticks/depth, monthly + weekly ATM band | REQUIRED_ENGINE | kite | tick,1m | ticks_depth_live | NON_RECOVERABLE
+U014 | NIFTY option chain snapshots (opt_chain_1m, greeks_1m, opt_snapshot_live, opt_summary_1m, opt_atm_1m, opt_depth_1m) | REQUIRED_ENGINE | upstox | 1m | opt_chain_1m | NON_RECOVERABLE
+U015 | NIFTY option contracts 1m OHLC history (live + expired) | REQUIRED_OWNER | upstox | 1m | opt_ohlc_1m | NON_RECOVERABLE
+U016 | BANKNIFTY options (monthly) live ticks | OPTIONAL_ADD | kite | tick | ticks_live | NON_RECOVERABLE
+U017 | SENSEX / BSE F&O options | DROP |  |  | ticks_live | NON_RECOVERABLE
+U018 | GIFT NIFTY daily candles | REQUIRED_ENGINE | dhan | 1D | gift_nifty_1d | RECOVERABLE
+U019 | GIFT NIFTY live overnight / pre-open ticks | REQUIRED_ENGINE | dhan | tick,1m | gift_nifty_ticks | NON_RECOVERABLE
+U020 | NIFTYBEES daily candles | OPTIONAL_KEEP | upstox | 1D | niftybees_1d | RECOVERABLE
+U021 | NIFTYBEES live ticks | REQUIRED_OWNER | kite | tick | ticks_live | NON_RECOVERABLE
+U022 | USDINR spot daily (Yahoo INR=X) | REQUIRED_ENGINE | yahoo | 1D | global_daily | RECOVERABLE
+U023 | USDINR NSE currency future (live or daily) | UNKNOWN |  |  | ticks_live | NON_RECOVERABLE
+U024 | MCX CRUDEOIL + GOLD near-month futures daily | REQUIRED_ENGINE | dhan | 1D | macro_futures_1d | RECOVERABLE
+U025 | USDINR / MCX live ticks (Kite TICK_EXTRA_MACRO) | DROP |  |  | ticks_live | NON_RECOVERABLE
+U026 | ASX200 daily (Yahoo ^AXJO) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U027 | BITCOIN daily (Yahoo BTC-USD) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U028 | BRENT daily (Yahoo BZ=F) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U029 | CAC daily (Yahoo ^FCHI) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U030 | COPPER daily (Yahoo HG=F) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U031 | DAX daily (Yahoo ^GDAXI) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U032 | DOW daily (Yahoo ^DJI) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U033 | DXY daily (Yahoo DX-Y.NYB) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U034 | EURUSD daily (Yahoo EURUSD=X) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U035 | FTSE daily (Yahoo ^FTSE) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U036 | GOLD daily (Yahoo GC=F) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U037 | HANGSENG daily (Yahoo ^HSI) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U038 | KOSPI daily (Yahoo ^KS11) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U039 | NASDAQ daily (Yahoo ^IXIC) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U040 | NIKKEI daily (Yahoo ^N225) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U041 | RUSSELL2000 daily (Yahoo ^RUT) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U042 | SHANGHAI daily (Yahoo 000001.SS) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U043 | SILVER daily (Yahoo SI=F) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U044 | SP500 daily (Yahoo ^GSPC) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U045 | US10Y daily (Yahoo ^TNX) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U046 | US2Y daily (Yahoo ^IRX) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U047 | USDINR daily (Yahoo INR=X) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U048 | USDJPY daily (Yahoo JPY=X) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U049 | VIX_US daily (Yahoo ^VIX) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U050 | WTI daily (Yahoo CL=F) | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE
+U051 | World markets intraday 1m (Yahoo) | REQUIRED_ENGINE | yahoo |  | global_1m | NON_RECOVERABLE
+U052 | FII/DII daily | REQUIRED_ENGINE | nse | 1D | fii_dii_daily | RECOVERABLE
+U053 | Participant OI daily | REQUIRED_OWNER | nse | 1D | participant_oi_daily | RECOVERABLE
+U054 | Derivative activity daily | OPTIONAL_KEEP | nse | 1D | derivative_activity | RECOVERABLE
+U055 | Market daily | OPTIONAL_KEEP | nse | 1D | market_1d | RECOVERABLE
+U056 | Breadth daily (NSE advance/decline) | OPTIONAL_KEEP | nse | 1D | breadth_1d | RECOVERABLE
+U057 | Corporate actions (NSE/Yahoo) | OPTIONAL_KEEP | nse | 1D | corporate_actions | RECOVERABLE
+U058 | Trading holidays / calendar | REQUIRED_OWNER | nse | 1D | trading_holidays | RECOVERABLE
+U059 | Sector indices 1m (sector_1m) | DROP |  |  | sector_1m | RECOVERABLE
+U060 | upstox instrument master (daily snapshot) | REQUIRED_OWNER | upstox | 1D | instrument_master | NON_RECOVERABLE
+U061 | dhan instrument master (daily snapshot) | REQUIRED_ENGINE | dhan | 1D | instrument_master | NON_RECOVERABLE
+U062 | kite instrument master (daily snapshot) | REQUIRED_OWNER | kite | 1D | instrument_master | NON_RECOVERABLE
+U063 | fyers instrument master (daily snapshot) | REQUIRED_OWNER | fyers | 1D | instrument_master | NON_RECOVERABLE
+U064 | Index membership (NIFTY 50 list) | REQUIRED_ENGINE | nse | 1D | index_membership | NON_RECOVERABLE
+U065 | Domestic news by NIFTY 50 constituent | REQUIRED_OWNER | upstox | event | news_items | NON_RECOVERABLE
+U066 | International news | NOT_AVAILABLE_AT_RETAIL |  |  | news_items | NON_RECOVERABLE
+U067 | Event calendar (RBI / FOMC / CPI) - manual | REQUIRED_ENGINE | manual | event | event_calendar | NON_RECOVERABLE
+U068 | ADANIENT 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U069 | ADANIENT live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U070 | ADANIPORTS 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U071 | ADANIPORTS live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U072 | APOLLOHOSP 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U073 | APOLLOHOSP live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U074 | ASIANPAINT 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U075 | ASIANPAINT live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U076 | AXISBANK 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U077 | AXISBANK live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U078 | BAJAJ-AUTO 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U079 | BAJAJ-AUTO live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U080 | BAJFINANCE 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U081 | BAJFINANCE live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U082 | BAJAJFINSV 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U083 | BAJAJFINSV live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U084 | BEL 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U085 | BEL live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U086 | BHARTIARTL 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U087 | BHARTIARTL live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U088 | CIPLA 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U089 | CIPLA live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U090 | COALINDIA 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U091 | COALINDIA live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U092 | DRREDDY 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U093 | DRREDDY live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U094 | EICHERMOT 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U095 | EICHERMOT live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U096 | ETERNAL 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U097 | ETERNAL live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U098 | GRASIM 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U099 | GRASIM live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U100 | HCLTECH 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U101 | HCLTECH live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U102 | HDFCBANK 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U103 | HDFCBANK live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U104 | HDFCLIFE 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U105 | HDFCLIFE live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U106 | HINDALCO 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U107 | HINDALCO live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U108 | HINDUNILVR 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U109 | HINDUNILVR live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U110 | ICICIBANK 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U111 | ICICIBANK live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U112 | INDIGO 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U113 | INDIGO live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U114 | INFY 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U115 | INFY live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U116 | ITC 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U117 | ITC live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U118 | JIOFIN 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U119 | JIOFIN live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U120 | JSWSTEEL 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U121 | JSWSTEEL live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U122 | KOTAKBANK 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U123 | KOTAKBANK live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U124 | LT 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U125 | LT live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U126 | M&M 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U127 | M&M live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U128 | MARUTI 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U129 | MARUTI live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U130 | MAXHEALTH 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U131 | MAXHEALTH live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U132 | NESTLEIND 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U133 | NESTLEIND live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U134 | NTPC 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U135 | NTPC live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U136 | ONGC 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U137 | ONGC live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U138 | POWERGRID 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U139 | POWERGRID live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U140 | RELIANCE 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U141 | RELIANCE live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U142 | SBILIFE 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U143 | SBILIFE live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U144 | SBIN 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U145 | SBIN live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U146 | SHRIRAMFIN 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U147 | SHRIRAMFIN live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U148 | SUNPHARMA 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U149 | SUNPHARMA live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U150 | TATACONSUM 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U151 | TATACONSUM live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U152 | TMPV 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U153 | TMPV live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U154 | TATASTEEL 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U155 | TATASTEEL live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U156 | TCS 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U157 | TCS live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U158 | TECHM 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U159 | TECHM live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U160 | TITAN 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U161 | TITAN live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U162 | TRENT 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U163 | TRENT live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U164 | ULTRACEMCO 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U165 | ULTRACEMCO live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U166 | WIPRO 1m candles | REQUIRED_ENGINE | upstox | 1m,1D | equity_1m | RECOVERABLE
+U167 | WIPRO live ticks | REQUIRED_ENGINE | kite | tick,1m | ticks_live | NON_RECOVERABLE
+U168 | Sector indices 1m (NIFTY BANK/IT/FIN/AUTO/PHARMA/FMCG/METAL/ENERGY/REALTY and siblings) | REQUIRED_ENGINE | fyers | 1m | index_1m | RECOVERABLE
+U169 | NIFTY MIDCAP 100 + NIFTY NEXT 50 index 1m | REQUIRED_ENGINE | fyers | 1m | index_1m | RECOVERABLE
+U170 | GIFT NIFTY 1m (pre-market gap cue) | REQUIRED_ENGINE | upstox | 1m | global_cues_1m | NON_RECOVERABLE
+U171 | Upstox GLOBAL_INDEX / INDICATOR 1m series | REQUIRED_ENGINE | upstox | 1m | global_cues_1m | NON_RECOVERABLE
+U172 | NSE F&O UDiFF bhavcopy, NIFTY contracts (daily) | REQUIRED_ENGINE | nse | 1D | fo_bhav_nifty_daily | RECOVERABLE
+U173 | participant_vol (NSE participant volume, daily) | REQUIRED_ENGINE | nse | 1D | participant_vol | RECOVERABLE
+U174 | CM bhavcopy / MTO delivery files (daily) | REQUIRED_ENGINE | nse | 1D | bhavcopy | RECOVERABLE
+U175 | india_macro (RBI / macro series, manual curated) | REQUIRED_ENGINE | manual | 1D | india_macro | NON_RECOVERABLE
+U176 | BANKNIFTY futures daily | REQUIRED_ENGINE | dhan | 1D | fut_1d | NON_RECOVERABLE
