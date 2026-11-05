@@ -19,4 +19,4 @@ Why it matters: the pullers will STOP pulling anything not on this list (disk is
 3. Do you agree with the Opus audit's 6 'rows to add' and 'NOT SAFE' classes?
 4. Anything in CLAUDE.md's constraints that you think is wrong?
 
-Answer in the format of AUDITOR_PROTOCOL.md (ITEM / FILE-BY-FILE / CLAIMS / MISSING PROOF / ASSUMPTIONS / VERDICT). No approval is recorded by this publication; the owner decides.
+Fable result (05-11): see FABLE_DATA_COMPLETENESS (in this folder and AUDITOR_RESPONSES/20261105_FABLE_DATA_COMPLETENESS.md). Answer in the format of AUDITOR_PROTOCOL.md (ITEM / FILE-BY-FILE / CLAIMS / MISSING PROOF / ASSUMPTIONS / VERDICT). No approval is recorded by this publication; the owner decides.
