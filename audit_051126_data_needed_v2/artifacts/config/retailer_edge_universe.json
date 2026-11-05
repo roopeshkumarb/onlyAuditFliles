@@ -1,0 +1,6582 @@
+{
+ "meta": {
+  "generated": "04-11-2026",
+  "scope": "intraday regime detection across timeframes + direction + edge; engines: regime_stabiliser, regime_6m, mtf_regime_engine",
+  "owner_rules": [
+   "live-only -> HDD RAID (4 brokers parallel on i5 and i7)",
+   "pullable -> SSD then HDD same day",
+   "nothing stays on SSD after Friday 20:00 IST"
+  ],
+  "decision_values": [
+   "REQUIRED_ENGINE",
+   "REQUIRED_OWNER",
+   "OPTIONAL_KEEP",
+   "OPTIONAL_ADD",
+   "DROP",
+   "NOT_AVAILABLE_AT_RETAIL",
+   "UNKNOWN"
+  ],
+  "escalations": [
+   "regime_6m_build.py fed regime_6m the index vendor aggregate nifty_1m.vol (CLAUDE.md 2.2 forbids) until commit 26f790a0; owner to confirm the nightly build on the boxes uses the fix",
+   "Event calendar: CLAUDE.md section 3 (SSD + Cloud Sync) conflicts with Friday 20:00 nothing-on-SSD",
+   "USDINR: Kite CDS future entitlement unproven (UNKNOWN, not not-available)"
+  ],
+  "approvals": "none ticked; draft for Fable round + external auditor + Kumar",
+  "audit_051126": "Opus audit FAIL-as-written: 9 rows added (U168+), U051/U054/U024 corrected. NOT proven: broker ids for added rows, windows, GIFT key. Approvals untouched."
+ },
+ "rows": [
+  {
+   "name": "NIFTY 50 index 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "nifty_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_INDEX|Nifty 50",
+    "dhan": "NSE IDX_I secid 13",
+    "kite": "256265",
+    "fyers": "NSE:NIFTY50-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers",
+    "kite"
+   ],
+   "timeframes": [
+    "1m",
+    "5m",
+    "15m",
+    "30m",
+    "60m",
+    "120m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/engines/regime_stabiliser.py:286",
+    "domain/engines/mtf_regime_engine.py:132",
+    "domain/services/regime_6m.py:187",
+    "tools/regime_6m_build.py:61"
+   ],
+   "reason": "the traded series; ADX/ATR/slope, 5d return, range, rv30 are all computed from it",
+   "status": "RECORDED (history pullers)",
+   "evidence": "dp_instruments.py:48; dp_depthrec.py:73; i7 scrip_master_20261104.csv NSE,I,13",
+   "id": "U001",
+   "cite_tokens": {
+    "domain/engines/regime_stabiliser.py:286": [
+     "self._adx.append(float(adx))"
+    ],
+    "domain/engines/mtf_regime_engine.py:132": [
+     "d[\"close\"]"
+    ],
+    "domain/services/regime_6m.py:187": [
+     "today_bars"
+    ],
+    "tools/regime_6m_build.py:61": [
+     "nifty_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY 50 index live ticks",
+   "group": "INDEX_SPOT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "NSE_INDEX|Nifty 50",
+    "dhan": "NSE IDX_I secid 13 (offered, not recorded)",
+    "kite": "256265",
+    "fyers": "NSE:NIFTY50-INDEX (offered, not recorded)"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "kite"
+   ],
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "CLAUDE.md:20 (SRC_ORDER upstox_live bar construction)"
+   ],
+   "reason": "live bar for the current minute; candles only exist after the minute closes | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED upstox+kite on i5 and i7",
+   "evidence": "LIVE_CENSUS i5/i7 upstox NSE_INDEX|Nifty 50, kite token 256265",
+   "id": "U002",
+   "cite_tokens": {
+    "CLAUDE.md:20": [
+     "upstox_live"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "India VIX 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "vix_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_INDEX|India VIX",
+    "dhan": "NSE IDX_I secid 21",
+    "kite": "264969",
+    "fyers": "NSE:INDIAVIX-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers",
+    "kite"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/regime_6m.py:196",
+    "tools/regime_6m_build.py:65",
+    "domain/services/meta_label.py:47"
+   ],
+   "reason": "volatility regime; 1m history only since 2025-08-11 (CLAUDE.md 1.1) so older backtests use futures realised vol",
+   "status": "RECORDED (history pullers)",
+   "evidence": "i7 scrip_master NSE,I,21 INDIA VIX; LIVE_CENSUS kite 264969",
+   "id": "U003",
+   "cite_tokens": {
+    "domain/services/regime_6m.py:196": [
+     "vix_now",
+     "pcr"
+    ],
+    "tools/regime_6m_build.py:65": [
+     "vix_1m"
+    ],
+    "domain/services/meta_label.py:47": [
+     "row.get(\"vix\")"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "India VIX live ticks",
+   "group": "INDEX_SPOT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_INDEX|India VIX",
+    "dhan": "NSE IDX_I secid 21 (offered, not recorded)",
+    "kite": "264969",
+    "fyers": "NSE:INDIAVIX-INDEX (offered, not recorded)"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "kite"
+   ],
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/regime_6m.py:196 (vix_now)"
+   ],
+   "reason": "live VIX percentile vs 6-month distribution",
+   "status": "RECORDED upstox+kite on i5 and i7",
+   "evidence": "LIVE_CENSUS",
+   "id": "U004",
+   "cite_tokens": {
+    "domain/services/regime_6m.py:196": [
+     "vix_now",
+     "pcr"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NIFTY BANK 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_INDEX|Nifty Bank",
+    "dhan": "NSE IDX_I secid 25",
+    "kite": "260105",
+    "fyers": "NSE:NIFTYBANK-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers",
+    "kite"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/derived_wide.py:452"
+   ],
+   "reason": "feature 111 banknifty_rs (BANKNIFTY relative strength)",
+   "status": "RECORDED (history pullers)",
+   "evidence": "i7 scrip_master NSE,I,25; LIVE_CENSUS kite 260105",
+   "id": "U005",
+   "cite_tokens": {
+    "domain/services/derived_wide.py:452": [
+     "NIFTY BANK"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY BANK live ticks",
+   "group": "INDEX_SPOT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_OWNER",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1"
+    }
+   },
+   "brokers": {
+    "kite": "260105",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick"
+   ],
+   "consumers": [],
+   "reason": "owner wishlist (Bank Nifty live graph); no engine reads the live tick yet",
+   "status": "RECORDED kite on i5 and i7 (TICK_EXTRA)",
+   "evidence": "LIVE_CENSUS kite NIFTY BANK token 260105",
+   "redundant": [],
+   "id": "U006",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SENSEX (BSE) 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "BSE_INDEX|SENSEX",
+    "dhan": "BSE IDX_I secid 51",
+    "kite": "UNKNOWN",
+    "fyers": "BSE:SENSEX-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/derived_wide.py:458"
+   ],
+   "reason": "feature 114 sensex_rs",
+   "status": "RECORDED (history pullers)",
+   "evidence": "i7 scrip_master BSE,I,51 Sensex; kite token not read: query instruments_today for SENSEX",
+   "id": "U007",
+   "cite_tokens": {
+    "domain/services/derived_wide.py:458": [
+     "sensex_rs"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY FIN SERVICE 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "NSE_INDEX|Nifty Fin Service",
+    "dhan": "NSE IDX_I secid 27",
+    "kite": "257801",
+    "fyers": "NSE:FINNIFTY-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "no regime/direction feature reads it (mapped in fyers_recorders.py:76-77 only); cheap daily pull, kept",
+   "status": "RECORDED (history pullers)",
+   "evidence": "i7 scrip_master NSE,I",
+   "id": "U008",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY MID SELECT 1m+1d candles",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "NSE_INDEX|NIFTY MID SELECT",
+    "dhan": "NSE IDX_I secid 442",
+    "kite": "UNKNOWN",
+    "fyers": "NSE:MIDCPNIFTY-INDEX"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "no regime/direction feature reads it (mapped in fyers_recorders.py:76-77 only); cheap daily pull, kept",
+   "status": "RECORDED (history pullers)",
+   "evidence": "i7 scrip_master NSE,I",
+   "id": "U009",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY near-month future 1m candles + OI + traded volume",
+   "group": "NIFTY_FUTURES",
+   "cls": "PULLABLE",
+   "store": "fut_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_FO monthly FUT (token from daily master)",
+    "dhan": "NSE FUTIDX NIFTY-<Mon><YYYY>-FUT (secid from daily master)",
+    "kite": "NFO NIFTY<YY><MON>FUT (token from daily master)",
+    "fyers": "NSE:NIFTY<YY><MON>FUT"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "5m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/traded_volume.py:138",
+    "tools/regime_6m_build.py:31",
+    "domain/services/regime_6m.py:280",
+    "CLAUDE.md:34 (VWAP/OBV from fut_1m traded volume)"
+   ],
+   "reason": "the only valid volume series (index volume is a vendor aggregate); also the pre-2025-08 volatility fallback. CORRECTED 04-11 after Fable r5: regime_6m_build.py used to feed regime_6m the index vendor aggregate nifty_1m.vol (CLAUDE.md 2.2 forbids); commit 26f790a0 now feeds futures traded volume through traded_volume._load_day (cites above). Verify on a box before trusting.",
+   "status": "RECORDED (history pullers)",
+   "evidence": "dp_families.py:52; CLAUDE.md 2.2",
+   "id": "U010",
+   "cite_tokens": {
+    "domain/services/traded_volume.py:138": [
+     "FROM fut_1m"
+    ],
+    "tools/regime_6m_build.py:31": [
+     "_with_traded_volume"
+    ],
+    "domain/services/regime_6m.py:280": [
+     "traded_volume"
+    ],
+    "CLAUDE.md:34": [
+     "fut_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY monthly+next-month future live ticks/depth/OI",
+   "group": "NIFTY_FUTURES",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_depth_live",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_FO monthly FUT (feed v3 full)",
+    "dhan": "FUTIDX secid (depth d200)",
+    "kite": "NIFTY26NOVFUT 15736578; NIFTY26DECFUT 15072002",
+    "fyers": "NSE:NIFTY26NOVFUT (TBT 50-level)"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/traded_volume.py:138",
+    "CLAUDE.md:20"
+   ],
+   "reason": "live futures volume/OI/basis; unrecoverable once missed",
+   "status": "RECORDED by all four on i5 and i7",
+   "evidence": "LIVE_CENSUS kite FUT tokens 15736578/15072002; dhan d200 FUT 1; fyers tbt FUT 1",
+   "id": "U011",
+   "cite_tokens": {
+    "domain/services/traded_volume.py:138": [
+     "FROM fut_1m"
+    ],
+    "CLAUDE.md:20": [
+     "upstox_live"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BANKNIFTY near-month future live ticks",
+   "group": "NIFTY_FUTURES",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_OWNER",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1"
+    }
+   },
+   "brokers": {
+    "kite": "BANKNIFTY26NOVFUT 15735298",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick"
+   ],
+   "consumers": [],
+   "reason": "owner wishlist (Bank Nifty, futures)",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite FUT",
+   "redundant": [],
+   "id": "U012",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NIFTY options live ticks/depth, monthly + weekly ATM band",
+   "group": "NIFTY_OPTIONS",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_depth_live",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_FO weekly ATM+-5 + monthly ATM+-5, full_d30 (47 keys on i7 today)",
+    "dhan": "d20 weekly ATM+-6 + monthly ATM+-5 (48 options + 1 d200 FUT)",
+    "kite": "monthly ATM+-20 + nearest-expiry ATM+-15, CE and PE (72 CE + 72 PE today)",
+    "fyers": "TBT ATM CE/PE + OTM pairs of the monthly (2 CE + 2 PE + 1 FUT)"
+   },
+   "primary": "kite",
+   "redundant": [
+    "upstox",
+    "dhan",
+    "fyers"
+   ],
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "tools/regime_6m_build.py:69 (PCR)",
+    "domain/services/regime_6m.py:196 (pcr)",
+    "domain/services/derived_features.py:226 (call/put walls from opt_chain_1m OI)"
+   ],
+   "reason": "OI, PCR, IV, walls and the order book exist only while streaming; weekly+monthly expiries both held (census proves weekly ON)",
+   "status": "RECORDED by all four, identical counts on i5 and i7 (Kite 72 CE, Dhan 13 CE d20, Upstox 25 keys, Fyers 2 CE)",
+   "evidence": "LIVE_CENSUS 04-11-2026; weekly expiry 2026-11-09 monthly 2026-11-23",
+   "id": "U013",
+   "cite_tokens": {
+    "tools/regime_6m_build.py:69": [
+     "options_chain_summary"
+    ],
+    "domain/services/regime_6m.py:196": [
+     "vix_now",
+     "pcr"
+    ],
+    "domain/services/derived_features.py:226": [
+     "FROM opt_chain_1m"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NIFTY option chain snapshots (opt_chain_1m, greeks_1m, opt_snapshot_live, opt_summary_1m, opt_atm_1m, opt_depth_1m)",
+   "group": "NIFTY_OPTIONS",
+   "cls": "LIVE_ONLY",
+   "store": "opt_chain_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "option chain endpoint",
+    "dhan": "/optionchain (1 request / 3 s)",
+    "kite": "NOT_OFFERED (no chain endpoint; /quote of ATM band only)",
+    "fyers": "options-chain-v3"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "tools/regime_6m_build.py:69 (options_chain_summary.pcr_oi_near)"
+   ],
+   "reason": "IV/greeks/OI of the whole chain at time t are not served again; PCR for the 6-month regime is built from it",
+   "status": "NOT RECORDED BY THE NEW SET (gap G8). The OLD pullers do record it: coverage.db snap rows fresh on both boxes 04-11 13:41 (upstox 15.2M/13.8M, dhan 4.1M/3.8M, fyers 138K/120K rows) inside rows_raw on SSD (G3 split needed)",
+   "evidence": "dp_families.py:64; config/recoverability.json join_audit_041126; RETAILER_PULLER_DESIGN_041126.md G3",
+   "id": "U014",
+   "cite_tokens": {
+    "tools/regime_6m_build.py:69": [
+     "options_chain_summary"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NIFTY option contracts 1m OHLC history (live + expired)",
+   "group": "NIFTY_OPTIONS",
+   "cls": "PULLABLE_WINDOW_LIMITED",
+   "store": "opt_ohlc_1m",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "expired contracts ~6 months",
+    "dhan": "active contracts only",
+    "kite": "NOT_OFFERED",
+    "fyers": "Prime expired F&O"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "fyers"
+   ],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "CLAUDE.md:14 (opt_ohlc_1m since 2025-09-15)"
+   ],
+   "reason": "backtest of option entries; window-limited so pull as soon as possible and keep on HDD (protected until a per-broker window is probed) | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED (dp_expired wired T-0749)",
+   "evidence": "config/recoverability.json window_limited_intraday",
+   "id": "U015",
+   "cite_tokens": {
+    "CLAUDE.md:14": [
+     "opt_ohlc_1m"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "HDD only until window probed"
+  },
+  {
+   "name": "BANKNIFTY options (monthly) live ticks",
+   "group": "NIFTY_OPTIONS",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "OPTIONAL_ADD",
+   "brokers": {
+    "dhan": "NSE OPTIDX BANKNIFTY-* (2,338 rows in master, monthly 2026-11-23, 2026-12-29)",
+    "kite": "NFO BANKNIFTY options (tokens from daily list)",
+    "upstox": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick"
+   ],
+   "consumers": [],
+   "reason": "no engine reads BANKNIFTY options; Dhan d20 is at its 50-instrument cap so only Kite ticks (cheap) can carry ATM+-5 monthly",
+   "status": "NOT RECORDED",
+   "evidence": "i7 scrip_master 04-11-2026: 2,338 BANKNIFTY OPTIDX rows",
+   "redundant": [],
+   "id": "U016",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SENSEX / BSE F&O options",
+   "group": "NIFTY_OPTIONS",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "DROP",
+   "brokers": {
+    "dhan": "BSE OPTIDX SENSEX-* (3,730 rows, weekly 2026-11-05/12/19)",
+    "upstox": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "",
+   "timeframes": [],
+   "consumers": [],
+   "reason": "no consumer beyond the SENSEX index (sensex_rs); BSE depth segment support not proven; not in owner's wishlist",
+   "status": "NOT RECORDED",
+   "evidence": "i7 scrip_master 04-11-2026",
+   "redundant": [],
+   "id": "U017",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "GIFT NIFTY daily candles",
+   "group": "PREMARKET_GAP",
+   "cls": "PULLABLE",
+   "store": "gift_nifty_1d",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "GLOBAL_INDEX canonical key (confirmed 01-11)",
+    "dhan": "NSE IDX_I secid 5024 GIFTNIFTY",
+    "kite": "NSEIX token 291849 (symbol format unresolved)",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "dhan",
+   "redundant": [
+    "upstox"
+   ],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:37",
+    "domain/services/session_schedule.py:144"
+   ],
+   "reason": "pre-market gap estimate",
+   "status": "RECORDED manually inside fullpuller (not scheduled)",
+   "evidence": "pullers/shared/gift_nifty_puller.py docstring; i7 scrip_master NSE,I,5024 GIFTNIFTY",
+   "id": "U018",
+   "cite_tokens": {
+    "domain/services/global_cues.py:37": [
+     "gift_nifty"
+    ],
+    "domain/services/session_schedule.py:144": [
+     "gift_nifty"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "GIFT NIFTY live overnight / pre-open ticks",
+   "group": "PREMARKET_GAP",
+   "cls": "LIVE_ONLY",
+   "store": "gift_nifty_ticks",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "dhan": "NSE IDX_I secid 5024 (index in Dhan master; live stream NOT yet proven)",
+    "upstox": "GLOBAL_INDEX key (live stream not proven)",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "dhan",
+   "redundant": [
+    "upstox"
+   ],
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/session_schedule.py:144",
+    "domain/services/global_cues.py:37"
+   ],
+   "reason": "GIFT trades 06:30-open; session_schedule samples it hourly; nothing records it. Needs ONE new recorder (gap G7); intraday GIFT history is not proven pullable so it is live-only",
+   "status": "NOT RECORDED - build gap G7; first step is a read-only Dhan IDX_I 5024 subscription test",
+   "evidence": "i7 scrip_master NSE,I,5024 GIFTNIFTY; RETAILER_PULLER_DESIGN_041126.md",
+   "id": "U019",
+   "cite_tokens": {
+    "domain/services/session_schedule.py:144": [
+     "gift_nifty"
+    ],
+    "domain/services/global_cues.py:37": [
+     "gift_nifty"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NIFTYBEES daily candles",
+   "group": "ETF",
+   "cls": "PULLABLE",
+   "store": "niftybees_1d",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "NSE_EQ|INF204KB14I2",
+    "dhan": "NSE_EQ secid 10576",
+    "kite": "2707457",
+    "fyers": "NSE:NIFTYBEES-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "owner wishlist BEES / CLAUDE.md 5.2 divergence; no engine reads it (constituents_top20.py:57 excludes it)",
+   "status": "RECORDED manually (not scheduled)",
+   "evidence": "niftybees_puller.py",
+   "id": "U020",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTYBEES live ticks",
+   "group": "ETF",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_OWNER",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1"
+    }
+   },
+   "brokers": {
+    "kite": "2707457",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick"
+   ],
+   "consumers": [],
+   "reason": "owner wishlist BEES",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite NIFTYBEES 2707457",
+   "redundant": [],
+   "id": "U021",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "USDINR spot daily (Yahoo INR=X)",
+   "group": "MACRO",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:38 (usdinr_change)"
+   ],
+   "reason": "macro stress overlay",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:65",
+   "redundant": [],
+   "id": "U022",
+   "cite_tokens": {
+    "domain/services/global_cues.py:38": [
+     "usdinr"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "USDINR NSE currency future (live or daily)",
+   "group": "MACRO",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "UNKNOWN",
+   "brokers": {
+    "dhan": "latest NSE FUTCUR USDINR contract in the Dhan master expires 2026-06-26 (no current-dated contract)",
+    "kite": "CDS USDINR near future IS subscribed by pullers/shared/dp_tickrec.py:138-162 when TICK_EXTRA_MACRO=1 (OFF today); account entitlement not proven",
+    "upstox": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "",
+   "timeframes": [],
+   "consumers": [],
+   "reason": "UNKNOWN, not 'not offered': the earlier verdict rested on the Dhan master alone (Fable r5). Next read-only step: with TICK_EXTRA_MACRO=1 on one box, does Kite instruments('CDS') return a current USDINR FUT and does the socket survive the token (dp_tickrec.py auditor note B1)? Yahoo INR=X covers the daily need meanwhile",
+   "status": "NOT RECORDED - entitlement unproven",
+   "evidence": "i7 scrip_master 04-11-2026 grep NSE,C FUTCUR USDINR; dp_tickrec.py:138-162",
+   "redundant": [],
+   "id": "U023",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "MCX CRUDEOIL + GOLD near-month futures daily",
+   "group": "MACRO",
+   "cls": "PULLABLE",
+   "store": "macro_futures_1d",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "dhan": "CRUDEOIL secid 573422 (2026-11-19); GOLD secid 495213 (2026-12-04); contract ids roll monthly",
+    "upstox": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "dhan",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_context.py:231"
+   ],
+   "reason": "CORRECTED 05-11: read by global_context.py:231 (macro_1d); expired months are unrecoverable",
+   "status": "RECORDED manually (hand-maintained ids)",
+   "evidence": "i7 scrip_master FUTCOM; macro_futures_puller.py",
+   "redundant": [],
+   "id": "U024",
+   "cite_tokens": {
+    "domain/services/global_context.py:231": [
+     "macro_1d"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "USDINR / MCX live ticks (Kite TICK_EXTRA_MACRO)",
+   "group": "MACRO",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "DROP",
+   "brokers": {
+    "kite": "CDS/MCX tokens",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "",
+   "timeframes": [],
+   "consumers": [],
+   "reason": "no regime/direction feature needs intraday macro ticks; daily covers the overlay",
+   "status": "OFF",
+   "evidence": "data_needed_instruments_041126.csv MACRO_FUTURES live rows",
+   "redundant": [],
+   "id": "U025",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ASX200 daily (Yahoo ^AXJO)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U026",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BITCOIN daily (Yahoo BTC-USD)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U027",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BRENT daily (Yahoo BZ=F)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U028",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "CAC daily (Yahoo ^FCHI)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U029",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "COPPER daily (Yahoo HG=F)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U030",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "DAX daily (Yahoo ^GDAXI)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U031",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "DOW daily (Yahoo ^DJI)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U032",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "DXY daily (Yahoo DX-Y.NYB)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U033",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "EURUSD daily (Yahoo EURUSD=X)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U034",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "FTSE daily (Yahoo ^FTSE)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U035",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "GOLD daily (Yahoo GC=F)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U036",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HANGSENG daily (Yahoo ^HSI)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U037",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "KOSPI daily (Yahoo ^KS11)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U038",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NASDAQ daily (Yahoo ^IXIC)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U039",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIKKEI daily (Yahoo ^N225)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U040",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "RUSSELL2000 daily (Yahoo ^RUT)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U041",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SHANGHAI daily (Yahoo 000001.SS)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U042",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SILVER daily (Yahoo SI=F)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U043",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SP500 daily (Yahoo ^GSPC)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U044",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "US10Y daily (Yahoo ^TNX)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U045",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "US2Y daily (Yahoo ^IRX)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U046",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "USDINR daily (Yahoo INR=X)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U047",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "USDJPY daily (Yahoo JPY=X)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U048",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "VIX_US daily (Yahoo ^VIX)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U049",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "WTI daily (Yahoo CL=F)",
+   "group": "WORLD_MARKETS",
+   "cls": "PULLABLE",
+   "store": "global_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_cues.py:84"
+   ],
+   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "status": "RECORDED (yahoo puller)",
+   "evidence": "dp_verify.py:60-71; no broker offers it",
+   "redundant": [],
+   "id": "U050",
+   "cite_tokens": {
+    "domain/services/global_cues.py:84": [
+     "global_cues_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "World markets intraday 1m (Yahoo)",
+   "group": "WORLD_MARKETS",
+   "cls": "LIVE_ONLY",
+   "store": "global_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "yahoo",
+   "timeframes": [],
+   "consumers": [
+    "tools/global_wire.py:141",
+    "tools/global_wire.py:143",
+    "tools/global_wire.py:146"
+   ],
+   "reason": "CORRECTED 05-11 (Opus audit D3): global_wire.py:141,143,146 read Yahoo DXY, US10Y, GOLD; Yahoo keeps ~30 d of 1m so unrecoverable once gone; was marked DROP",
+   "status": "REQUIRED, capture-forward",
+   "evidence": "pullers/fullpuller/download_engine.py:160",
+   "redundant": [],
+   "id": "U051",
+   "cite_tokens": {
+    "tools/global_wire.py:141": [
+     "DXY"
+    ],
+    "tools/global_wire.py:143": [
+     "US10Y"
+    ],
+    "tools/global_wire.py:146": [
+     "GOLD"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "FII/DII daily",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "fii_dii_daily",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/session_schedule.py:204",
+    "domain/services/session_schedule.py:309"
+   ],
+   "reason": "institutional direction (EOD only)",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U052",
+   "cite_tokens": {
+    "domain/services/session_schedule.py:204": [
+     "fii_dii"
+    ],
+    "domain/services/session_schedule.py:309": [
+     "fii_dii"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Participant OI daily",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "participant_oi_daily",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "who holds open interest; EOD only",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U053",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Derivative activity daily",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "derivative_activity",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:280"
+   ],
+   "reason": "CORRECTED 05-11: eod_pit.py:280 reads it (was 'nothing reads it')",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U054",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:280": [
+     "derivative_activity"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Market daily",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "market_1d",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "NSE daily market picture; nothing reads it",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U055",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Breadth daily (NSE advance/decline)",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "breadth_1d",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:256 (breadth_1d)"
+   ],
+   "reason": "feeds the EOD point-in-time feature BRD_adv_share only; the live regime engines do not read it and CLAUDE.md 2.2 says live breadth is computed from equity_1m",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U056",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:256": [
+     "FROM breadth_1d"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Corporate actions (NSE/Yahoo)",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "corporate_actions",
+   "decision": "OPTIONAL_KEEP",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [],
+   "reason": "CORRECTED after Fable r5: domain/services/corporate_actions.py (lines 94-121) detects splits from equity_1m/nifty_1m price jumps and never reads this store, so there is no engine consumer; kept because the NSE list is the proof for a detected jump",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U057",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Trading holidays / calendar",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "trading_holidays",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "CLAUDE.md:16 (Tuesday-rule fallback)"
+   ],
+   "reason": "expiry dating; degrades to Tuesday rule when unreadable | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED (nse puller)",
+   "evidence": "dp_families.py:92-134",
+   "redundant": [],
+   "id": "U058",
+   "cite_tokens": {
+    "CLAUDE.md:16": [
+     "Tuesday"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "Sector indices 1m (sector_1m)",
+   "group": "SECTOR",
+   "cls": "PULLABLE",
+   "store": "sector_1m",
+   "decision": "DROP",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "",
+   "timeframes": [],
+   "consumers": [],
+   "reason": "DECISION after Fable r5: only domain/services/sector_rotation.py:72 builds from it, and feature_compute_full.py:51 marks the sector features (f168-f200) too short (held only from 2025-08-11); no live regime engine reads it; instrument ids unresolved in the repo. Revisit if a sector-rotation feature is ever promoted.",
+   "status": "not needed",
+   "evidence": "dp_families.py:135 (sources upstox,kite,fyers); sector_rotation.py:72; feature_compute_full.py:51",
+   "redundant": [],
+   "id": "U059",
+   "cite_tokens": {},
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "upstox instrument master (daily snapshot)",
+   "group": "INSTRUMENT_MASTER",
+   "cls": "LIVE_ONLY",
+   "store": "instrument_master",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "daily master file",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "upstox",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "CLAUDE.md:30 (expiry dating)"
+   ],
+   "reason": "only today's list is served; old lists map old contracts | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED daily by the recorders (dhan: depth/j1800/scrip_master_*.csv)",
+   "evidence": "dp_families.py:116",
+   "redundant": [],
+   "id": "U060",
+   "cite_tokens": {
+    "CLAUDE.md:30": [
+     "expiry dating"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "dhan instrument master (daily snapshot)",
+   "group": "INSTRUMENT_MASTER",
+   "cls": "LIVE_ONLY",
+   "store": "instrument_master",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "dhan": "daily master file",
+    "upstox": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "dhan",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "CLAUDE.md:30 (expiry dating)",
+    "pullers/shared/dp_depthrec.py:232 (dhan scrip_master)"
+   ],
+   "reason": "only today's list is served; old lists map old contracts",
+   "status": "RECORDED daily by the recorders (dhan: depth/j1800/scrip_master_*.csv)",
+   "evidence": "dp_families.py:116",
+   "redundant": [],
+   "id": "U061",
+   "cite_tokens": {
+    "CLAUDE.md:30": [
+     "expiry dating"
+    ],
+    "pullers/shared/dp_depthrec.py:232": [
+     "scrip_master"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "kite instrument master (daily snapshot)",
+   "group": "INSTRUMENT_MASTER",
+   "cls": "LIVE_ONLY",
+   "store": "instrument_master",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "kite": "daily master file",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "CLAUDE.md:30 (expiry dating)"
+   ],
+   "reason": "only today's list is served; old lists map old contracts | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED daily by the recorders (dhan: depth/j1800/scrip_master_*.csv)",
+   "evidence": "dp_families.py:116",
+   "redundant": [],
+   "id": "U062",
+   "cite_tokens": {
+    "CLAUDE.md:30": [
+     "expiry dating"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "fyers instrument master (daily snapshot)",
+   "group": "INSTRUMENT_MASTER",
+   "cls": "LIVE_ONLY",
+   "store": "instrument_master",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "fyers": "daily master file",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN"
+   },
+   "primary": "fyers",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "CLAUDE.md:30 (expiry dating)"
+   ],
+   "reason": "only today's list is served; old lists map old contracts | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "status": "RECORDED daily by the recorders (dhan: depth/j1800/scrip_master_*.csv)",
+   "evidence": "dp_families.py:116",
+   "redundant": [],
+   "id": "U063",
+   "cite_tokens": {
+    "CLAUDE.md:30": [
+     "expiry dating"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "Index membership (NIFTY 50 list)",
+   "group": "NSE_REPORT",
+   "cls": "LIVE_ONLY",
+   "store": "index_membership",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:216 (membership from the prior session)"
+   ],
+   "reason": "which 50 names and weights apply on a given day",
+   "status": "RECORDED",
+   "evidence": "dp_families.py:116",
+   "redundant": [],
+   "id": "U064",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:216": [
+     "_prior_session"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "Domestic news by NIFTY 50 constituent",
+   "group": "NEWS",
+   "cls": "LIVE_ONLY",
+   "store": "news_items",
+   "decision": "REQUIRED_OWNER",
+   "brokers": {
+    "upstox": "news endpoint by instrument_key",
+    "dhan": "blocked DH-902 (needs Plus)",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "upstox",
+   "timeframes": [
+    "event"
+   ],
+   "consumers": [],
+   "reason": "owner wishlist; arrival time is part of the data; no engine reads it yet",
+   "status": "module exists; scheduling UNKNOWN",
+   "evidence": "dp_news.py",
+   "redundant": [],
+   "id": "U065",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "International news",
+   "group": "NEWS",
+   "cls": "LIVE_ONLY",
+   "store": "news_items",
+   "decision": "NOT_AVAILABLE_AT_RETAIL",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "",
+   "timeframes": [],
+   "consumers": [],
+   "reason": "no source for international news exists in the repo or in the four brokers' APIs; a free RSS source would need to be proven first",
+   "status": "NOT RECORDED",
+   "evidence": "repo-wide search 04-11-2026",
+   "redundant": [],
+   "id": "U066",
+   "cite_tokens": {},
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "Event calendar (RBI / FOMC / CPI) - manual",
+   "group": "EVENTS",
+   "cls": "MANUAL_CURATED",
+   "store": "event_calendar",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "manual",
+   "timeframes": [
+    "event"
+   ],
+   "consumers": [
+    "domain/services/institutional_flow.py:189",
+    "CLAUDE.md:49 (Event Calendar: SSD + Cloud Sync, i5, i7, Pi5)"
+   ],
+   "reason": "manual curation; no broker provides it. Placement follows CLAUDE.md section 3 (SSD + cloud sync on i5, i7, Pi5), NOT a broker live feed. CONFLICT FOR THE OWNER: Friday 20:00 'nothing on SSD' vs CLAUDE.md section 3; interim = section 3 placement plus a copy on the RAID HDD (tiny file). File is config/event_calendar.json; CLAUDE.md line 76 names data/event_calendar.yaml (mismatch reported).",
+   "status": "file exists; must be backed up to Drive",
+   "evidence": "config/event_calendar.json; CLAUDE.md:49",
+   "redundant": [],
+   "id": "U067",
+   "cite_tokens": {
+    "domain/services/institutional_flow.py:189": [
+     "event_calendar"
+    ],
+    "CLAUDE.md:49": [
+     "Event Calendar",
+     "Cloud Sync"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "SSD + cloud sync + Pi5 copy per CLAUDE.md section 3, plus a copy on RAID HDD (owner to resolve vs the Friday rule)"
+  },
+  {
+   "name": "ADANIENT 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE423A01024",
+    "dhan": "NSE_EQ secid 25",
+    "kite": "NSE:ADANIENT (token 6401)",
+    "fyers": "NSE:ADANIENT-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U068",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ADANIENT live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=1"
+    }
+   },
+   "recorder_symbol": "ADANIENT",
+   "brokers": {
+    "kite": "NSE:ADANIENT (token 6401)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U069",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ADANIPORTS 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE742F01042",
+    "dhan": "NSE_EQ secid 15083",
+    "kite": "NSE:ADANIPORTS (token 3861249)",
+    "fyers": "NSE:ADANIPORTS-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U070",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ADANIPORTS live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=2"
+    }
+   },
+   "recorder_symbol": "ADANIPORTS",
+   "brokers": {
+    "kite": "NSE:ADANIPORTS (token 3861249)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U071",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "APOLLOHOSP 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE437A01024",
+    "dhan": "NSE_EQ secid 157",
+    "kite": "NSE:APOLLOHOSP (token 40193)",
+    "fyers": "NSE:APOLLOHOSP-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U072",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "APOLLOHOSP live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=3"
+    }
+   },
+   "recorder_symbol": "APOLLOHOSP",
+   "brokers": {
+    "kite": "NSE:APOLLOHOSP (token 40193)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U073",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ASIANPAINT 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE021A01026",
+    "dhan": "NSE_EQ secid 236",
+    "kite": "NSE:ASIANPAINT (token 60417)",
+    "fyers": "NSE:ASIANPAINT-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U074",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ASIANPAINT live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=4"
+    }
+   },
+   "recorder_symbol": "ASIANPAINT",
+   "brokers": {
+    "kite": "NSE:ASIANPAINT (token 60417)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U075",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "AXISBANK 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE238A01034",
+    "dhan": "NSE_EQ secid 5900",
+    "kite": "NSE:AXISBANK (token 1510401)",
+    "fyers": "NSE:AXISBANK-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U076",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "AXISBANK live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=5"
+    }
+   },
+   "recorder_symbol": "AXISBANK",
+   "brokers": {
+    "kite": "NSE:AXISBANK (token 1510401)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U077",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BAJAJ-AUTO 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE917I01010",
+    "dhan": "NSE_EQ secid 16669",
+    "kite": "NSE:BAJAJ-AUTO (token 4267265)",
+    "fyers": "NSE:BAJAJ-AUTO-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U078",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BAJAJ-AUTO live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=6"
+    }
+   },
+   "recorder_symbol": "BAJAJ-AUTO",
+   "brokers": {
+    "kite": "NSE:BAJAJ-AUTO (token 4267265)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U079",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BAJFINANCE 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE296A01032",
+    "dhan": "NSE_EQ secid 317",
+    "kite": "NSE:BAJFINANCE (token 81153)",
+    "fyers": "NSE:BAJFINANCE-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U080",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BAJFINANCE live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=7"
+    }
+   },
+   "recorder_symbol": "BAJFINANCE",
+   "brokers": {
+    "kite": "NSE:BAJFINANCE (token 81153)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U081",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BAJAJFINSV 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE918I01026",
+    "dhan": "NSE_EQ secid 16675",
+    "kite": "NSE:BAJAJFINSV (token 4268801)",
+    "fyers": "NSE:BAJAJFINSV-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U082",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BAJAJFINSV live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=8"
+    }
+   },
+   "recorder_symbol": "BAJAJFINSV",
+   "brokers": {
+    "kite": "NSE:BAJAJFINSV (token 4268801)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U083",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BEL 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE263A01024",
+    "dhan": "NSE_EQ secid 383",
+    "kite": "NSE:BEL (token 98049)",
+    "fyers": "NSE:BEL-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U084",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BEL live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=9"
+    }
+   },
+   "recorder_symbol": "BEL",
+   "brokers": {
+    "kite": "NSE:BEL (token 98049)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U085",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "BHARTIARTL 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE397D01024",
+    "dhan": "NSE_EQ secid 10604",
+    "kite": "NSE:BHARTIARTL (token 2714625)",
+    "fyers": "NSE:BHARTIARTL-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U086",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "BHARTIARTL live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=10"
+    }
+   },
+   "recorder_symbol": "BHARTIARTL",
+   "brokers": {
+    "kite": "NSE:BHARTIARTL (token 2714625)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U087",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "CIPLA 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE059A01026",
+    "dhan": "NSE_EQ secid 694",
+    "kite": "NSE:CIPLA (token 177665)",
+    "fyers": "NSE:CIPLA-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U088",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "CIPLA live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=11"
+    }
+   },
+   "recorder_symbol": "CIPLA",
+   "brokers": {
+    "kite": "NSE:CIPLA (token 177665)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U089",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "COALINDIA 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE522F01014",
+    "dhan": "NSE_EQ secid 20374",
+    "kite": "NSE:COALINDIA (token 5215745)",
+    "fyers": "NSE:COALINDIA-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U090",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "COALINDIA live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=12"
+    }
+   },
+   "recorder_symbol": "COALINDIA",
+   "brokers": {
+    "kite": "NSE:COALINDIA (token 5215745)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U091",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "DRREDDY 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE089A01031",
+    "dhan": "NSE_EQ secid 881",
+    "kite": "NSE:DRREDDY (token 225537)",
+    "fyers": "NSE:DRREDDY-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U092",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "DRREDDY live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=13"
+    }
+   },
+   "recorder_symbol": "DRREDDY",
+   "brokers": {
+    "kite": "NSE:DRREDDY (token 225537)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U093",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "EICHERMOT 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE066A01021",
+    "dhan": "NSE_EQ secid 910",
+    "kite": "NSE:EICHERMOT (token 232961)",
+    "fyers": "NSE:EICHERMOT-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U094",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "EICHERMOT live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=14"
+    }
+   },
+   "recorder_symbol": "EICHERMOT",
+   "brokers": {
+    "kite": "NSE:EICHERMOT (token 232961)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U095",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ETERNAL 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE758T01015",
+    "dhan": "NSE_EQ secid 5097",
+    "kite": "NSE:ETERNAL (token 1304833)",
+    "fyers": "NSE:ETERNAL-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U096",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ETERNAL live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=15"
+    }
+   },
+   "recorder_symbol": "ETERNAL",
+   "brokers": {
+    "kite": "NSE:ETERNAL (token 1304833)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U097",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "GRASIM 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE047A01021",
+    "dhan": "NSE_EQ secid 1232",
+    "kite": "NSE:GRASIM (token 315393)",
+    "fyers": "NSE:GRASIM-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U098",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "GRASIM live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=16"
+    }
+   },
+   "recorder_symbol": "GRASIM",
+   "brokers": {
+    "kite": "NSE:GRASIM (token 315393)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U099",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "HCLTECH 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE860A01027",
+    "dhan": "NSE_EQ secid 7229",
+    "kite": "NSE:HCLTECH (token 1850625)",
+    "fyers": "NSE:HCLTECH-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U100",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HCLTECH live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=17"
+    }
+   },
+   "recorder_symbol": "HCLTECH",
+   "brokers": {
+    "kite": "NSE:HCLTECH (token 1850625)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U101",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "HDFCBANK 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE040A01034",
+    "dhan": "NSE_EQ secid 1333",
+    "kite": "NSE:HDFCBANK (token 341249)",
+    "fyers": "NSE:HDFCBANK-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U102",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HDFCBANK live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=18"
+    }
+   },
+   "recorder_symbol": "HDFCBANK",
+   "brokers": {
+    "kite": "NSE:HDFCBANK (token 341249)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U103",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "HDFCLIFE 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE795G01014",
+    "dhan": "NSE_EQ secid 467",
+    "kite": "NSE:HDFCLIFE (token 119553)",
+    "fyers": "NSE:HDFCLIFE-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U104",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HDFCLIFE live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=19"
+    }
+   },
+   "recorder_symbol": "HDFCLIFE",
+   "brokers": {
+    "kite": "NSE:HDFCLIFE (token 119553)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U105",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "HINDALCO 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE038A01020",
+    "dhan": "NSE_EQ secid 1363",
+    "kite": "NSE:HINDALCO (token 348929)",
+    "fyers": "NSE:HINDALCO-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U106",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HINDALCO live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=20"
+    }
+   },
+   "recorder_symbol": "HINDALCO",
+   "brokers": {
+    "kite": "NSE:HINDALCO (token 348929)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U107",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "HINDUNILVR 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE030A01027",
+    "dhan": "NSE_EQ secid 1394",
+    "kite": "NSE:HINDUNILVR (token 356865)",
+    "fyers": "NSE:HINDUNILVR-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U108",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "HINDUNILVR live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=21"
+    }
+   },
+   "recorder_symbol": "HINDUNILVR",
+   "brokers": {
+    "kite": "NSE:HINDUNILVR (token 356865)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U109",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ICICIBANK 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE090A01021",
+    "dhan": "NSE_EQ secid 4963",
+    "kite": "NSE:ICICIBANK (token 1270529)",
+    "fyers": "NSE:ICICIBANK-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U110",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ICICIBANK live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=22"
+    }
+   },
+   "recorder_symbol": "ICICIBANK",
+   "brokers": {
+    "kite": "NSE:ICICIBANK (token 1270529)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U111",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "INDIGO 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE646L01027",
+    "dhan": "NSE_EQ secid 11195",
+    "kite": "NSE:INDIGO (token 2865921)",
+    "fyers": "NSE:INDIGO-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U112",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "INDIGO live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=23"
+    }
+   },
+   "recorder_symbol": "INDIGO",
+   "brokers": {
+    "kite": "NSE:INDIGO (token 2865921)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U113",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "INFY 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE009A01021",
+    "dhan": "NSE_EQ secid 1594",
+    "kite": "NSE:INFY (token 408065)",
+    "fyers": "NSE:INFY-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U114",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "INFY live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=24"
+    }
+   },
+   "recorder_symbol": "INFY",
+   "brokers": {
+    "kite": "NSE:INFY (token 408065)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U115",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ITC 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE154A01025",
+    "dhan": "NSE_EQ secid 1660",
+    "kite": "NSE:ITC (token 424961)",
+    "fyers": "NSE:ITC-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U116",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ITC live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=25"
+    }
+   },
+   "recorder_symbol": "ITC",
+   "brokers": {
+    "kite": "NSE:ITC (token 424961)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U117",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "JIOFIN 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE758E01017",
+    "dhan": "NSE_EQ secid 18143",
+    "kite": "NSE:JIOFIN (token 4644609)",
+    "fyers": "NSE:JIOFIN-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U118",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "JIOFIN live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=26"
+    }
+   },
+   "recorder_symbol": "JIOFIN",
+   "brokers": {
+    "kite": "NSE:JIOFIN (token 4644609)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U119",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "JSWSTEEL 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE019A01038",
+    "dhan": "NSE_EQ secid 11723",
+    "kite": "NSE:JSWSTEEL (token 3001089)",
+    "fyers": "NSE:JSWSTEEL-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U120",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "JSWSTEEL live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=27"
+    }
+   },
+   "recorder_symbol": "JSWSTEEL",
+   "brokers": {
+    "kite": "NSE:JSWSTEEL (token 3001089)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U121",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "KOTAKBANK 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE237A01036",
+    "dhan": "NSE_EQ secid 1922",
+    "kite": "NSE:KOTAKBANK (token 492033)",
+    "fyers": "NSE:KOTAKBANK-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U122",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "KOTAKBANK live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=28"
+    }
+   },
+   "recorder_symbol": "KOTAKBANK",
+   "brokers": {
+    "kite": "NSE:KOTAKBANK (token 492033)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U123",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "LT 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE018A01030",
+    "dhan": "NSE_EQ secid 11483",
+    "kite": "NSE:LT (token 2939649)",
+    "fyers": "NSE:LT-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U124",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "LT live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=29"
+    }
+   },
+   "recorder_symbol": "LT",
+   "brokers": {
+    "kite": "NSE:LT (token 2939649)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U125",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "M&M 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE101A01026",
+    "dhan": "NSE_EQ secid 2031",
+    "kite": "NSE:M&M (token 519937)",
+    "fyers": "NSE:M&M-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U126",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "M&M live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=30"
+    }
+   },
+   "recorder_symbol": "M&M",
+   "brokers": {
+    "kite": "NSE:M&M (token 519937)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U127",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "MARUTI 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE585B01010",
+    "dhan": "NSE_EQ secid 10999",
+    "kite": "NSE:MARUTI (token 2815745)",
+    "fyers": "NSE:MARUTI-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U128",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "MARUTI live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=31"
+    }
+   },
+   "recorder_symbol": "MARUTI",
+   "brokers": {
+    "kite": "NSE:MARUTI (token 2815745)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U129",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "MAXHEALTH 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE027H01010",
+    "dhan": "NSE_EQ secid 22377",
+    "kite": "NSE:MAXHEALTH (token 5728513)",
+    "fyers": "NSE:MAXHEALTH-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U130",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "MAXHEALTH live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=32"
+    }
+   },
+   "recorder_symbol": "MAXHEALTH",
+   "brokers": {
+    "kite": "NSE:MAXHEALTH (token 5728513)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U131",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NESTLEIND 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE239A01024",
+    "dhan": "NSE_EQ secid 17963",
+    "kite": "NSE:NESTLEIND (token 4598529)",
+    "fyers": "NSE:NESTLEIND-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U132",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NESTLEIND live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=33"
+    }
+   },
+   "recorder_symbol": "NESTLEIND",
+   "brokers": {
+    "kite": "NSE:NESTLEIND (token 4598529)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U133",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NTPC 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE733E01010",
+    "dhan": "NSE_EQ secid 11630",
+    "kite": "NSE:NTPC (token 2977281)",
+    "fyers": "NSE:NTPC-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U134",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NTPC live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=34"
+    }
+   },
+   "recorder_symbol": "NTPC",
+   "brokers": {
+    "kite": "NSE:NTPC (token 2977281)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U135",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ONGC 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE213A01029",
+    "dhan": "NSE_EQ secid 2475",
+    "kite": "NSE:ONGC (token 633601)",
+    "fyers": "NSE:ONGC-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U136",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ONGC live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=35"
+    }
+   },
+   "recorder_symbol": "ONGC",
+   "brokers": {
+    "kite": "NSE:ONGC (token 633601)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U137",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "POWERGRID 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE752E01010",
+    "dhan": "NSE_EQ secid 14977",
+    "kite": "NSE:POWERGRID (token 3834113)",
+    "fyers": "NSE:POWERGRID-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U138",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "POWERGRID live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=36"
+    }
+   },
+   "recorder_symbol": "POWERGRID",
+   "brokers": {
+    "kite": "NSE:POWERGRID (token 3834113)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U139",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "RELIANCE 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE002A01018",
+    "dhan": "NSE_EQ secid 2885",
+    "kite": "NSE:RELIANCE (token 738561)",
+    "fyers": "NSE:RELIANCE-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U140",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "RELIANCE live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=37"
+    }
+   },
+   "recorder_symbol": "RELIANCE",
+   "brokers": {
+    "kite": "NSE:RELIANCE (token 738561)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U141",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SBILIFE 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE123W01016",
+    "dhan": "NSE_EQ secid 21808",
+    "kite": "NSE:SBILIFE (token 5582849)",
+    "fyers": "NSE:SBILIFE-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U142",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SBILIFE live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=38"
+    }
+   },
+   "recorder_symbol": "SBILIFE",
+   "brokers": {
+    "kite": "NSE:SBILIFE (token 5582849)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U143",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SBIN 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE062A01020",
+    "dhan": "NSE_EQ secid 3045",
+    "kite": "NSE:SBIN (token 779521)",
+    "fyers": "NSE:SBIN-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U144",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SBIN live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=39"
+    }
+   },
+   "recorder_symbol": "SBIN",
+   "brokers": {
+    "kite": "NSE:SBIN (token 779521)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U145",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SHRIRAMFIN 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE721A01047",
+    "dhan": "NSE_EQ secid 4306",
+    "kite": "NSE:SHRIRAMFIN (token 1102337)",
+    "fyers": "NSE:SHRIRAMFIN-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U146",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SHRIRAMFIN live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=40"
+    }
+   },
+   "recorder_symbol": "SHRIRAMFIN",
+   "brokers": {
+    "kite": "NSE:SHRIRAMFIN (token 1102337)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U147",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "SUNPHARMA 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE044A01036",
+    "dhan": "NSE_EQ secid 3351",
+    "kite": "NSE:SUNPHARMA (token 857857)",
+    "fyers": "NSE:SUNPHARMA-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U148",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "SUNPHARMA live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=41"
+    }
+   },
+   "recorder_symbol": "SUNPHARMA",
+   "brokers": {
+    "kite": "NSE:SUNPHARMA (token 857857)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U149",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TATACONSUM 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE192A01025",
+    "dhan": "NSE_EQ secid 3432",
+    "kite": "NSE:TATACONSUM (token 878593)",
+    "fyers": "NSE:TATACONSUM-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U150",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TATACONSUM live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=42"
+    }
+   },
+   "recorder_symbol": "TATACONSUM",
+   "brokers": {
+    "kite": "NSE:TATACONSUM (token 878593)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U151",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TMPV 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE155A01022",
+    "dhan": "NSE_EQ secid 3456",
+    "kite": "NSE:TMPV (token 884737)",
+    "fyers": "NSE:TMPV-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U152",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TMPV live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=43"
+    }
+   },
+   "recorder_symbol": "TMPV",
+   "brokers": {
+    "kite": "NSE:TMPV (token 884737)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U153",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TATASTEEL 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE081A01020",
+    "dhan": "NSE_EQ secid 3499",
+    "kite": "NSE:TATASTEEL (token 895745)",
+    "fyers": "NSE:TATASTEEL-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U154",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TATASTEEL live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=44"
+    }
+   },
+   "recorder_symbol": "TATASTEEL",
+   "brokers": {
+    "kite": "NSE:TATASTEEL (token 895745)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U155",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TCS 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE467B01029",
+    "dhan": "NSE_EQ secid 11536",
+    "kite": "NSE:TCS (token 2953217)",
+    "fyers": "NSE:TCS-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U156",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TCS live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=45"
+    }
+   },
+   "recorder_symbol": "TCS",
+   "brokers": {
+    "kite": "NSE:TCS (token 2953217)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U157",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TECHM 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE669C01036",
+    "dhan": "NSE_EQ secid 13538",
+    "kite": "NSE:TECHM (token 3465729)",
+    "fyers": "NSE:TECHM-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U158",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TECHM live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=46"
+    }
+   },
+   "recorder_symbol": "TECHM",
+   "brokers": {
+    "kite": "NSE:TECHM (token 3465729)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U159",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TITAN 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE280A01028",
+    "dhan": "NSE_EQ secid 3506",
+    "kite": "NSE:TITAN (token 897537)",
+    "fyers": "NSE:TITAN-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U160",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TITAN live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=47"
+    }
+   },
+   "recorder_symbol": "TITAN",
+   "brokers": {
+    "kite": "NSE:TITAN (token 897537)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U161",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "TRENT 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE849A01020",
+    "dhan": "NSE_EQ secid 1964",
+    "kite": "NSE:TRENT (token 502785)",
+    "fyers": "NSE:TRENT-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U162",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "TRENT live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=48"
+    }
+   },
+   "recorder_symbol": "TRENT",
+   "brokers": {
+    "kite": "NSE:TRENT (token 502785)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U163",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "ULTRACEMCO 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE481G01011",
+    "dhan": "NSE_EQ secid 11532",
+    "kite": "NSE:ULTRACEMCO (token 2952193)",
+    "fyers": "NSE:ULTRACEMCO-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U164",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "ULTRACEMCO live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=49"
+    }
+   },
+   "recorder_symbol": "ULTRACEMCO",
+   "brokers": {
+    "kite": "NSE:ULTRACEMCO (token 2952193)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U165",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "WIPRO 1m candles",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "PULLABLE",
+   "store": "equity_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "NSE_EQ|INE075A01022",
+    "dhan": "NSE_EQ secid 3787",
+    "kite": "NSE:WIPRO (token 969473)",
+    "fyers": "NSE:WIPRO-EQ"
+   },
+   "primary": "upstox",
+   "redundant": [
+    "dhan",
+    "kite",
+    "fyers"
+   ],
+   "timeframes": [
+    "1m",
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119",
+    "domain/services/market_state.py:119"
+   ],
+   "reason": "breadth and weighted constituent return",
+   "status": "RECORDED (history pullers); NOTE feature_compute_full.py:50 says equity_1m held ETFs not constituents - verify per symbol before trusting",
+   "evidence": "ids read from resolved_symbols_041126.csv (upstox, dhan) and resolved_symbols_fyers_kite_041126.csv (fyers: public NSE_CM.csv; kite: recorder token from LIVE_CENSUS)",
+   "id": "U166",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ],
+    "domain/services/market_state.py:119": [
+     "equity_1m"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "WIPRO live ticks",
+   "group": "NIFTY50_CONSTITUENT",
+   "cls": "LIVE_ONLY",
+   "store": "ticks_live",
+   "decision": "REQUIRED_ENGINE",
+   "requires_env": {
+    "edge_ticks": {
+     "TICK_EXTRA": "1",
+     "TICK_EXTRA_EQ": ">=50"
+    }
+   },
+   "recorder_symbol": "WIPRO",
+   "brokers": {
+    "kite": "NSE:WIPRO (token 969473)",
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "kite",
+   "timeframes": [
+    "tick",
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/constituents_top20.py:119"
+   ],
+   "reason": "live breadth/advancers; all 50 recorded because top-20 membership by weight changes",
+   "status": "RECORDED kite on i5 and i7",
+   "evidence": "LIVE_CENSUS kite EQ 53 rows (50 constituents + NIFTYBEES + BANK + FIN)",
+   "redundant": [],
+   "id": "U167",
+   "cite_tokens": {
+    "domain/services/constituents_top20.py:119": [
+     "NIFTY50"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "Sector indices 1m (NIFTY BANK/IT/FIN/AUTO/PHARMA/FMCG/METAL/ENERGY/REALTY and siblings)",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "NSE:<SECTOR>-INDEX (list to be fixed from derived_wide.py datasets 109/110/112/115)"
+   },
+   "primary": "fyers",
+   "redundant": [],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/derived_wide.py:452",
+    "domain/services/feature_compute_full.py:890"
+   ],
+   "reason": "read by derived_wide; window-limited at the broker (Fyers ~100 d) so history older than the window is lost for good if not kept",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U168",
+   "cite_tokens": {
+    "domain/services/derived_wide.py:452": [
+     "NIFTY BANK"
+    ],
+    "domain/services/feature_compute_full.py:890": [
+     "NIFTY IT"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "NIFTY MIDCAP 100 + NIFTY NEXT 50 index 1m",
+   "group": "INDEX_SPOT",
+   "cls": "PULLABLE",
+   "store": "index_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "NSE:NIFTYMIDCAP100-INDEX, NSE:NIFTYJR-INDEX (to be verified)"
+   },
+   "primary": "fyers",
+   "redundant": [],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "domain/services/derived_wide.py:452",
+    "domain/services/feature_compute_full.py:890"
+   ],
+   "reason": "read by derived_wide datasets 109/110/112/115",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U169",
+   "cite_tokens": {
+    "domain/services/derived_wide.py:452": [
+     "NIFTY BANK"
+    ],
+    "domain/services/feature_compute_full.py:890": [
+     "NIFTY IT"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "GIFT NIFTY 1m (pre-market gap cue)",
+   "group": "GLOBAL_CUE",
+   "cls": "LIVE_ONLY",
+   "store": "global_cues_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "instrument_key to be found in the Upstox master (CLAUDE.md section 5)",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "upstox",
+   "redundant": [],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "tools/global_wire.py:23",
+    "tools/global_wire.py:46"
+   ],
+   "reason": "feeds global_cues_1m, stale since 16-10; no row existed",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U170",
+   "cite_tokens": {
+    "tools/global_wire.py:23": [
+     "gift_nifty_bias"
+    ],
+    "tools/global_wire.py:46": [
+     "gift_nifty_bias"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "Upstox GLOBAL_INDEX / INDICATOR 1m series",
+   "group": "GLOBAL_CUE",
+   "cls": "LIVE_ONLY",
+   "store": "global_cues_1m",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "GLOBAL_* keys (master names unverified)",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "upstox",
+   "redundant": [],
+   "timeframes": [
+    "1m"
+   ],
+   "consumers": [
+    "tools/global_wire.py:142",
+    "tools/global_wire.py:145"
+   ],
+   "reason": "16 Upstox/Yahoo 1m series build global_cues_1m",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U171",
+   "cite_tokens": {
+    "tools/global_wire.py:142": [
+     "BRENT"
+    ],
+    "tools/global_wire.py:145": [
+     "WTI"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "RAID HDD directly (i5 and i7, all brokers in parallel)"
+  },
+  {
+   "name": "NSE F&O UDiFF bhavcopy, NIFTY contracts (daily)",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "fo_bhav_nifty_daily",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "redundant": [],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:156"
+   ],
+   "reason": "read by eod_pit and options_context (judge gate 18); the old 'duplicates broker candles' reason was wrong",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U172",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:156": [
+     "fo_bhav_nifty_daily"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "participant_vol (NSE participant volume, daily)",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "participant_vol",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "redundant": [],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:130"
+   ],
+   "reason": "read by eod_pit; earlier marked not needed",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U173",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:130": [
+     "participant_vol_daily"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "CM bhavcopy / MTO delivery files (daily)",
+   "group": "NSE_REPORT",
+   "cls": "PULLABLE",
+   "store": "bhavcopy",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "nse",
+   "redundant": [],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:218",
+    "domain/services/eod_pit.py:229"
+   ],
+   "reason": "read by eod_pit",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U174",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:218": [
+     "market_delivery_daily"
+    ],
+    "domain/services/eod_pit.py:229": [
+     "equity_eod_delivery"
+    ]
+   },
+   "config_class": "RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  },
+  {
+   "name": "india_macro (RBI / macro series, manual curated)",
+   "group": "MACRO",
+   "cls": "MANUAL_CURATED",
+   "store": "india_macro",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "UNKNOWN",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "manual",
+   "redundant": [],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/eod_pit.py:242"
+   ],
+   "reason": "read by eod_pit; manually curated so not pullable",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U175",
+   "cite_tokens": {
+    "domain/services/eod_pit.py:242": [
+     "india_macro"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "SSD + cloud sync + Pi5 copy per CLAUDE.md section 3, plus a copy on RAID HDD (owner to resolve vs the Friday rule)"
+  },
+  {
+   "name": "BANKNIFTY futures daily",
+   "group": "FUTURES",
+   "cls": "PULLABLE_WINDOW_LIMITED",
+   "store": "fut_1d",
+   "decision": "REQUIRED_ENGINE",
+   "brokers": {
+    "upstox": "UNKNOWN",
+    "dhan": "NSE FUTIDX BANKNIFTY-<Mon><YYYY>-FUT (secid from the daily master)",
+    "kite": "UNKNOWN",
+    "fyers": "UNKNOWN"
+   },
+   "primary": "dhan",
+   "redundant": [],
+   "timeframes": [
+    "1D"
+   ],
+   "consumers": [
+    "domain/services/global_context.py:224"
+   ],
+   "reason": "read by global_context",
+   "status": "ADDED 05-11-2026 from Opus audit D1-D5; broker identifiers still to be filled and proven",
+   "evidence": "docs/framework/OPUS_AUDIT_DATA_NEEDED_051126.md",
+   "id": "U176",
+   "cite_tokens": {
+    "domain/services/global_context.py:224": [
+     "fut_1d"
+    ]
+   },
+   "config_class": "NON_RECOVERABLE",
+   "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
+  }
+ ]
+}
