@@ -1,8 +1,16 @@
-# DATA NEEDED LIST (05-11-2026) - what the engines read, per row
+# DATA NEEDED LIST - FINAL FOR EXTERNAL AUDIT (05-11-2026)
 
-Source of truth: `config/retailer_edge_universe.json` (176 rows). **Status: NOT yet proven or audited.** An Opus audit on 05-11 found it incomplete; 9 rows were added (U168-U176) and 3 corrected; a second audit and an external audit are pending. Broker ids for the added rows are unproven.
+Source of truth: `config/retailer_edge_universe.json` (176 rows). **Status: NOT approved by anyone.** Fable (05-11): no new feed needed, ~75% confidence, no edge demonstrated. Opus round 1: FAIL as written; round 2: PASS-WITH-FIXES. External audit: pending. Owner: pending.
 
-Decision values: REQUIRED_* = must be pulled; OPTIONAL_KEEP = keep if cheap; DROP = not read by any engine. `cites` = code lines that read it (pinned = registered in tests/fixtures/universe_cite_pins.json).
+## Open gaps (known, unfixed or partly fixed)
+
+- **G1** point-in-time NIFTY 50 membership history (survivorship bias); static config/nifty50.py is used -- _NOT BUILT; history must come from NSE index circulars, UNVERIFIED, do not invent_
+- **G2** rule_change_history: lot size, expiry-day, STT/charges by effective date (backtest PnL validity) -- _NOT BUILT; values must be sourced from NSE/SEBI circulars; the figures quoted by auditors (75->65) are UNVERIFIED_
+- **G3** historical news archive: Upstox ~7 d only; international news not available at retail -- _decision: news features LIVE/PAPER ONLY, blocked from ML training/backtest until an archive exists_
+- **G4** continuous-futures roll adjustment for fut_1m backtests -- _UNVERIFIED whether the engine adjusts; to be read from code and proven_
+- **G5** per-broker 1m history depth per dataset (index 1m is held from 2022-01-03 per CLAUDE.md, so not every 1m series is window-limited to 28/100 days) -- _to be MEASURED: task T-0832 max depth x max period; classifier must not be changed before_
+- **G6** feature_compute_full.py:50 blocks breadth f151-f167 saying equity_1m holds ETFs not constituents; MEASURED 05-11 on i5 blpro_working.db: equity_1m holds 52 symbols (NIFTY constituents by name) from dhan since 2025-09-15 (4.39M rows), fyers_backfill since 2026-09-15 (677k rows, 50 symbols, 75,000 rows for 4 days = 50x375x4 complete), fyers_live 50 symbols (Aug-Sep 2026), kite 23 symbols; older rows before 2025-09-15 not measured -- _PARTLY RESOLVED (Opus R2): measured only rows since 2025-09-15; 52 symbols vs 50 constituents unexplained; equity_1m mixes 4 sources with different symbol spellings (breadth can double-count unless keyed by db_sym in config/nifty50.py); f151-f167 block also cites missing index weights. Code block not touched._
+- **G7** residual wrong citations (Opus R2 D6): U013/U014 options_chain_summary (history is bhavcopy), U064 _prior_session reads no membership, U022 label tuple, U168 feature_compute_full.py:890 inside the blocked f151-f167 range, U170 cites docstring lines -- _OPEN_
 
 ## Summary by group
 
@@ -53,31 +61,31 @@ Decision values: REQUIRED_* = must be pulled; OPTIONAL_KEEP = keep if cheap; DRO
 | U023 | USDINR NSE currency future (live or daily) | MACRO | UNKNOWN |  |  | ticks_live | NON_RECOVERABLE | 0 cited, 0 pinned |
 | U024 | MCX CRUDEOIL + GOLD near-month futures daily | MACRO | REQUIRED_ENGINE | dhan | 1D | macro_futures_1d | RECOVERABLE | 1 cited, 1 pinned |
 | U025 | USDINR / MCX live ticks (Kite TICK_EXTRA_MACRO) | MACRO | DROP |  |  | ticks_live | NON_RECOVERABLE | 0 cited, 0 pinned |
-| U026 | ASX200 daily (Yahoo ^AXJO) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U027 | BITCOIN daily (Yahoo BTC-USD) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U028 | BRENT daily (Yahoo BZ=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U029 | CAC daily (Yahoo ^FCHI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U030 | COPPER daily (Yahoo HG=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U031 | DAX daily (Yahoo ^GDAXI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U032 | DOW daily (Yahoo ^DJI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U033 | DXY daily (Yahoo DX-Y.NYB) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U034 | EURUSD daily (Yahoo EURUSD=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U035 | FTSE daily (Yahoo ^FTSE) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U036 | GOLD daily (Yahoo GC=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U037 | HANGSENG daily (Yahoo ^HSI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U038 | KOSPI daily (Yahoo ^KS11) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U039 | NASDAQ daily (Yahoo ^IXIC) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U040 | NIKKEI daily (Yahoo ^N225) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U041 | RUSSELL2000 daily (Yahoo ^RUT) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U042 | SHANGHAI daily (Yahoo 000001.SS) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U043 | SILVER daily (Yahoo SI=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U044 | SP500 daily (Yahoo ^GSPC) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U045 | US10Y daily (Yahoo ^TNX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U046 | US2Y daily (Yahoo ^IRX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U047 | USDINR daily (Yahoo INR=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U048 | USDJPY daily (Yahoo JPY=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U049 | VIX_US daily (Yahoo ^VIX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
-| U050 | WTI daily (Yahoo CL=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 1 cited, 1 pinned |
+| U026 | ASX200 daily (Yahoo ^AXJO) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U027 | BITCOIN daily (Yahoo BTC-USD) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U028 | BRENT daily (Yahoo BZ=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U029 | CAC daily (Yahoo ^FCHI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U030 | COPPER daily (Yahoo HG=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U031 | DAX daily (Yahoo ^GDAXI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U032 | DOW daily (Yahoo ^DJI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U033 | DXY daily (Yahoo DX-Y.NYB) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U034 | EURUSD daily (Yahoo EURUSD=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U035 | FTSE daily (Yahoo ^FTSE) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U036 | GOLD daily (Yahoo GC=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U037 | HANGSENG daily (Yahoo ^HSI) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U038 | KOSPI daily (Yahoo ^KS11) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U039 | NASDAQ daily (Yahoo ^IXIC) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U040 | NIKKEI daily (Yahoo ^N225) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U041 | RUSSELL2000 daily (Yahoo ^RUT) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U042 | SHANGHAI daily (Yahoo 000001.SS) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U043 | SILVER daily (Yahoo SI=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U044 | SP500 daily (Yahoo ^GSPC) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U045 | US10Y daily (Yahoo ^TNX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U046 | US2Y daily (Yahoo ^IRX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U047 | USDINR daily (Yahoo INR=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U048 | USDJPY daily (Yahoo JPY=X) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U049 | VIX_US daily (Yahoo ^VIX) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
+| U050 | WTI daily (Yahoo CL=F) | WORLD_MARKETS | REQUIRED_OWNER | yahoo | 1D | global_daily | RECOVERABLE | 0 cited, 0 pinned |
 | U051 | World markets intraday 1m (Yahoo) | WORLD_MARKETS | REQUIRED_ENGINE | yahoo |  | global_1m | NON_RECOVERABLE | 3 cited, 3 pinned |
 | U052 | FII/DII daily | NSE_REPORT | REQUIRED_ENGINE | nse | 1D | fii_dii_daily | RECOVERABLE | 2 cited, 2 pinned |
 | U053 | Participant OI daily | NSE_REPORT | REQUIRED_OWNER | nse | 1D | participant_oi_daily | RECOVERABLE | 0 cited, 0 pinned |

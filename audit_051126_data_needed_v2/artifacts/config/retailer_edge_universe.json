@@ -22,7 +22,51 @@
    "USDINR: Kite CDS future entitlement unproven (UNKNOWN, not not-available)"
   ],
   "approvals": "none ticked; draft for Fable round + external auditor + Kumar",
-  "audit_051126": "Opus audit FAIL-as-written: 9 rows added (U168+), U051/U054/U024 corrected. NOT proven: broker ids for added rows, windows, GIFT key. Approvals untouched."
+  "audit_051126": "Opus audit FAIL-as-written: 9 rows added (U168+), U051/U054/U024 corrected. NOT proven: broker ids for added rows, windows, GIFT key. Approvals untouched.",
+  "open_gaps_051126": [
+   {
+    "id": "G1",
+    "gap": "point-in-time NIFTY 50 membership history (survivorship bias); static config/nifty50.py is used",
+    "source": "Opus audit item 6 + external audit 05-11",
+    "status": "NOT BUILT; history must come from NSE index circulars, UNVERIFIED, do not invent"
+   },
+   {
+    "id": "G2",
+    "gap": "rule_change_history: lot size, expiry-day, STT/charges by effective date (backtest PnL validity)",
+    "source": "external audit 05-11",
+    "status": "NOT BUILT; values must be sourced from NSE/SEBI circulars; the figures quoted by auditors (75->65) are UNVERIFIED"
+   },
+   {
+    "id": "G3",
+    "gap": "historical news archive: Upstox ~7 d only; international news not available at retail",
+    "source": "external audit 05-11",
+    "status": "decision: news features LIVE/PAPER ONLY, blocked from ML training/backtest until an archive exists"
+   },
+   {
+    "id": "G4",
+    "gap": "continuous-futures roll adjustment for fut_1m backtests",
+    "source": "external audit 05-11",
+    "status": "UNVERIFIED whether the engine adjusts; to be read from code and proven"
+   },
+   {
+    "id": "G5",
+    "gap": "per-broker 1m history depth per dataset (index 1m is held from 2022-01-03 per CLAUDE.md, so not every 1m series is window-limited to 28/100 days)",
+    "source": "conflict between the facts given to auditors and CLAUDE.md",
+    "status": "to be MEASURED: task T-0832 max depth x max period; classifier must not be changed before"
+   },
+   {
+    "id": "G6",
+    "gap": "feature_compute_full.py:50 blocks breadth f151-f167 saying equity_1m holds ETFs not constituents; MEASURED 05-11 on i5 blpro_working.db: equity_1m holds 52 symbols (NIFTY constituents by name) from dhan since 2025-09-15 (4.39M rows), fyers_backfill since 2026-09-15 (677k rows, 50 symbols, 75,000 rows for 4 days = 50x375x4 complete), fyers_live 50 symbols (Aug-Sep 2026), kite 23 symbols; older rows before 2025-09-15 not measured",
+    "source": "Fable conflict + Opus audit, resolved by read-only query",
+    "status": "PARTLY RESOLVED (Opus R2): measured only rows since 2025-09-15; 52 symbols vs 50 constituents unexplained; equity_1m mixes 4 sources with different symbol spellings (breadth can double-count unless keyed by db_sym in config/nifty50.py); f151-f167 block also cites missing index weights. Code block not touched."
+   },
+   {
+    "id": "G7",
+    "gap": "residual wrong citations (Opus R2 D6): U013/U014 options_chain_summary (history is bhavcopy), U064 _prior_session reads no membership, U022 label tuple, U168 feature_compute_full.py:890 inside the blocked f151-f167 range, U170 cites docstring lines",
+    "source": "Opus R2 05-11",
+    "status": "OPEN"
+   }
+  ]
  },
  "rows": [
   {
@@ -509,7 +553,7 @@
     "domain/services/regime_6m.py:196 (pcr)",
     "domain/services/derived_features.py:226 (call/put walls from opt_chain_1m OI)"
    ],
-   "reason": "OI, PCR, IV, walls and the order book exist only while streaming; weekly+monthly expiries both held (census proves weekly ON)",
+   "reason": "OI, PCR, IV, walls and the order book exist only while streaming; weekly+monthly expiries both held (census proves weekly ON) | 05-11 Opus D6: the cited options_chain_summary history is built from the NSE F&O bhavcopy (daily_recorder.py:90), NOT from the live chain; live ticks/depth/OI remain live-only.",
    "status": "RECORDED by all four, identical counts on i5 and i7 (Kite 72 CE, Dhan 13 CE d20, Upstox 25 keys, Fyers 2 CE)",
    "evidence": "LIVE_CENSUS 04-11-2026; weekly expiry 2026-11-09 monthly 2026-11-23",
    "id": "U013",
@@ -551,7 +595,7 @@
    "consumers": [
     "tools/regime_6m_build.py:69 (options_chain_summary.pcr_oi_near)"
    ],
-   "reason": "IV/greeks/OI of the whole chain at time t are not served again; PCR for the 6-month regime is built from it",
+   "reason": "IV/greeks/OI of the whole chain at time t are not served again; PCR for the 6-month regime is built from it | 05-11 Opus D6: options_chain_summary history comes from NSE F&O bhavcopy (daily_recorder.py:90); the live chain snapshots (opt_chain_1m, greeks_1m) are a different, live-only store. Citation kept, claim narrowed.",
    "status": "NOT RECORDED BY THE NEW SET (gap G8). The OLD pullers do record it: coverage.db snap rows fresh on both boxes 04-11 13:41 (upstox 15.2M/13.8M, dhan 4.1M/3.8M, fyers 138K/120K rows) inside rows_raw on SSD (G3 split needed)",
    "evidence": "dp_families.py:64; config/recoverability.json join_audit_041126; RETAILER_PULLER_DESIGN_041126.md G3",
    "id": "U014",
@@ -585,7 +629,7 @@
    "consumers": [
     "CLAUDE.md:14 (opt_ohlc_1m since 2025-09-15)"
    ],
-   "reason": "backtest of option entries; window-limited so pull as soon as possible and keep on HDD (protected until a per-broker window is probed) | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18)",
+   "reason": "backtest of option entries; window-limited so pull as soon as possible and keep on HDD (protected until a per-broker window is probed) | no engine read-site is pinned yet (CLAUDE.md rule only), so this is an owner requirement, not REQUIRED_ENGINE (Fable round 8 N18) | 05-11 Opus D6: no strike band is specified; which strikes/expiries to keep is UNDECIDED.",
    "status": "RECORDED (dp_expired wired T-0749)",
    "evidence": "config/recoverability.json window_limited_intraday",
    "id": "U015",
@@ -913,19 +957,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U026",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -945,19 +983,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U027",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -977,19 +1009,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named BRENT IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U028",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1009,19 +1035,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named CAC IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U029",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1041,19 +1061,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U030",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1073,19 +1087,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named DAX IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U031",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1105,19 +1113,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U032",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1137,19 +1139,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named DXY IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U033",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1169,19 +1165,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U034",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1201,19 +1191,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named FTSE IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U035",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1233,19 +1217,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named GOLD IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U036",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1265,19 +1243,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U037",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1297,19 +1269,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U038",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1329,19 +1295,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U039",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1361,19 +1321,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U040",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1393,19 +1347,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U041",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1425,19 +1373,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U042",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1457,19 +1399,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U043",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1489,19 +1425,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U044",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1521,19 +1451,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named US10Y IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U045",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1553,19 +1477,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U046",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1585,19 +1503,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named USDINR IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U047",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1617,19 +1529,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U048",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1649,19 +1555,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. No 1m series of this name is read there either.",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U049",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1681,19 +1581,13 @@
    "timeframes": [
     "1D"
    ],
-   "consumers": [
-    "domain/services/global_cues.py:84"
-   ],
-   "reason": "owner wishlist (world markets); global_cues reads a global risk vote, per-symbol use not individually verified",
+   "consumers": [],
+   "reason": "owner wishlist (daily series). CORRECTED 05-11 (Opus audit D6): no engine reader of THIS daily series was found; global_cues.py:84 reads global_cues_1m, which tools/global_wire.py builds from 1m series. A 1m series named WTI IS read there (U051/U171 cover that).",
    "status": "RECORDED (yahoo puller)",
    "evidence": "dp_verify.py:60-71; no broker offers it",
    "redundant": [],
    "id": "U050",
-   "cite_tokens": {
-    "domain/services/global_cues.py:84": [
-     "global_cues_1m"
-    ]
-   },
+   "cite_tokens": {},
    "config_class": "RECOVERABLE",
    "destination": "SSD at pull, moved to RAID HDD the same day (i5, i7; Pi5 copy to i5)"
   },
@@ -1960,7 +1854,7 @@
    "primary": "",
    "timeframes": [],
    "consumers": [],
-   "reason": "DECISION after Fable r5: only domain/services/sector_rotation.py:72 builds from it, and feature_compute_full.py:51 marks the sector features (f168-f200) too short (held only from 2025-08-11); no live regime engine reads it; instrument ids unresolved in the repo. Revisit if a sector-rotation feature is ever promoted.",
+   "reason": "DECISION after Fable r5: only domain/services/sector_rotation.py:72 builds from it, and feature_compute_full.py:51 marks the sector features (f168-f200) too short (held only from 2025-08-11); no live regime engine reads it; instrument ids unresolved in the repo. Revisit if a sector-rotation feature is ever promoted. | 05-11: the OLD sector_1m table is dropped; the same indices are now REQUIRED as index_1m in U168 (superseded, not a contradiction)",
    "status": "not needed",
    "evidence": "dp_families.py:135 (sources upstox,kite,fyers); sector_rotation.py:72; feature_compute_full.py:51",
    "redundant": [],
@@ -2120,7 +2014,7 @@
    "consumers": [
     "domain/services/constituents_top20.py:216 (membership from the prior session)"
    ],
-   "reason": "which 50 names and weights apply on a given day",
+   "reason": "which 50 names and weights apply on a given day | 05-11 Opus D6: membership is the STATIC config/nifty50.py today, not a point-in-time table (gap G1).",
    "status": "RECORDED",
    "evidence": "dp_families.py:116",
    "redundant": [],
@@ -2150,7 +2044,7 @@
     "event"
    ],
    "consumers": [],
-   "reason": "owner wishlist; arrival time is part of the data; no engine reads it yet",
+   "reason": "owner wishlist; arrival time is part of the data; no engine reads it yet | 05-11 external audit: Upstox serves ~7 days of news, so news features are LIVE/PAPER ONLY until a historical archive exists (not usable in ML training or backtests); UNVERIFIED window",
    "status": "module exists; scheduling UNKNOWN",
    "evidence": "dp_news.py",
    "redundant": [],

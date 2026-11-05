@@ -1,0 +1,333 @@
+{
+ "CLAUDE.md:14": {
+  "kind": "rule_doc",
+  "line": "* **Options 1m (`opt_ohlc_1m`):** 2025-09-15 to present (~13.5 months).",
+  "tokens": [
+   "opt_ohlc_1m"
+  ]
+ },
+ "CLAUDE.md:16": {
+  "kind": "rule_doc",
+  "line": "* **Trading Holidays (`trading_holidays`):** Degrades to **\"Tuesday rule only\"** if the `NSE holiday-master FO` src is unreadable or missing.",
+  "tokens": [
+   "Tuesday"
+  ]
+ },
+ "CLAUDE.md:20": {
+  "kind": "rule_doc",
+  "line": "`(\"upstox_live\", \"upstox_expired\", \"fyers_backfill\", \"dhan\", \"fyers_live\", \"fyers_live+upstox_oi\", \"fyers_live+dhan_oi\")`",
+  "tokens": [
+   "upstox_live"
+  ]
+ },
+ "CLAUDE.md:30": {
+  "kind": "rule_doc",
+  "line": "* **The Tuesday Rule Fallback:** If `nse_calendar.py` cannot read `trading_holidays` (src `NSE holiday-master FO`), expiry dating falls back to \"Tuesday rule only\". The regime engine must flag `expiry_confidence = LOW` on these days and increase the `NO_TRADE` threshold.",
+  "tokens": [
+   "expiry dating"
+  ]
+ },
+ "CLAUDE.md:34": {
+  "kind": "rule_doc",
+  "line": "* **Volume Proxy:** `market_1m` volume is the *NIFTY INDEX volume* (vendor aggregate, Kite/Upstox send 0). It must NOT be used for VWAP/OBV. VWAP/OBV must use `fut_1m` traded volume (`traded_volume` column), NaN where unmeasured.",
+  "tokens": [
+   "fut_1m"
+  ]
+ },
+ "CLAUDE.md:49": {
+  "kind": "rule_doc",
+  "line": "| **Event Calendar** (`event_calendar.yaml`) | **SSD + Cloud Sync** | i5, i7, Pi5 | Manual curation. Must survive box death. |",
+  "tokens": [
+   "Event Calendar",
+   "Cloud Sync"
+  ]
+ },
+ "domain/engines/mtf_regime_engine.py:132": {
+  "kind": "read_site",
+  "line": "close = d[\"close\"]",
+  "tokens": [
+   "d[\"close\"]"
+  ]
+ },
+ "domain/engines/regime_stabiliser.py:286": {
+  "kind": "read_site",
+  "line": "self._adx.append(float(adx))",
+  "tokens": [
+   "self._adx.append(float(adx))"
+  ]
+ },
+ "domain/services/constituents_top20.py:119": {
+  "kind": "read_site",
+  "line": "symbols = {fy.split(\":\", 1)[1].rsplit(\"-EQ\", 1)[0] for fy, _ in NIFTY50} | {\"NIFTYBEES\"}",
+  "tokens": [
+   "NIFTY50"
+  ]
+ },
+ "domain/services/constituents_top20.py:216": {
+  "kind": "read_site",
+  "line": "prev = _prior_session(con, bars_table, lo)",
+  "tokens": [
+   "_prior_session"
+  ]
+ },
+ "domain/services/derived_features.py:226": {
+  "kind": "read_site",
+  "line": "\"SELECT dt, opt_type, strike, oi FROM opt_chain_1m \"",
+  "tokens": [
+   "FROM opt_chain_1m"
+  ]
+ },
+ "domain/services/derived_wide.py:452": {
+  "kind": "read_site",
+  "line": "bn = _index_series(ro, day, _pick(syms, \"NIFTY BANK\", \"BANKNIFTY\"),",
+  "tokens": [
+   "NIFTY BANK"
+  ]
+ },
+ "domain/services/derived_wide.py:458": {
+  "kind": "read_site",
+  "line": "sx = _index_series(ro, day, _pick(syms, \"BSE:SENSEX\", \"SENSEX\"), why, \"sensex_rs\")",
+  "tokens": [
+   "sensex_rs"
+  ]
+ },
+ "domain/services/eod_pit.py:256": {
+  "kind": "read_site",
+  "line": "r = _rows(con, \"SELECT dt, advances, declines, unchanged FROM breadth_1d WHERE dt < ? AND %s \"",
+  "tokens": [
+   "FROM breadth_1d"
+  ]
+ },
+ "domain/services/global_cues.py:37": {
+  "kind": "spec",
+  "line": "\"gift_nifty\": [(\"gift_nifty_bias\", \"GIFT NIFTY\", \"%\"), (\"gift_vs_nifty_pct\", \"GIFT vs NIFTY close (basis included)\", \"%\"),",
+  "tokens": [
+   "gift_nifty"
+  ]
+ },
+ "domain/services/global_cues.py:38": {
+  "kind": "spec",
+  "line": "(\"usdinr_change\", \"USDINR\", \"%\"), (\"risk_on_off\", \"global equity vote\", \"\")],",
+  "tokens": [
+   "usdinr"
+  ]
+ },
+ "domain/services/institutional_flow.py:189": {
+  "kind": "read_site",
+  "line": "cur = con.execute(\"SELECT source, name, start_ist FROM event_calendar WHERE start_ist >= ? AND start_ist < ? \"",
+  "tokens": [
+   "event_calendar"
+  ]
+ },
+ "domain/services/market_state.py:119": {
+  "kind": "read_site",
+  "line": "q(\"eqvol\", \"SELECT dt, SUM(volume) FROM equity_1m WHERE dt BETWEEN ? AND ? \"",
+  "tokens": [
+   "equity_1m"
+  ]
+ },
+ "domain/services/meta_label.py:47": {
+  "kind": "read_site",
+  "line": "vix = row.get(\"vix\")",
+  "tokens": [
+   "row.get(\"vix\")"
+  ]
+ },
+ "domain/services/regime_6m.py:187": {
+  "kind": "read_site",
+  "line": "hi = max(float(b[2]) for b in today_bars); lo = min(float(b[3]) for b in today_bars)",
+  "tokens": [
+   "today_bars"
+  ]
+ },
+ "domain/services/regime_6m.py:196": {
+  "kind": "read_site",
+  "line": "\"rv30\": None, \"vix\": vix_now, \"pcr\": dist.get(\"prev_pcr\"),",
+  "tokens": [
+   "vix_now",
+   "pcr"
+  ]
+ },
+ "domain/services/regime_6m.py:280": {
+  "kind": "read_site",
+  "line": "vcol = \"traded_volume\" if \"traded_volume\" in cols else None   # never the index vol/volume column (CLAUDE.md 2.2)",
+  "tokens": [
+   "traded_volume"
+  ]
+ },
+ "domain/services/session_schedule.py:144": {
+  "kind": "spec",
+  "line": "Slot(\"gift_nifty\", \"GIFT NIFTY + expected gap\", \"06:30\", \"09:10\", every_min=60,",
+  "tokens": [
+   "gift_nifty"
+  ]
+ },
+ "domain/services/session_schedule.py:204": {
+  "kind": "spec",
+  "line": "Slot(\"fii_dii\", \"FII/DII: 1D, 3D, 5D, 20D positioning\", \"06:00\", \"06:40\",",
+  "tokens": [
+   "fii_dii"
+  ]
+ },
+ "domain/services/session_schedule.py:309": {
+  "kind": "spec",
+  "line": "Slot(\"fii_dii_fetch\", \"FETCH today's FII/DII and store it\", \"18:00\", \"20:00\",",
+  "tokens": [
+   "fii_dii"
+  ]
+ },
+ "domain/services/traded_volume.py:138": {
+  "kind": "read_site",
+  "line": "\"SELECT substr(dt,1,16), src, sym, volume FROM fut_1m WHERE dt >= ? AND dt < ? \"",
+  "tokens": [
+   "FROM fut_1m"
+  ]
+ },
+ "pullers/shared/dp_depthrec.py:232": {
+  "kind": "writer",
+  "line": "path = os.path.join(OUT_DIR, \"scrip_master_%s.csv\" % day.strftime(\"%Y%m%d\"))",
+  "tokens": [
+   "scrip_master"
+  ]
+ },
+ "tools/regime_6m_build.py:31": {
+  "kind": "definition",
+  "line": "def _with_traded_volume(raw, db_path):",
+  "tokens": [
+   "_with_traded_volume"
+  ]
+ },
+ "tools/regime_6m_build.py:61": {
+  "kind": "read_site",
+  "line": "raw = con.execute(\"select ts,open,high,low,close from nifty_1m where ts>=? order by ts\",",
+  "tokens": [
+   "nifty_1m"
+  ]
+ },
+ "tools/regime_6m_build.py:65": {
+  "kind": "read_site",
+  "line": "for ts, c in con.execute(\"select ts,close from vix_1m where ts>=? order by ts\", (since,)):",
+  "tokens": [
+   "vix_1m"
+  ]
+ },
+ "tools/regime_6m_build.py:69": {
+  "kind": "read_site",
+  "line": "for d, p in con.execute(\"select dt,pcr_oi_near from options_chain_summary where dt>=?\",",
+  "tokens": [
+   "options_chain_summary"
+  ]
+ },
+ "domain/services/global_context.py:231": {
+  "kind": "read_site",
+  "line": "df = pd.read_sql(\"SELECT dt, close FROM macro_1d WHERE sym=? \"",
+  "tokens": [
+   "macro_1d"
+  ]
+ },
+ "tools/global_wire.py:141": {
+  "kind": "read_site",
+  "line": "(\"dxy_change\", \"DXY\", \"yahoo\", \"pct\"),",
+  "tokens": [
+   "DXY"
+  ]
+ },
+ "tools/global_wire.py:143": {
+  "kind": "read_site",
+  "line": "(\"us_yields_change\", \"US10Y\", \"yahoo\", \"bp\"),",
+  "tokens": [
+   "US10Y"
+  ]
+ },
+ "tools/global_wire.py:146": {
+  "kind": "read_site",
+  "line": "(\"gold_change\", \"GOLD\", \"yahoo\", \"pct\"),",
+  "tokens": [
+   "GOLD"
+  ]
+ },
+ "domain/services/eod_pit.py:280": {
+  "kind": "read_site",
+  "line": "r = _rows(con, \"SELECT dt, total_index_options_volume, total_index_futures_volume FROM derivative_activity \"",
+  "tokens": [
+   "derivative_activity"
+  ]
+ },
+ "domain/services/feature_compute_full.py:890": {
+  "kind": "read_site",
+  "line": "sectors = {\"NIFTY BANK\": \"f151\", \"NIFTY IT\": \"f152\", \"NIFTY PHARMA\": \"f153\",",
+  "tokens": [
+   "NIFTY IT"
+  ]
+ },
+ "tools/global_wire.py:23": {
+  "kind": "read_site",
+  "line": "global_cues_1m(dt, gift_nifty_bias, dxy_change, brent_change, us_yields_change, risk_on_off, ...)   PK dt",
+  "tokens": [
+   "gift_nifty_bias"
+  ]
+ },
+ "tools/global_wire.py:46": {
+  "kind": "read_site",
+  "line": "gift_nifty_bias   GIFT NIFTY % since the last NSE close. The futures basis cancels because both ends are",
+  "tokens": [
+   "gift_nifty_bias"
+  ]
+ },
+ "tools/global_wire.py:142": {
+  "kind": "read_site",
+  "line": "(\"brent_change\", \"BRENT\", \"upstox\", \"pct\"),",
+  "tokens": [
+   "BRENT"
+  ]
+ },
+ "tools/global_wire.py:145": {
+  "kind": "read_site",
+  "line": "(\"wti_change\", \"WTI\", \"upstox\", \"pct\"),",
+  "tokens": [
+   "WTI"
+  ]
+ },
+ "domain/services/eod_pit.py:156": {
+  "kind": "read_site",
+  "line": "r = _rows(con, \"SELECT %s FROM fo_bhav_nifty_daily WHERE business_date < ? ORDER BY business_date DESC LIMIT 2\"",
+  "tokens": [
+   "fo_bhav_nifty_daily"
+  ]
+ },
+ "domain/services/eod_pit.py:130": {
+  "kind": "read_site",
+  "line": "v = _rows(con, \"SELECT business_date, participant, fut_idx_long, fut_idx_short FROM participant_vol_daily \"",
+  "tokens": [
+   "participant_vol_daily"
+  ]
+ },
+ "domain/services/eod_pit.py:218": {
+  "kind": "read_site",
+  "line": "r = _rows(con, \"SELECT business_date, deliv_ratio FROM market_delivery_daily WHERE business_date < ? \"",
+  "tokens": [
+   "market_delivery_daily"
+  ]
+ },
+ "domain/services/eod_pit.py:229": {
+  "kind": "read_site",
+  "line": "n = _rows(con, \"SELECT business_date, AVG(delivery_pct), COUNT(*) FROM equity_eod_delivery WHERE business_date = \"",
+  "tokens": [
+   "equity_eod_delivery"
+  ]
+ },
+ "domain/services/eod_pit.py:242": {
+  "kind": "read_site",
+  "line": "r = _rows(con, \"SELECT dt, actual, source FROM india_macro WHERE indicator = ? AND substr(dt,1,10) < ? \"",
+  "tokens": [
+   "india_macro"
+  ]
+ },
+ "domain/services/global_context.py:224": {
+  "kind": "read_site",
+  "line": "\"SELECT sym, dt, close FROM fut_1d ORDER BY dt\").fetchall()",
+  "tokens": [
+   "fut_1d"
+  ]
+ }
+}
