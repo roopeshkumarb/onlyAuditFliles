@@ -1,4 +1,5 @@
 # LATEST: open for verification (updated 05-11-2026 night IST; newest first)
+## ROUND 6 FULL AUDIT REPORT (05-11): audit_051126_data_needed_v2/FULL_AUDIT_REPORT_051126.md = every auditor, finding, fix and proof, plus what is still open.
 ## ROUND 6 FINAL PACK (05-11 night): audit_051126_data_needed_v2/FINAL_AUDIT_PACK_ONE_FILE_051126.md = list + Opus R1 + Opus R2 + Fable in ONE file. The older AUDIT_PACK_ONE_FILE_051126.txt is SUPERSEDED (it predates the R2 audit and the gaps G1-G7).
 ## ROUND 6 (05-11 night): is the data-needed list COMPLETE for the intraday directional engine? | AWAITING AUDITORS
 Start with audit_051126_data_needed_v2/README.md. Opus audit found the list incomplete (6 groups of inputs missing); 9 rows added, fix not re-audited. Questions inside. Nothing is deployed on any puller because of this list; a stop-pulling policy waits for audit + external audit + owner.
